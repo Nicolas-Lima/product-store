@@ -1,8 +1,4 @@
 import { BrowserRouter } from "react-router-dom";
-
-import Home from "./pages/Home";
-import Error from "./pages/Error";
-
 import RoutesApp from "./routes";
 
 import "./css/app.css";

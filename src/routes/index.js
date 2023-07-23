@@ -5,8 +5,8 @@ import Error from "../pages/Error";
 function RoutesApp() {
   return (
     <Routes>
-      <Route to="/" element={<Home />} />
-      <Route to="*" element={<Error />} />
+      <Route path="/" element={<Home />} />
+      <Route path="*" element={<Error />} />
     </Routes>
   );
 }

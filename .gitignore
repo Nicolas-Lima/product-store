@@ -1,4 +1,9 @@
-node_modules/
+.vscode/
+
+/src/services/firebaseConnection.js
+
+# Local Netlify folder
+.netlify
 
 # dependencies
 /node_modules

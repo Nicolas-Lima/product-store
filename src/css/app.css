@@ -3,6 +3,6 @@ html,
   background-color: #eeeeee;
 }
 
-* {
+* :not(a) {
   color: #2f2f2f !important;
 }
