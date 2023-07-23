@@ -1,0 +1,13 @@
+.grid article img {
+  max-width: 265px;
+  max-height: 265px;
+}
+
+.product article {
+  position: relative;
+}
+
+.product article:hover {
+  box-shadow: 0 10px 10px #eeeeee;
+  top: -1px;
+}
