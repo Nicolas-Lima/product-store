@@ -109,9 +109,9 @@ function AuthProvider({ children }) {
   };
 
   return (
-    <AuthProvider.Provider value={contextValue}>
-      {children}
-    </AuthProvider.Provider>
+    <AuthContext.Provider value={contextValue}>
+      {pageLoading ? <Loading /> : children}
+    </AuthContext.Provider>
   );
 }
 

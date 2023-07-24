@@ -3,10 +3,6 @@ html,
   background-color: #eeeeee;
 }
 
-* :not(a) {
-  color: #2f2f2f !important;
-}
-
 .text-pico-danger {
   color: rgb(229, 57, 53);
 }
@@ -20,7 +16,11 @@ html,
 }
 
 .mt-2-3rem {
-  margin-top: 2.3rem;
+  margin-top: 2.3rem !important;
+}
+
+.ms-custom-1 {
+  margin-left: 0.6rem;
 }
 
 .mb-2-3rem {

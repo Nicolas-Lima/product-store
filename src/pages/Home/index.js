@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Nav from "../../components/Nav";
-import Products from "../../components/Products"
+import Products from "../../components/Products";
 
 function Home() {
   const [search, setSearch] = useState("");

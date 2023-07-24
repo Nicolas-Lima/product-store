@@ -45,10 +45,6 @@ function RegisterForm() {
     }
   }, [password]);
 
-  useEffect(() => {
-    console.log(registering);
-  }, [registering]);
-
   const validateEmail = () => {
     const { isValid, errorMessage } = validateEmailWithMessage(email);
     setEmailError(errorMessage);
