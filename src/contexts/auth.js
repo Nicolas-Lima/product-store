@@ -1,7 +1,16 @@
-import { createContext, useEffect, useState } from "react";
+import { useState, useEffect, createContext } from "react";
+import Loading from "../components/Loading";
 import { useNavigate } from "react-router-dom";
-
 import { auth } from "../services/firebaseConnection";
+import {
+  getAuthErrorMessage,
+  getCreateAccountErrorMessage,
+} from "../utils/validationUtils";
+import {
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signOut,
+} from "firebase/auth";
 
 const AuthContext = createContext({});
 

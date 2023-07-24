@@ -6,3 +6,41 @@ html,
 * :not(a) {
   color: #2f2f2f !important;
 }
+
+.text-pico-danger {
+  color: rgb(229, 57, 53);
+}
+
+.text-cyan {
+  color: #00acc1;
+}
+
+.bg-gray {
+  background-color: #a5a5a5;
+}
+
+.mt-2-3rem {
+  margin-top: 2.3rem;
+}
+
+.mb-2-3rem {
+  margin-bottom: 2.3rem;
+}
+
+.pt-4rem {
+  padding-top: 4rem !important;
+}
+
+.custom-link {
+  text-decoration: unset;
+  color: rgb(65, 84, 98);
+}
+
+.custom-color {
+  color: rgb(65, 84, 98);
+}
+
+form#register input,
+form#login input {
+  background-image: unset !important;
+}

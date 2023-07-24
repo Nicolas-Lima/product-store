@@ -2,7 +2,7 @@ import Product from "../Product";
 
 function Products() {
   return (
-    <div class="grid" data-theme="light">
+    <div className="grid" data-theme="light">
       <Product
         title="A única coisa"
         imgUrl="https://m.media-amazon.com/images/I/41o+ibXhIgL._SY344_BO1,204,203,200_.jpg"
