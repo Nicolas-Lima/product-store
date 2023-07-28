@@ -5,18 +5,20 @@ import Products from "../../components/Products";
 function Home() {
   const [search, setSearch] = useState("");
   return (
-    <main className="container">
+    <>
       <Nav />
-      <input
-        className="mt-4"
-        type="search"
-        placeholder="Pesquise por um produto..."
-        value={search}
-        onChange={e => setSearch(e.target.value)}
-        data-theme="light"
-      />
-      <Products />
-    </main>
+      <main className="container">
+        <input
+          className="mt-4"
+          type="search"
+          placeholder="Pesquise por um produto..."
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          data-theme="light"
+        />
+        <Products />
+      </main>
+    </>
   );
 }
 

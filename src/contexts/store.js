@@ -37,7 +37,7 @@ function StoreProvider({ children }) {
       seller: "A & B",
       minPurchaseUnits: 1,
       maxPurchaseUnits: 3,
-      stock: 4,
+      stock: 0,
       keywords: ["oculos", "oculos de sol"],
       empty: false,
     },
