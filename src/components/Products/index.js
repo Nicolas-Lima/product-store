@@ -1,26 +1,74 @@
+import { useContext, useEffect, useState, Fragment } from "react";
+import { StoreContext } from "../../contexts/store";
 import Product from "../Product";
 
 function Products() {
+  const [slicedProductsIntoGroups, setSlicedProductsIntoGroups] = useState(
+    []
+  ); // We have to divide the products into groups of 3 so that the PICO.css grid to work better.
+  const { products } = useContext(StoreContext);
+
+  const sliceProductsIntoGroups = () => {
+    const productsCopy = [...products];
+    const groupSize = 3;
+    const numberOfGroups = productsCopy.length / groupSize;
+    const slicedProductGroups = [];
+
+    for (let i = 0; i < numberOfGroups; i++) {
+      slicedProductGroups.push(productsCopy.splice(0, groupSize));
+    }
+
+    slicedProductGroups.map(group => {
+      if (group.length !== groupSize) {
+        const missingProducts = groupSize - group.length;
+        for (let i = 0; i < missingProducts; i++) {
+          group.push({ emptyProduct: true });
+        }
+      }
+    });
+
+    return slicedProductGroups;
+  };
+
+  useEffect(() => {
+    setSlicedProductsIntoGroups(sliceProductsIntoGroups());
+  }, []);
+
   return (
-    <div className="grid" data-theme="light">
-      <Product
-        title="A única coisa"
-        imgUrl="https://m.media-amazon.com/images/I/41o+ibXhIgL._SY344_BO1,204,203,200_.jpg"
-        alt="livro-unica-coisa"
-      />
-
-      <Product
-        title="Óculos de sol"
-        imgUrl="https://m.media-amazon.com/images/I/31S41ebtGzL._AC_SX679_.jpg"
-        alt="oculos-de-sol"
-      />
-
-      <Product
-        title="Chaleira elétrica"
-        imgUrl="https://m.media-amazon.com/images/I/517c17in3RL._AC_SX569_.jpg"
-        alt="chaleira-eletrica"
-      />
-    </div>
+    <>
+      {slicedProductsIntoGroups.map((productsGroup, groupIndex) => {
+        return (
+          <div
+            className="grid"
+            data-theme="light"
+            key={`productsGroup-${groupIndex}`}>
+            {productsGroup.map((product, productIndex) => {
+              const productKey = `product-${groupIndex}-${productIndex}`;
+              return (
+                <Fragment key={productKey}>
+                  {product.emptyProduct ? (
+                    <div
+                      className="empty-product"
+                      key={"empty-" + productKey}></div>
+                  ) : (
+                    <Product
+                      key={productKey}
+                      id={product.id}
+                      title={product.name}
+                      imgUrl={product.imgUrl}
+                      alt={product.name}
+                      description={product.description}
+                      seller={product.seller}
+                      price={product.price}
+                    />
+                  )}
+                </Fragment>
+              );
+            })}
+          </div>
+        );
+      })}
+    </>
   );
 }
 

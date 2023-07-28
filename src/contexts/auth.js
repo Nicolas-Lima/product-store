@@ -1,7 +1,7 @@
 import { useState, useEffect, createContext } from "react";
 import Loading from "../components/Loading";
 import { useNavigate } from "react-router-dom";
-import { auth } from "../services/firebaseConnection";
+import { auth, db } from "../services/firebaseConnection";
 import {
   getAuthErrorMessage,
   getCreateAccountErrorMessage,
@@ -11,6 +11,8 @@ import {
   createUserWithEmailAndPassword,
   signOut,
 } from "firebase/auth";
+
+import { setDoc, doc } from "firebase/firestore";
 
 const AuthContext = createContext({});
 
@@ -62,12 +64,22 @@ function AuthProvider({ children }) {
     };
 
     await createUserWithEmailAndPassword(auth, email, password)
-      .then(value => {
+      .then(async value => {
         const { email, uid } = value.user;
         saveUserData(email, uid);
         setUser({
           email,
           uid,
+        });
+
+        await setDoc(doc(db, "users", uid), {
+          email,
+          uid,
+          purchasedProducts: [],
+          profileConfiguration: {
+            imgUrl: "",
+            name: "",
+          },
         });
         navigate("/");
       })
@@ -80,11 +92,9 @@ function AuthProvider({ children }) {
     return returnObject;
   }
 
-  async function logout() {
-    await signOut(auth).then(() => {
-      localStorage.removeItem("@userData");
-      setUser(null);
-    });
+  function logout() {
+    localStorage.removeItem("@userData");
+    setUser(false)
   }
 
   function saveUserData(email, uid) {

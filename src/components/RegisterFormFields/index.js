@@ -1,10 +1,15 @@
 import { useContext, useEffect } from "react";
 import { FormContext } from "../../contexts/form";
 import PasswordToggle from "../PasswordToggle";
+import { capitalizeFirstLetter } from "../../utils/generalUtils";
 
 function RegisterFormFields(props) {
-  const { email, setEmail, password, setPassword } = props;
+  const { fullName, setFullName, email, setEmail, password, setPassword } =
+    props;
   const {
+    fullNameInputStarted,
+    setFullNameInputStarted,
+    fullNameError,
     emailInputStarted,
     setEmailInputStarted,
     emailError,
@@ -15,9 +20,40 @@ function RegisterFormFields(props) {
     passwordError,
   } = useContext(FormContext);
 
+  const handleFullNameInput = e => {
+    setFullName(capitalizeFirstLetter(e.target.value));
+    if (!fullNameInputStarted) {
+      setFullNameInputStarted(true);
+    }
+  };
+
   return (
     <div className="d-flex flex-column mb-4">
-      <label className="mb-2" htmlFor="email">
+      <label className="mb-2" htmlFor="fullName">
+        Nome
+      </label>
+      <input
+        type="text"
+        id="fullName"
+        placeholder="Digite seu nome e sobrenome"
+        value={fullName}
+        onChange={handleFullNameInput}
+        aria-invalid={
+          fullNameInputStarted || formSubmitted
+            ? fullNameError
+              ? "true"
+              : "false"
+            : ""
+        }
+      />
+      <div
+        className={`mt-1 mb-2 ${fullNameError ? "d-initial" : "d-none"}`}>
+        <span className="name-error text-pico-danger">
+          {fullNameError}
+        </span>
+      </div>
+
+      <label className="mb-2 mt-2" htmlFor="email">
         Email
       </label>
       <input

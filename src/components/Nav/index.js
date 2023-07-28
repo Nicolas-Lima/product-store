@@ -50,9 +50,8 @@ function Nav() {
                   <BsGear />
                 </div>
               </li>
-              <li>
+              <li onClick={logout}>
                 <div
-                  onClick={logout}
                   className="d-flex justify-content-end align-items-center link-secondary">
                   <span className="ms-custom-1">Sair</span>
                   <BsBoxArrowRight />

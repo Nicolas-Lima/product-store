@@ -1,13 +1,21 @@
 .grid article img {
-  max-width: 265px;
-  max-height: 265px;
+  max-width: 200px;
+  max-height: 200px;
 }
 
 .product article {
   position: relative;
 }
 
-.product article:hover {
-  box-shadow: 0 10px 10px #eeeeee;
+.product article:hover, .product article:focus {
+  box-shadow: 0 10px 10px #aaaaaa;
   top: -1px;
+}
+
+.description {
+  font-size: 18px !important;
+}
+
+.price {
+  font-size: 24px;
 }

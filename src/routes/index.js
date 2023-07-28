@@ -2,6 +2,7 @@ import { Routes, Route } from "react-router-dom";
 import Home from "../pages/Home";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
+import Product from "../pages/Product";
 import Error from "../pages/Error";
 import Private from "./Private";
 
@@ -34,6 +35,8 @@ function RoutesApp() {
           </FormProvider>
         }
       />
+      <Route path="/product/:id" element={<Product />} />
+
       <Route path="*" element={<Error />} />
     </Routes>
   );

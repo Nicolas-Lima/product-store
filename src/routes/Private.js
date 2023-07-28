@@ -6,7 +6,7 @@ function Private({ children }) {
   const { userSigned } = useContext(AuthContext);
 
   if (!userSigned) {
-    <Navigate to="/" />
+    return <Navigate to="/login" />
   }
 
   return children;

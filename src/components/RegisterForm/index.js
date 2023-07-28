@@ -6,15 +6,19 @@ import { AuthContext } from "../../contexts/auth";
 import {
   validateEmailWithMessage,
   validatePasswordWithMessage,
+  validateFullNameWithMessage,
 } from "../../utils/validationUtils";
 
 import RegisterFormFields from "../../components/RegisterFormFields";
 
 function RegisterForm() {
+  const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const {
+    setFullNameError,
+    fullNameInputStarted,
     setEmailError,
     emailInputStarted,
     setFormSubmitted,
@@ -45,6 +49,12 @@ function RegisterForm() {
     }
   }, [password]);
 
+  useEffect(() => {
+    if (fullNameInputStarted) {
+      validateFullName();
+    }
+  }, [fullName]);
+
   const validateEmail = () => {
     const { isValid, errorMessage } = validateEmailWithMessage(email);
     setEmailError(errorMessage);
@@ -55,6 +65,13 @@ function RegisterForm() {
     const { isValid, errorMessage } =
       validatePasswordWithMessage(password);
     setPasswordError(errorMessage);
+    return isValid;
+  };
+
+  const validateFullName = () => {
+    const { isValid, errorMessage } =
+      validateFullNameWithMessage(fullName);
+    setFullNameError(errorMessage);
     return isValid;
   };
 
@@ -92,6 +109,8 @@ function RegisterForm() {
               id="register"
               noValidate>
               <RegisterFormFields
+                fullName={fullName}
+                setFullName={setFullName}
                 email={email}
                 setEmail={setEmail}
                 password={password}

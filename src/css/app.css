@@ -1,6 +1,6 @@
 html,
 #root {
-  background-color: #eeeeee;
+  background-color: #fff;
 }
 
 .text-pico-danger {
@@ -9,6 +9,10 @@ html,
 
 .text-cyan {
   color: #00acc1;
+}
+
+.text-gray {
+  color: #595959;
 }
 
 .bg-gray {
@@ -32,7 +36,7 @@ html,
 }
 
 .custom-link {
-  text-decoration: unset;
+  text-decoration: unset !important;
   color: rgb(65, 84, 98);
 }
 

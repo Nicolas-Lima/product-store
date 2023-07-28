@@ -24,6 +24,7 @@ function hasNumber(string) {
 }
 
 function capitalizeFirstLetter(str) {
+  str = str.trimStart();
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 

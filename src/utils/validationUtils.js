@@ -96,6 +96,38 @@ function validatePasswordWithMessage(password) {
   };
 }
 
+function validateFullNameWithMessage(fullName) {
+  let isValid = true;
+  let errorMessage = "";
+
+  const validationConditions = [
+    {
+      condition: !fullName,
+      errorMessage: "Seu nome está vazio!",
+    },
+    {
+      condition: !(fullName.length >= 3),
+      errorMessage: "Seu nome precisa de ter no mínimo 3 letras!",
+    },
+    {
+      condition: !(fullName.trim().split(" ").length >= 2),
+      errorMessage: "Insira ao menos um sobrenome!",
+    },
+  ];
+
+  validationConditions.forEach(condition => {
+    if (condition.condition && isValid) {
+      isValid = false;
+      errorMessage = condition.errorMessage;
+    }
+  });
+
+  return {
+    isValid,
+    errorMessage,
+  };
+}
+
 function getAuthErrorMessage(errorCode) {
   let errorMessage = "";
 
@@ -111,6 +143,9 @@ function getAuthErrorMessage(errorCode) {
     case "auth/missing-password":
       errorMessage =
         "Senha obrigatória. Por favor, certifique-se de digitar sua senha antes de prosseguir.";
+      break;
+    case "auth/wrong-password":
+      errorMessage = "Sua senha está incorreta!";
       break;
     default:
       errorMessage =
@@ -149,6 +184,7 @@ export {
   hasValidDomain,
   validateEmailWithMessage,
   validatePasswordWithMessage,
+  validateFullNameWithMessage,
   getAuthErrorMessage,
   getCreateAccountErrorMessage,
 };
