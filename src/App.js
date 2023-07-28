@@ -10,10 +10,6 @@ import "./css/pico-bootstrap-grid.css";
 
 function App() {
 
-  alert("Comitar arquivo por arquivo detalhadamente!")
-
-  alert(`redirectTo="/login" redirectMessage="Faça login!" Ná pagina "Error"`)
-
   return (
     <BrowserRouter>
       <AuthProvider>

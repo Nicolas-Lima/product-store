@@ -22,7 +22,7 @@ function Product() {
 
   if(productNotFound) {
     return (
-      <ErrorComponent message="Esse produto não existe!" />
+      <ErrorComponent message="Esse produto não existe!"/>
     );
   }
 
