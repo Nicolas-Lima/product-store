@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { AuthContext } from "../../contexts/auth";
 import box from "../../assets/box.png";
 
-import { BsBoxArrowRight, BsGear, BsBox } from "react-icons/bs";
+import { BsBoxArrowRight, BsGear, BsBox, BsCart3 } from "react-icons/bs";
 
 import "./nav.css";
 
@@ -41,6 +41,14 @@ function Nav() {
                     className="d-flex justify-content-end align-items-center link-secondary">
                     <span className="ms-custom-1">Meus pedidos</span>
                     <BsBox />
+                  </div>
+                </li>
+                <li>
+                  <div
+                    onClick={() => console.log("Meus pedidos")}
+                    className="d-flex justify-content-end align-items-center link-secondary">
+                    <span className="ms-custom-1">Meu carrinho</span>
+                    <BsCart3 />
                   </div>
                 </li>
                 <li>

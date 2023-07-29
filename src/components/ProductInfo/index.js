@@ -1,7 +1,22 @@
+import StockMessage from "../StockMessage";
 import "./productInfo.css";
 
 function ProductInfo({ product }) {
   const hasStock = product.stock > 0;
+  const { minPurchaseUnits } = product;
+
+  const generateOptionsForAmountSelect = () => {
+    const amountArray = [...Array(product.maxPurchaseUnits)];
+    return amountArray.map((value, index) => {
+      const optionValue = index + minPurchaseUnits;
+      return (
+        <option value={optionValue} key={index}>
+          {optionValue}
+        </option>
+      );
+    });
+  };
+
   return (
     <>
       <article>
@@ -12,43 +27,25 @@ function ProductInfo({ product }) {
               <sup>{product.price.cents}</sup>
             </span>
           </div>
-          {hasStock ? (
-            <div className="mt-1">
-              <span className="text-white bagde bg-success rounded p-1 px-2">
-                Em estoque!
-              </span>
-            </div>
-          ) : (
-            <div className="mt-1">
-              <span className="text-white bagde bg-danger rounded p-1 px-2">
-                Produto sem estoque!
-              </span>
-            </div>
-          )}
+          <div className="mt-2 mb-3">
+            <StockMessage stock={product.stock} />
+          </div>
           {hasStock && (
-            <div className="amount-container mt-2">
+            <div className="amount-container">
               <label htmlFor="amount">Quantidade</label>
               <select id="amount" required>
-                {[...Array(product.maxPurchaseUnits)].map(
-                  (value, index) => {
-                    return (
-                      <option value={index + 1} key={index}>
-                        {index + 1}
-                      </option>
-                    );
-                  }
-                )}
+                {generateOptionsForAmountSelect()}
               </select>
             </div>
           )}
-          <div className="about-container mt-2 mb-3">
+          <div className="about-container mb-3">
             <strong>Sobre este item</strong>: {product.description}
           </div>
 
           <div className="actions">
             {hasStock && (
               <>
-                <button className="btn-orange">Comprar</button>
+                <button>Comprar</button>
                 <button className="btn-yellow">
                   Adicionar ao carrinho
                 </button>

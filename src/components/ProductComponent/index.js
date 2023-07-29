@@ -1,7 +1,10 @@
+import StockMessage from "../StockMessage";
 import { Link } from "react-router-dom";
 import "./product.css";
 
-function Product({ title, seller, imgUrl, description, price, id }) {
+function ProductComponent({ product, includeStockMessage = true }) {
+  const { title, seller, imgUrl, description, price, id, stock } = product;
+
   return (
     <>
       <Link
@@ -18,6 +21,7 @@ function Product({ title, seller, imgUrl, description, price, id }) {
                 <span className="seller badge bg-light p-1 px-2 rounded">
                   {seller}
                 </span>
+
                 <div className="description text-center mt-3 text-gray">
                   {description}
                 </div>
@@ -27,6 +31,11 @@ function Product({ title, seller, imgUrl, description, price, id }) {
                     <sup>{price.cents}</sup>
                   </span>
                 </div>
+                {includeStockMessage && (
+                  <div className="stockMessage mt-3">
+                    <StockMessage stock={stock} withBadge={false} />
+                  </div>
+                )}
               </div>
             </div>
           </article>
@@ -36,4 +45,4 @@ function Product({ title, seller, imgUrl, description, price, id }) {
   );
 }
 
-export default Product;
+export default ProductComponent;

@@ -1,0 +1,59 @@
+:root {
+  --custom-yellow: #fdd835;
+  --custom-yellow-hover: #fbc02d;
+  --custom-yellow-focus: #fbc02d;
+  --custom-yellow-inverse: rgba(0, 0, 0, 0.75);
+  --custom-grey: #757575;
+  --custom-grey-hover: #616161;
+  --custom-grey-focus: #616161;
+  --custom-grey-inverse: #fff;
+  --custom-orange: #f4511e;
+  --custom-orange-hover: #e64a19;
+  --custom-orange-focus: #e64a19;
+  --custom-orange-inverse: #fff;
+}
+
+.btn-yellow {
+  background-color: var(--custom-yellow) !important;
+  border-color: var(--custom-yellow) !important;
+  color: var(--custom-yellow-inverse) !important;
+  box-shadow: var(--button-box-shadow, 0 0 0 rgba(0, 0, 0, 0)) !important;
+}
+
+.btn-yellow:hover {
+  background-color: var(--custom-yellow-hover) !important;
+}
+
+.btn-yellow:focus {
+  background-color: var(--custom-yellow-focus) !important;
+}
+
+.btn-grey {
+  background-color: var(--custom-grey) !important;
+  border-color: var(--custom-grey) !important;
+  color: var(--custom-grey-inverse) !important;
+  box-shadow: var(--button-box-shadow, 0 0 0 rgba(0, 0, 0, 0)) !important;
+}
+
+.btn-grey:hover {
+  background-color: var(--custom-grey-hover) !important;
+}
+
+.btn-grey:focus {
+  background-color: var(--custom-grey-focus) !important;
+}
+
+.btn-orange {
+  background-color: var(--custom-orange) !important;
+  border-color: var(--custom-orange) !important;
+  color: var(--custom-orange-inverse) !important;
+  box-shadow: var(--button-box-shadow, 0 0 0 rgba(0, 0, 0, 0)) !important;
+}
+
+.btn-orange:hover {
+  background-color: var(--custom-orange-hover) !important;
+}
+
+.btn-orange:focus {
+  background-color: var(--custom-orange-focus) !important;
+}

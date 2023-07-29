@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState, Fragment } from "react";
 import { StoreContext } from "../../contexts/store";
-import Product from "../Product";
+import ProductComponent from "../ProductComponent";
 
 function Products() {
   const [slicedProductsIntoGroups, setSlicedProductsIntoGroups] = useState(
@@ -51,15 +51,9 @@ function Products() {
                       className="empty-product"
                       key={"empty-" + productKey}></div>
                   ) : (
-                    <Product
+                    <ProductComponent
                       key={productKey}
-                      id={product.id}
-                      title={product.name}
-                      imgUrl={product.imgUrl}
-                      alt={product.name}
-                      description={product.description}
-                      seller={product.seller}
-                      price={product.price}
+                      product={product}
                     />
                   )}
                 </Fragment>

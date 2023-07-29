@@ -4,6 +4,7 @@ import { StoreContext } from "../../contexts/store";
 import Nav from "../../components/Nav";
 import Loading from "../../components/Loading";
 import ErrorComponent from "../../components/ErrorComponent";
+import ProductComponent from "../../components/ProductComponent";
 import ProductInfo from "../../components/ProductInfo";
 
 function Product() {
@@ -36,7 +37,7 @@ function Product() {
       <main className="container">
         <div className="grid">
           <div>
-            <article>
+            {/* <article>
               <header className="text-center">
                 <strong>{product.name}</strong>
               </header>
@@ -57,7 +58,8 @@ function Product() {
                   </div>
                 </div>
               </div>
-            </article>
+            </article> */}
+            <ProductComponent product={product} includeStockMessage={false} />
           </div>
           <div>
             <ProductInfo product={product} />

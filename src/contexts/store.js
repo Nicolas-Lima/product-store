@@ -95,6 +95,9 @@ function StoreProvider({ children }) {
     if (userSigned && userUid) {
       loadUserInfo();
     }
+
+
+
   }, []);
 
   const getProductById = productId => {
