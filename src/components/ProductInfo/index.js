@@ -13,9 +13,17 @@ function ProductInfo({ product }) {
             </span>
           </div>
           {hasStock ? (
-            <div className="text-success">Em estoque!</div>
+            <div className="mt-1">
+              <span className="text-white bagde bg-success rounded p-1 px-2">
+                Em estoque!
+              </span>
+            </div>
           ) : (
-            <div className="text-danger">Produto sem estoque!</div>
+            <div className="mt-1">
+              <span className="text-white bagde bg-danger rounded p-1 px-2">
+                Produto sem estoque!
+              </span>
+            </div>
           )}
           {hasStock && (
             <div className="amount-container mt-2">
@@ -40,13 +48,15 @@ function ProductInfo({ product }) {
           <div className="actions">
             {hasStock && (
               <>
-                <button>Comprar</button>
-                <button className="secondary">
+                <button className="btn-orange">Comprar</button>
+                <button className="btn-yellow">
                   Adicionar ao carrinho
                 </button>
               </>
             )}
-            <button className="contrast">Adicionar à Lista</button>
+            <button className="contrast btn-grey">
+              Adicionar à Lista
+            </button>
           </div>
         </div>
       </article>

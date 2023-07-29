@@ -110,7 +110,7 @@ function StoreProvider({ children }) {
     setProducts,
     getProductById,
     userInfo,
-    purchasedProducts: userInfo.purchasedProducts, };
+    purchasedProducts: userInfo?.purchasedProducts, };
 
   return (
     <StoreContext.Provider value={contextValue}>

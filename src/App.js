@@ -5,6 +5,7 @@ import AuthProvider from "./contexts/auth";
 import StoreProvider from "./contexts/store";
 
 import "./css/app.css";
+import "./css/custom-buttons.css";
 import "./css/bootstrap-utilities.css";
 import "./css/pico-bootstrap-grid.css";
 
