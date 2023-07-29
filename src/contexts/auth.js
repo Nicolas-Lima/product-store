@@ -25,9 +25,9 @@ function AuthProvider({ children }) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const userData = localStorage.getItem("@userData");
-    if (userData) {
-      setUser(JSON.parse(userData));
+    const userData = JSON.parse(localStorage.getItem("@userData")) || "";
+    if (userData && userData.uid) {
+      setUser(userData);
     }
     setPageLoading(false);
   }, []);
@@ -41,7 +41,7 @@ function AuthProvider({ children }) {
     await signInWithEmailAndPassword(auth, email, password)
       .then(value => {
         const uid = value.user.uid;
-        saveUserData(uid, email);
+        saveUserData(email, uid);
         setUser({
           email,
           uid,
@@ -108,6 +108,7 @@ function AuthProvider({ children }) {
   const contextValue = {
     userSigned: !!user,
     user,
+    userUid: user?.uid,
     signIn,
     signUp,
     logout,

@@ -1,8 +1,13 @@
-import { createContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
+import { AuthContext } from "./auth";
+import { db } from "../services/firebaseConnection";
+import { doc, getDoc, getDocs, collection } from "firebase/firestore";
 
 const StoreContext = createContext({});
 
 function StoreProvider({ children }) {
+  const { userSigned, userUid } = useContext(AuthContext);
+  const [userInfo, setUserInfo] = useState(null);
   const [products, setProducts] = useState([
     {
       id: 1,
@@ -79,15 +84,33 @@ function StoreProvider({ children }) {
     },
   ]);
 
-  const getProducts = () => {};
+  useEffect(() => {
+    const loadUserInfo = async () => {
+      const userRef = doc(db, "users", userUid);
+      await getDoc(userRef).then(snapshot => {
+        setUserInfo(snapshot.data());
+      });
+    };
+
+    if (userSigned && userUid) {
+      loadUserInfo();
+    }
+  }, []);
 
   const getProductById = productId => {
-    productId = parseInt(productId)
-    const product = products.filter(product => product.id === productId)[0];
+    productId = parseInt(productId);
+    const product = products.filter(
+      product => product.id === productId
+    )[0];
     return product;
   };
 
-  const contextValue = { products, setProducts, getProductById };
+  const contextValue = {
+    products,
+    setProducts,
+    getProductById,
+    userInfo,
+    purchasedProducts: userInfo.purchasedProducts, };
 
   return (
     <StoreContext.Provider value={contextValue}>
