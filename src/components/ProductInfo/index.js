@@ -3,10 +3,13 @@ import "./productInfo.css";
 
 function ProductInfo({ product }) {
   const hasStock = product.stock > 0;
-  const { minPurchaseUnits } = product;
+  const { minPurchaseUnits, maxPurchaseUnits, price } = product;
+  const {dollars, cents } = price
 
   const generateOptionsForAmountSelect = () => {
-    const amountArray = [...Array(product.maxPurchaseUnits)];
+    const amountArray = [
+      ...Array((maxPurchaseUnits - minPurchaseUnits) + 1),
+    ];
     return amountArray.map((value, index) => {
       const optionValue = index + minPurchaseUnits;
       return (
@@ -19,16 +22,16 @@ function ProductInfo({ product }) {
 
   return (
     <>
-      <article>
+      <article className="mb-0">
         <div>
           <div className="price text-start p-1 px-2 mt-2">
             <span>
-              R${product.price.dollars}
-              <sup>{product.price.cents}</sup>
+              R${dollars}
+              <sup>{String(cents).padStart(2, 0)}</sup>
             </span>
           </div>
           <div className="mt-2 mb-3">
-            <StockMessage stock={product.stock} />
+            <StockMessage stock={product.stock} withBadge={true} />
           </div>
           {hasStock && (
             <div className="amount-container">
@@ -43,17 +46,15 @@ function ProductInfo({ product }) {
           </div>
 
           <div className="actions">
-            {hasStock && (
+            {hasStock ? (
               <>
-                <button>Comprar</button>
-                <button className="btn-yellow">
-                  Adicionar ao carrinho
-                </button>
+                <button className="btn-yellow">Comprar</button>
+                <button>Adicionar ao carrinho</button>
+                <button className="btn-grey">Adicionar à Lista</button>
               </>
+            ) : (
+              <button>Adicionar à Lista</button>
             )}
-            <button className="contrast btn-grey">
-              Adicionar à Lista
-            </button>
           </div>
         </div>
       </article>

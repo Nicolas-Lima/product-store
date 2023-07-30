@@ -54,6 +54,7 @@ function Products() {
                     <ProductComponent
                       key={productKey}
                       product={product}
+                      includeStockMessage={true}
                     />
                   )}
                 </Fragment>

@@ -27,6 +27,30 @@ function StoreProvider({ children }) {
       stock: 5,
       keywords: ["livro", "livro unica coisa"],
       empty: false,
+      rating: 4.3,
+      reviews: [
+        {
+          personName: "Steve Trabalhos",
+          avatarUrl:
+            "https://taylorsdigilimdaeun.files.wordpress.com/2014/09/ec9ea1ec8aa4-ec9b90ebb3b81.jpg",
+          comment: "Esse livro é muito bom!",
+          rate: 5,
+        },
+        {
+          personName: "Julia Lima",
+          avatarUrl: "",
+          comment:
+            "Esse livro é muito ruim. Não tras nenhum conhecimento util e também nenhuma capa dura",
+          rate: 1,
+        },
+        {
+          personName: "Roberta",
+          avatarUrl: "https://jooinn.com/images/woman-smile-2.jpg",
+          comment:
+            "Esse livro é muito ruim. Não tras nenhum conhecimento util e também nenhuma capa dura",
+          rate: 3.5,
+        },
+      ],
     },
     {
       id: 2,
@@ -77,7 +101,7 @@ function StoreProvider({ children }) {
       },
       seller: "A & B",
       minPurchaseUnits: 1,
-      maxPurchaseUnits: 3,
+      maxPurchaseUnits: 2,
       stock: 4,
       keywords: ["oculos", "oculos de sol"],
       empty: false,
@@ -96,8 +120,13 @@ function StoreProvider({ children }) {
       loadUserInfo();
     }
 
+    console.group("Coisas pra fazer");
 
-
+    console.log(
+      "Adicionar comentários, estrelas no primeiro Article que é o componente Product! no COMPONENTE PRODUCT INFO"
+    );
+    console.log("Colocar LOADING para IMAGEM não ficar 'd-none'");
+    console.groupEnd();
   }, []);
 
   const getProductById = productId => {
@@ -113,7 +142,8 @@ function StoreProvider({ children }) {
     setProducts,
     getProductById,
     userInfo,
-    purchasedProducts: userInfo?.purchasedProducts, };
+    purchasedProducts: userInfo?.purchasedProducts,
+  };
 
   return (
     <StoreContext.Provider value={contextValue}>

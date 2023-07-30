@@ -1,4 +1,4 @@
-function StockMessage({ stock, withBadge = true }) {
+function StockMessage({ stock, withBadge = false }) {
   const hasStock = stock > 0;
   return (
     <>

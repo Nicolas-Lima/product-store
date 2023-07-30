@@ -15,10 +15,16 @@ function Nav() {
     <div className="container">
       <nav className="mt-3">
         <ul>
-          <li className="d-flex align-items-center">
-            <img src={box} className="logo me-3" alt="logo" />
-            <strong>Product Store</strong>
-          </li>
+          <>
+            <Link
+              to="/"
+              className="link-secondary shadow-none bg-transparent">
+              <li className="d-flex align-items-center">
+                <img src={box} className="logo me-3" alt="logo" />
+                <strong>Product Store</strong>
+              </li>
+            </Link>
+          </>
         </ul>
         <ul>
           <li>
