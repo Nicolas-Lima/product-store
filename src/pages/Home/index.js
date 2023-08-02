@@ -8,13 +8,10 @@ import "./home.css";
 function Home() {
   const [search, setSearch] = useState("");
 
-  const { productsLoading, searchProducts } =
-    useContext(StoreContext);
-  
+  const { productsLoading, searchProducts } = useContext(StoreContext);
+
   const handleSearch = () => {
-    if(search.trim() !== "") {
-      searchProducts(search);
-    }
+    searchProducts(search);
   };
 
   return (

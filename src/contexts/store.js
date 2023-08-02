@@ -95,15 +95,28 @@ function StoreProvider({ children }) {
 
   const searchProducts = (search = "") => {
     if (!productsLoading) {
-      const productsFound = products.filter(product => {
-        const { description = "", name = "", keywords = [] } = product;
-        const searchFilter =
-          description.includes(search) ||
-          name.includes(search) ||
-          keywords?.filter(keyword => keyword.includes(search)).length > 0;
-        return searchFilter;
-      });
-      setSearchResults(productsFound);
+      if (search.trim() !== "") {
+        const productsFound = products.filter(product => {
+          const strToLowerCase = str => str?.toLowerCase() || "";
+          let { description = "", name = "", keywords = [] } = product;
+          [search, description, name, keywords] = [
+            search,
+            description,
+            name,
+          ].map(item => strToLowerCase(item));
+
+          const searchFilter =
+            description.includes(search) ||
+            name.includes(search) ||
+            keywords?.filter(keyword =>
+              strToLowerCase(keyword).includes(search)
+            ).length > 0;
+          return searchFilter;
+        });
+        setSearchResults(productsFound);
+      } else if (products?.length > 0) {
+        setSearchResults(products);
+      }
     }
   };
 

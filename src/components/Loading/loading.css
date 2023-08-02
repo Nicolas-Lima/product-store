@@ -1,11 +1,10 @@
 @keyframes fadeInOut {
-  0%,
-  100% {
-    opacity: 0;
+  0%, 100% {
+    opacity: 1.0; /* Set opacity to 1.0 (fully visible) at the start and end */
   }
-  /* Set opacity to 1 at the halfway point of the animation to fade in */
+  /* Set opacity to 0.5 at the halfway point of the animation to create a blink effect */
   50% {
-    opacity: 1;
+    opacity: 0.4;
   }
 }
 
@@ -13,7 +12,7 @@
   width: 100%;
   height: auto;
   min-height: 350px;
-  background-color: #f8f8f8;
+  background-color: #f4f4f4;
   border: 1px solid rgb(211, 211, 211, 0.3);
   animation: fadeInOut 2s infinite;
 }
