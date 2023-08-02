@@ -16,6 +16,7 @@ function StoreProvider({ children }) {
   const [userInfo, setUserInfo] = useState(null);
   const [products, setProducts] = useState(null);
   const [productsLoading, setProductsLoading] = useState(true);
+  const [searchResults, setSearchResults] = useState([]);
 
   const getProducts = async () => {
     const productsRef = collection(db, "products");
@@ -92,11 +93,27 @@ function StoreProvider({ children }) {
     });
   };
 
+  const searchProducts = (search = "") => {
+    if (!productsLoading) {
+      const productsFound = products.filter(product => {
+        const { description = "", name = "", keywords = [] } = product;
+        const searchFilter =
+          description.includes(search) ||
+          name.includes(search) ||
+          keywords?.filter(keyword => keyword.includes(search)).length > 0;
+        return searchFilter;
+      });
+      setSearchResults(productsFound);
+    }
+  };
+
   const contextValue = {
     products: products || [],
     setProducts,
     getProductById,
     setProduct,
+    searchProducts,
+    searchResults,
     productsLoading,
     userInfo,
     purchasedProducts: userInfo?.purchasedProducts,

@@ -7,9 +7,10 @@ function Products() {
   const [slicedProductsIntoGroups, setSlicedProductsIntoGroups] = useState(
     []
   ); // We have to divide the products into groups of 3 so that the PICO.css grid to work better.
-  const { products, productsLoading } = useContext(StoreContext);
+  const { products, productsLoading, searchResults } =
+    useContext(StoreContext);
 
-  const sliceProductsIntoGroups = () => {
+  const sliceProductsIntoGroups = products => {
     const productsCopy = [...products];
     const groupSize = 3;
     const numberOfGroups = productsCopy.length / groupSize;
@@ -32,7 +33,18 @@ function Products() {
   };
 
   useEffect(() => {
-    setSlicedProductsIntoGroups(sliceProductsIntoGroups());
+    if (!productsLoading) {
+      const searchResultsSlicedIntoGroups =
+        sliceProductsIntoGroups(searchResults);
+      setSlicedProductsIntoGroups(searchResultsSlicedIntoGroups);
+    }
+  }, [searchResults]);
+
+  useEffect(() => {
+    if (products.length > 0) {
+      const productsSlicedIntoGroups = sliceProductsIntoGroups(products);
+      setSlicedProductsIntoGroups(productsSlicedIntoGroups);
+    }
   }, [products]);
 
   if (productsLoading) {

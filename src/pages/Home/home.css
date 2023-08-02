@@ -1,0 +1,19 @@
+.searchContainer {
+  width: 100%;
+  position: relative; /* Add position relative to the container */
+}
+
+.searchContainer input {
+  width: 100%;
+  padding-right: 30px; /* Add padding to accommodate the button */
+}
+
+.searchContainer button {
+  width: auto; /* Let the button adjust its width based on content */
+  position: absolute; /* Position the button absolutely inside the container */
+  right: 12.5px; /* Adjust the right positioning to your preference */
+  top: 52%; /* Center the button vertically within the input */
+  transform: translateY(
+    -50%
+  ); /* Offset the button to center it vertically */
+}
