@@ -1,5 +1,5 @@
 import { useState, useEffect, createContext } from "react";
-import Loading from "../components/Loading";
+import Loading from "../components/LoadingSpinner";
 import { useNavigate } from "react-router-dom";
 import { auth, db } from "../services/firebaseConnection";
 import {

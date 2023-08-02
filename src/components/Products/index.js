@@ -1,12 +1,13 @@
 import { useContext, useEffect, useState, Fragment } from "react";
 import { StoreContext } from "../../contexts/store";
 import ProductComponent from "../ProductComponent";
+import Loading from "../Loading";
 
 function Products() {
   const [slicedProductsIntoGroups, setSlicedProductsIntoGroups] = useState(
     []
   ); // We have to divide the products into groups of 3 so that the PICO.css grid to work better.
-  const { products } = useContext(StoreContext);
+  const { products, productsLoading } = useContext(StoreContext);
 
   const sliceProductsIntoGroups = () => {
     const productsCopy = [...products];
@@ -32,7 +33,11 @@ function Products() {
 
   useEffect(() => {
     setSlicedProductsIntoGroups(sliceProductsIntoGroups());
-  }, []);
+  }, [products]);
+
+  if (productsLoading) {
+    return <Loading />;
+  }
 
   return (
     <>

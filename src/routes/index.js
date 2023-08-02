@@ -11,14 +11,7 @@ import FormProvider from "../contexts/form";
 function RoutesApp() {
   return (
     <Routes>
-      <Route
-        path="/"
-        element={
-          <Private>
-            <Home />
-          </Private>
-        }
-      />
+      <Route path="/" element={<Home />} />
       <Route
         path="/login"
         element={

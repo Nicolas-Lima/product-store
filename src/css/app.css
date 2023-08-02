@@ -1,6 +1,6 @@
 html,
 #root {
-  background-color: #fff;
+  background-color: #fff !important;
 }
 
 .text-pico-danger {
@@ -21,6 +21,10 @@ html,
 
 .mt-2-3rem {
   margin-top: 2.3rem !important;
+}
+
+.mt-2-5rem {
+  margin-top: 2.5rem !important;
 }
 
 .ms-custom-1 {

@@ -15,39 +15,44 @@ function Product() {
   const [productNotFound, setProductNotFound] = useState(false);
   const [productLoading, setProductLoading] = useState(true);
 
-  const { products, getProductById } = useContext(StoreContext);
+  const { products, getProductById, productsLoading } =
+    useContext(StoreContext);
 
   useEffect(() => {
-    const product = getProductById(productId);
-    setProductNotFound(!product);
-    setProduct(product);
-    setProductLoading(false);
-  }, []);
+    if (!productsLoading) {
+      const product = getProductById(productId);
+      setProductNotFound(!product);
+      setProduct(product);
+      setProductLoading(false);
+    }
+  }, [products]);
 
   if (productNotFound) {
     return <ErrorComponent message="Esse produto não existe!" />;
   }
 
-  if (productLoading) {
-    return <Loading />;
-  }
-
   return (
     <>
       <Nav />
-      <main className="container">
-        <div className="grid">
-          <div>
-            <ProductComponent product={product} isProductPage={true} />
-          </div>
-          <div>
-            <ProductInfo product={product} />
-          </div>
-        </div>
-        <div>
-          <ProductReviews reviews={product.reviews} />
-        </div>
-      </main>
+      {productLoading ? (
+        <Loading />
+      ) : (
+        <>
+          <main className="container">
+            <div className="grid">
+              <div>
+                <ProductComponent product={product} isProductPage={true} />
+              </div>
+              <div>
+                <ProductInfo product={product} />
+              </div>
+            </div>
+            <div>
+              <ProductReviews reviews={product?.reviews} />
+            </div>
+          </main>
+        </>
+      )}
     </>
   );
 }

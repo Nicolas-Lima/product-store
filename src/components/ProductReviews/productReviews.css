@@ -1,0 +1,23 @@
+.reviewContainer {
+  min-width: 300px;
+}
+
+.reviewerPhoto {
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+}
+
+.reviewerInfo span {
+  margin-left: 0.7em !important;
+}
+
+.rate svg {
+  color: #f6d658;
+  width: 30px;
+  height: 30px;
+}
+
+.rate svg:not(:last-child) {
+  margin-right: 3px;
+}
