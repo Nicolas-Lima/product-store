@@ -8,6 +8,7 @@ import {
   getDocs,
   collection,
 } from "firebase/firestore";
+import { removeAccents } from "../utils/generalUtils";
 
 const StoreContext = createContext({});
 
@@ -46,10 +47,9 @@ function StoreProvider({ children }) {
   }, []);
 
   const getProductById = productId => {
-    productId = parseInt(productId);
-    const product = products.filter(
-      product => product.id === productId
-    )[0];
+    const product = products.filter(product => {
+      return product.id === productId;
+    })[0];
     return product;
   };
 
@@ -59,7 +59,6 @@ function StoreProvider({ children }) {
     }
 
     const {
-      id,
       name,
       description,
       imgUrl,
@@ -74,9 +73,8 @@ function StoreProvider({ children }) {
       rating,
       reviews,
     } = product;
-    const productsRef = collection(db, "products");
-    await addDoc(productsRef, {
-      id,
+
+    const newProduct = {
       name,
       description,
       imgUrl,
@@ -90,6 +88,17 @@ function StoreProvider({ children }) {
       empty,
       rating,
       reviews,
+    };
+
+    const productsRef = collection(db, "products");
+    await addDoc(productsRef, newProduct).then(docRef => {
+      setProducts(prevState => [
+        ...prevState,
+        {
+          id: docRef.id,
+          ...newProduct,
+        },
+      ]);
     });
   };
 
@@ -103,13 +112,13 @@ function StoreProvider({ children }) {
             search,
             description,
             name,
-          ].map(item => strToLowerCase(item));
+          ].map(item => removeAccents(strToLowerCase(item)));
 
           const searchFilter =
             description.includes(search) ||
             name.includes(search) ||
             keywords?.filter(keyword =>
-              strToLowerCase(keyword).includes(search)
+              removeAccents(strToLowerCase(keyword)).includes(search)
             ).length > 0;
           return searchFilter;
         });
