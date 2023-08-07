@@ -1,14 +1,17 @@
+import { useContext } from "react";
+import { StoreContext } from "../../contexts/store";
 import StockMessage from "../StockMessage";
 import "./productInfo.css";
 
 function ProductInfo({ product }) {
+  const { addProductToList } = useContext(StoreContext);
   const hasStock = product.stock > 0;
   const { minPurchaseUnits, maxPurchaseUnits, price } = product;
-  const {dollars, cents } = price
+  const { dollars, cents } = price;
 
   const generateOptionsForAmountSelect = () => {
     const amountArray = [
-      ...Array((maxPurchaseUnits - minPurchaseUnits) + 1),
+      ...Array(maxPurchaseUnits - minPurchaseUnits + 1),
     ];
     return amountArray.map((value, index) => {
       const optionValue = index + minPurchaseUnits;
@@ -18,6 +21,10 @@ function ProductInfo({ product }) {
         </option>
       );
     });
+  };
+
+  const handleAddProductToList = () => {
+    addProductToList(product.id);
   };
 
   return (
@@ -50,10 +57,16 @@ function ProductInfo({ product }) {
               <>
                 <button className="btn-yellow">Comprar</button>
                 <button>Adicionar ao carrinho</button>
-                <button className="btn-grey">Adicionar à Lista</button>
+                <button
+                  className="btn-grey"
+                  onClick={handleAddProductToList}>
+                  Adicionar à Lista
+                </button>
               </>
             ) : (
-              <button>Adicionar à Lista</button>
+              <button onClick={handleAddProductToList}>
+                Adicionar à Lista
+              </button>
             )}
           </div>
         </div>

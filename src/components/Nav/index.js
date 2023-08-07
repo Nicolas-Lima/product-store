@@ -28,10 +28,16 @@ function Nav() {
         </ul>
         <ul>
           <li>
+            <Link to="/list" className="link-secondary">
+              Minha lista
+            </Link>
+          </li>
+          <li>
             <Link to="/login" className="link-secondary">
               Login
             </Link>
           </li>
+
           <li>
             <details role="list" dir="rtl">
               <summary

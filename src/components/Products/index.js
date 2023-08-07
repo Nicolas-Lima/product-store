@@ -1,6 +1,8 @@
-import { useContext, useEffect, useState, Fragment } from "react";
+import { useContext, useEffect, useState } from "react";
 import { StoreContext } from "../../contexts/store";
-import ProductComponent from "../ProductComponent";
+
+import ProductsGridRenderer from "../ProductsGridRenderer";
+import { sliceProductsIntoGroups } from "../../utils/productsUtils";
 import Loading from "../Loading";
 
 function Products() {
@@ -9,28 +11,6 @@ function Products() {
   ); // We have to divide the products into groups of 3 so that the PICO.css grid to work better.
   const { products, productsLoading, searchResults } =
     useContext(StoreContext);
-
-  const sliceProductsIntoGroups = products => {
-    const productsCopy = [...products];
-    const groupSize = 3;
-    const numberOfGroups = productsCopy.length / groupSize;
-    const slicedProductGroups = [];
-
-    for (let i = 0; i < numberOfGroups; i++) {
-      slicedProductGroups.push(productsCopy.splice(0, groupSize));
-    }
-
-    slicedProductGroups.map(group => {
-      if (group.length !== groupSize) {
-        const missingProducts = groupSize - group.length;
-        for (let i = 0; i < missingProducts; i++) {
-          group.push({ emptyProduct: true });
-        }
-      }
-    });
-
-    return slicedProductGroups;
-  };
 
   useEffect(() => {
     if (!productsLoading) {
@@ -53,32 +33,9 @@ function Products() {
 
   return (
     <>
-      {slicedProductsIntoGroups.map((productsGroup, groupIndex) => {
-        return (
-          <div
-            className="grid"
-            data-theme="light"
-            key={`productsGroup-${groupIndex}`}>
-            {productsGroup.map((product, productIndex) => {
-              const productKey = `product-${groupIndex}-${productIndex}`;
-              return (
-                <Fragment key={productKey}>
-                  {product.emptyProduct ? (
-                    <div
-                      className="empty-product"
-                      key={"empty-" + productKey}></div>
-                  ) : (
-                    <ProductComponent
-                      key={productKey}
-                      product={product}
-                      includeStockMessage={true}
-                    />
-                  )}
-                </Fragment>
-              );
-            })}
-          </div>
-        );
+      {ProductsGridRenderer({
+        slicedProductsIntoGroups,
+        includeStockMessage: true,
       })}
     </>
   );

@@ -12,24 +12,54 @@ import {
   signOut,
 } from "firebase/auth";
 
-import { setDoc, doc } from "firebase/firestore";
+import { setDoc, doc, getDoc } from "firebase/firestore";
 
 const AuthContext = createContext({});
 
 function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
+  const [guestInfo, setGuestInfo] = useState(null);
   const [pageLoading, setPageLoading] = useState(true);
   const [loggingIn, setLoggingIn] = useState(false);
   const [registering, setRegistering] = useState(false);
 
   const navigate = useNavigate();
 
+  const getUserData = async uid => {
+    const userRef = doc(db, "users", uid);
+    try {
+      const snapshot = await getDoc(userRef);
+      const userData = snapshot.data();
+      return userData;
+    } catch (error) {
+      return "error";
+    }
+  };
+
   useEffect(() => {
     const userData = JSON.parse(localStorage.getItem("@userData")) || "";
+
     if (userData && userData.uid) {
-      setUser(userData);
+      const setStoredUserData = async userUid => {
+        const storedUserData = await getUserData(userUid);
+
+        if (storedUserData) {
+          setUser(storedUserData);
+        }
+        setPageLoading(false);
+      };
+
+      setStoredUserData(userData.uid);
+    } else {
+ 
+      const guestData =
+        JSON.parse(localStorage.getItem("@guestData")) || "";
+
+      if (guestData) {
+        setGuestInfo(guestData);
+      }
+      setPageLoading(false);
     }
-    setPageLoading(false);
   }, []);
 
   async function signIn(email, password) {
@@ -39,13 +69,13 @@ function AuthProvider({ children }) {
       credentialsError: "",
     };
     await signInWithEmailAndPassword(auth, email, password)
-      .then(value => {
+      .then(async value => {
         const uid = value.user.uid;
-        saveUserData(email, uid);
-        setUser({
-          email,
-          uid,
-        });
+
+        const userData = await getUserData(uid);
+
+        saveUserLoginInfo(email, uid);
+        setUser(userData);
         navigate("/");
       })
       .catch(error => {
@@ -66,21 +96,21 @@ function AuthProvider({ children }) {
     await createUserWithEmailAndPassword(auth, email, password)
       .then(async value => {
         const { email, uid } = value.user;
-        saveUserData(email, uid);
-        setUser({
-          email,
-          uid,
-        });
+        saveUserLoginInfo(email, uid);
 
-        await setDoc(doc(db, "users", uid), {
+        const newUser = {
           email,
           uid,
           purchasedProducts: [],
+          list: [],
           profileConfiguration: {
             imgUrl: "",
             name: "",
           },
-        });
+        };
+        setUser(newUser);
+
+        await setDoc(doc(db, "users", uid), newUser);
         navigate("/");
       })
       .catch(error => {
@@ -94,10 +124,10 @@ function AuthProvider({ children }) {
 
   function logout() {
     localStorage.removeItem("@userData");
-    setUser(false)
+    setUser(false);
   }
 
-  function saveUserData(email, uid) {
+  function saveUserLoginInfo(email, uid) {
     const userData = {
       email,
       uid,
@@ -108,7 +138,10 @@ function AuthProvider({ children }) {
   const contextValue = {
     userSigned: !!user,
     user,
+    setUser,
     userUid: user?.uid,
+    guestInfo,
+    setGuestInfo,
     signIn,
     signUp,
     logout,

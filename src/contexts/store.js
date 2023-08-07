@@ -7,13 +7,15 @@ import {
   getDoc,
   getDocs,
   collection,
+  updateDoc,
 } from "firebase/firestore";
 import { removeAccents } from "../utils/generalUtils";
 
 const StoreContext = createContext({});
 
 function StoreProvider({ children }) {
-  const { userSigned, userUid } = useContext(AuthContext);
+  const { user, userSigned, userUid, setUser, guestInfo, setGuestInfo } =
+    useContext(AuthContext);
   const [userInfo, setUserInfo] = useState(null);
   const [products, setProducts] = useState(null);
   const [productsLoading, setProductsLoading] = useState(true);
@@ -50,7 +52,7 @@ function StoreProvider({ children }) {
     const product = products.filter(product => {
       return product.id === productId;
     })[0];
-    return product;
+    return product || null;
   };
 
   const setProduct = async product => {
@@ -129,16 +131,49 @@ function StoreProvider({ children }) {
     }
   };
 
+  const addProductToList = async productUid => {
+    const selectedProduct = getProductById(productUid);
+
+    if (!selectedProduct) return;
+
+    if (userSigned) {
+      const userRef = doc(db, "users", userUid);
+      const updatedList = [...user.list, selectedProduct];
+      updateDoc(userRef, {
+        list: updatedList,
+      });
+      setUser({
+        ...user,
+        list: updatedList,
+      });
+    } else {
+      const savedList =
+        JSON.parse(localStorage.getItem("@guestData"))?.list ?? [];
+
+      const updatedList = [...savedList, selectedProduct];
+      const updatedGuestInfo = {
+        ...guestInfo,
+        list: updatedList,
+      };
+      setGuestInfo(updatedGuestInfo);
+
+      localStorage.setItem("@guestData", JSON.stringify(updatedGuestInfo));
+    }
+  };
+
   const contextValue = {
     products: products || [],
     setProducts,
     getProductById,
     setProduct,
     searchProducts,
+    addProductToList,
+    userPurchasedProducts: user?.purchasedProducts,
+    userList: user?.list,
+    guestList: guestInfo?.list,
     searchResults,
     productsLoading,
     userInfo,
-    purchasedProducts: userInfo?.purchasedProducts,
   };
 
   return (

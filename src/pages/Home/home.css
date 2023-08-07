@@ -6,6 +6,7 @@
 .searchContainer input {
   width: 100%;
   padding-right: 30px; /* Add padding to accommodate the button */
+
 }
 
 .searchContainer button {
@@ -16,4 +17,13 @@
   transform: translateY(
     -50%
   ); /* Offset the button to center it vertically */
+}
+
+
+.searchContainer svg {
+  transform: scale(0.95);
+}
+
+.searchContainer svg:hover {
+  transform: scale(1);
 }

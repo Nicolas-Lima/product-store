@@ -4,6 +4,7 @@ import Login from "../pages/Login";
 import Register from "../pages/Register";
 import Product from "../pages/Product";
 import Error from "../pages/Error";
+import List from "../pages/List";
 import Private from "./Private";
 
 import FormProvider from "../contexts/form";
@@ -29,6 +30,7 @@ function RoutesApp() {
         }
       />
       <Route path="/product/:id" element={<Product />} />
+      <Route path="/list" element={<List />} />
 
       <Route path="*" element={<Error />} />
     </Routes>

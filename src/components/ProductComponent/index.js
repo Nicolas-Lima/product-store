@@ -2,9 +2,19 @@ import StockMessage from "../StockMessage";
 import { Link } from "react-router-dom";
 import "./product.css";
 
-function ProductContent({ product, includeStockMessage }) {
+function ProductContent({
+  product,
+  includeStockMessage,
+  isListPage = false,
+}) {
   const { title, seller, imgUrl, description, price, id, stock } = product;
   const { dollars, cents } = price;
+
+  console.log(
+    "Não aparecer adicionar ao carrinho quando já estiver no carrinho"
+  );
+  console.log("Não adicionar na lista se já tiver!")
+
   return (
     <div>
       <article>
@@ -33,6 +43,15 @@ function ProductContent({ product, includeStockMessage }) {
               </div>
             )}
           </div>
+          {isListPage && (
+            <div className="list-actions d-flex flex-column mt-3">
+              <button className="btn-yellow">Comprar</button>
+              <button>Adicionar ao carrinho</button>
+              <button className="btn-orange" onClick={() => undefined}>
+                Remover da Lista
+              </button>
+            </div>
+          )}
         </div>
       </article>
     </div>
@@ -42,26 +61,28 @@ function ProductContent({ product, includeStockMessage }) {
 function ProductComponent({
   product,
   isProductPage = false,
+  isListPage = false,
   includeStockMessage = false,
 }) {
+  if (isProductPage || isListPage) {
+    return (
+      <ProductContent
+        product={product}
+        isListPage={isListPage}
+        includeStockMessage={includeStockMessage}
+      />
+    );
+  }
+
   return (
-    <>
-      {isProductPage ? (
-        <ProductContent
-          product={product}
-          includeStockMessage={includeStockMessage}
-        />
-      ) : (
-        <Link
-          to={`product/${product.id}`}
-          className="custom-link shadow-none bg-transparent product">
-          <ProductContent
-            product={product}
-            includeStockMessage={includeStockMessage}
-          />
-        </Link>
-      )}
-    </>
+    <Link
+      to={`${window.location.origin}/product/${product.id}`}
+      className="custom-link shadow-none bg-transparent product">
+      <ProductContent
+        product={product}
+        includeStockMessage={includeStockMessage}
+      />
+    </Link>
   );
 }
 
