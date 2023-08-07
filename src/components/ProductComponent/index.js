@@ -1,14 +1,24 @@
-import StockMessage from "../StockMessage";
-import { Link } from "react-router-dom";
-import "./product.css";
+import { useContext, useState } from 'react'
+import { StoreContext } from '../../contexts/store'
+import StockMessage from '../StockMessage'
+import { Link } from 'react-router-dom'
+import './product.css'
 
 function ProductContent({
   product,
   includeStockMessage,
-  isListPage = false,
+  isListPage = false
 }) {
-  const { title, seller, imgUrl, description, price, stock } = product;
-  const { dollars, cents } = price;
+  const { removeProductFromList } = useContext(StoreContext)
+  const [removingProduct, setRemovingProduct] = useState(false)
+  const { title, seller, imgUrl, description, price, stock } = product
+  const { dollars, cents } = price
+
+  const handleRemoveProductFromList = async () => {
+    setRemovingProduct(true)
+    await removeProductFromList(product.id)
+    setTimeout(() => setRemovingProduct(false), 500)
+  }
 
   return (
     <div>
@@ -42,22 +52,26 @@ function ProductContent({
             <div className="list-actions d-flex flex-column mt-3">
               <button className="btn-yellow">Comprar</button>
               <button>Adicionar ao carrinho</button>
-              <button className="btn-orange" onClick={() => undefined}>
-                Remover da Lista
+              <button
+                className="btn-orange"
+                onClick={handleRemoveProductFromList}>
+                {removingProduct
+                  ? 'Removendo da Lista...'
+                  : 'Remover da Lista'}
               </button>
             </div>
           )}
         </div>
       </article>
     </div>
-  );
+  )
 }
 
 function ProductComponent({
   product,
   isProductPage = false,
   isListPage = false,
-  includeStockMessage = false,
+  includeStockMessage = false
 }) {
   if (isProductPage || isListPage) {
     return (
@@ -66,7 +80,7 @@ function ProductComponent({
         isListPage={isListPage}
         includeStockMessage={includeStockMessage}
       />
-    );
+    )
   }
 
   return (
@@ -78,7 +92,7 @@ function ProductComponent({
         includeStockMessage={includeStockMessage}
       />
     </Link>
-  );
+  )
 }
 
-export default ProductComponent;
+export default ProductComponent

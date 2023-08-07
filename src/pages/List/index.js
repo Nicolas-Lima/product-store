@@ -14,9 +14,9 @@ function List() {
   ); // We have to divide the products into groups of 3 so that the PICO.css grid to work better.
 
   useEffect(() => {
-    if (userList?.length > 0) {
-      setSlicedProductsIntoGroups(sliceProductsIntoGroups(userList));
-    } else if (guestList?.length > 0 && !userSigned) {
+    if (userSigned) {
+      setSlicedProductsIntoGroups(sliceProductsIntoGroups(userList))
+    } else {
       setSlicedProductsIntoGroups(sliceProductsIntoGroups(guestList))
     }
   }, [userList, guestList, userSigned]);
@@ -25,14 +25,14 @@ function List() {
     <>
       <Nav />
       <main className="container mt-4">
-        {sliceProductsIntoGroups?.length > 0 ? (
+        {slicedProductsIntoGroups?.length > 0 ? (
           <>
             <h1 className="mb-4 text-center text-secondary">
               Minha lista de produtos
             </h1>
             {ProductsGridRenderer({
               slicedProductsIntoGroups,
-              isListPage: true,
+              isListPage: true
             })}
           </>
         ) : (
@@ -42,7 +42,7 @@ function List() {
         )}
       </main>
     </>
-  );
+  )
 }
 
 export default List;

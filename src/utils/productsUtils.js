@@ -1,4 +1,8 @@
 const sliceProductsIntoGroups = products => {
+  if (!Array.isArray(products) || products.length === 0) {
+    return []
+  }
+
   const productsCopy = [...products]
   const groupSize = 3
   const numberOfGroups = productsCopy.length / groupSize

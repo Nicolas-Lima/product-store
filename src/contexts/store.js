@@ -132,6 +132,30 @@ function StoreProvider({ children }) {
     }
   }
 
+  const updateUserInfo = async (updatedInfo = {}) => {
+    try {
+      const userRef = doc(db, 'users', userUid)
+
+      await updateDoc(userRef, updatedInfo)
+      setUser({
+        ...user,
+        ...updatedInfo
+      })
+    } catch (error) {}
+  }
+
+  const updateGuestInfo = (updatedInfo = {}) => {
+    try {
+      const updatedGuestInfo = {
+        ...guestInfo,
+        ...updatedInfo
+      }
+      setGuestInfo(updatedGuestInfo)
+
+      localStorage.setItem('@guestData', JSON.stringify(updatedGuestInfo))
+    } catch (error) {}
+  }
+
   const addProductToList = async productUid => {
     const selectedProduct = getProductById(productUid)
 
@@ -143,13 +167,8 @@ function StoreProvider({ children }) {
     }
 
     if (userSigned) {
-      const userRef = doc(db, 'users', userUid)
       const updatedList = [...user.list, selectedProduct]
-      updateDoc(userRef, {
-        list: updatedList
-      })
-      setUser({
-        ...user,
+      updateUserInfo({
         list: updatedList
       })
     } else {
@@ -157,13 +176,37 @@ function StoreProvider({ children }) {
         JSON.parse(localStorage.getItem('@guestData'))?.list ?? []
 
       const updatedList = [...savedList, selectedProduct]
-      const updatedGuestInfo = {
-        ...guestInfo,
+      updateGuestInfo({
         list: updatedList
-      }
-      setGuestInfo(updatedGuestInfo)
+      })
+    }
+  }
 
-      localStorage.setItem('@guestData', JSON.stringify(updatedGuestInfo))
+  const removeProductFromList = async productUid => {
+    const selectedProduct = getProductById(productUid)
+
+    if (!selectedProduct) {
+      return
+    }
+
+    if (userSigned) {
+      const updatedList = [...user.list].filter(
+        product => product.id !== productUid
+      )
+
+      await updateUserInfo({
+        list: updatedList
+      })
+    } else {
+      const savedList =
+        JSON.parse(localStorage.getItem('@guestData'))?.list ?? []
+
+      const updatedList = [...savedList].filter(
+        product => product.id !== productUid
+      )
+      updateGuestInfo({
+        list: updatedList
+      })
     }
   }
 
@@ -174,6 +217,7 @@ function StoreProvider({ children }) {
     setProduct,
     searchProducts,
     addProductToList,
+    removeProductFromList,
     userPurchasedProducts: user?.purchasedProducts,
     userList: user?.list,
     guestList: guestInfo?.list,
