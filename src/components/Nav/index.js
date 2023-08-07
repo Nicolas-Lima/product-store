@@ -1,15 +1,21 @@
-import { useContext } from "react";
-import { Link } from "react-router-dom";
+import { useContext } from 'react'
+import { Link } from 'react-router-dom'
 
-import { AuthContext } from "../../contexts/auth";
-import box from "../../assets/box.png";
+import { AuthContext } from '../../contexts/auth'
+import box from '../../assets/box.png'
 
-import { BsBoxArrowRight, BsGear, BsBox, BsCart3 } from "react-icons/bs";
+import {
+  BsBoxArrowRight,
+  BsGear,
+  BsBox,
+  BsCart3,
+  BsListUl
+} from 'react-icons/bs'
 
-import "./nav.css";
+import './nav.css'
 
 function Nav() {
-  const { logout } = useContext(AuthContext);
+  const { logout, userSigned } = useContext(AuthContext)
 
   return (
     <div className="container">
@@ -27,16 +33,13 @@ function Nav() {
           </>
         </ul>
         <ul>
-          <li>
-            <Link to="/list" className="link-secondary">
-              Minha lista
-            </Link>
-          </li>
-          <li>
-            <Link to="/login" className="link-secondary">
-              Login
-            </Link>
-          </li>
+          {!userSigned && (
+            <li>
+              <Link to="/login" className="link-secondary">
+                Fazer login
+              </Link>
+            </li>
+          )}
 
           <li>
             <details role="list" dir="rtl">
@@ -44,46 +47,66 @@ function Nav() {
                 aria-haspopup="listbox"
                 role="link"
                 className="link-secondary shadow-none bg-transparent">
-                Conta
+                Minha conta
               </summary>
               <ul role="listbox">
                 <li>
-                  <div
-                    onClick={() => console.log("Meus pedidos")}
-                    className="d-flex justify-content-end align-items-center link-secondary">
-                    <span className="ms-custom-1">Meus pedidos</span>
-                    <BsBox />
-                  </div>
+                  <Link to="/orders" className="link-secondary">
+                    <div
+                      onClick={() => console.log('Meus pedidos')}
+                      className="d-flex justify-content-end align-items-center">
+                      <span className="ms-custom-1">Meus pedidos</span>
+                      <BsBox />
+                    </div>
+                  </Link>
                 </li>
                 <li>
-                  <div
-                    onClick={() => console.log("Meus pedidos")}
-                    className="d-flex justify-content-end align-items-center link-secondary">
-                    <span className="ms-custom-1">Meu carrinho</span>
-                    <BsCart3 />
-                  </div>
+                  <Link to="/cart" className="link-secondary">
+                    <div
+                      onClick={() => console.log('Meus pedidos')}
+                      className="d-flex justify-content-end align-items-center">
+                      <span className="ms-custom-1">Meu carrinho</span>
+                      <BsCart3 />
+                    </div>
+                  </Link>
                 </li>
                 <li>
-                  <div
-                    onClick={() => console.log("configurações")}
-                    className="d-flex justify-content-end align-items-center link-secondary">
-                    <span className="ms-custom-1">Configurações</span>
-                    <BsGear />
-                  </div>
+                  <Link to="/list" className="link-secondary">
+                    <div
+                      onClick={() => console.log('Meus pedidos')}
+                      className="d-flex justify-content-end align-items-center">
+                      <span className="ms-custom-1">Minha lista</span>
+                      <BsListUl />
+                    </div>
+                  </Link>
                 </li>
-                <li onClick={logout}>
-                  <div className="d-flex justify-content-end align-items-center link-secondary">
-                    <span className="ms-custom-1">Sair</span>
-                    <BsBoxArrowRight />
-                  </div>
+                <li>
+                  <Link to="/settings" className="link-secondary">
+                    <div
+                      onClick={() => console.log('configurações')}
+                      className="d-flex justify-content-end align-items-center">
+                      <span className="ms-custom-1">Configurações</span>
+                      <BsGear />
+                    </div>
+                  </Link>
                 </li>
+                {userSigned && (
+                  <li onClick={logout}>
+                    <Link to="" className="link-secondary">
+                      <div className="d-flex justify-content-end align-items-center">
+                        <span className="ms-custom-1">Sair</span>
+                        <BsBoxArrowRight />
+                      </div>
+                    </Link>
+                  </li>
+                )}
               </ul>
             </details>
           </li>
         </ul>
       </nav>
     </div>
-  );
+  )
 }
 
-export default Nav;
+export default Nav
