@@ -10,7 +10,10 @@ import {
   updateDoc
 } from 'firebase/firestore'
 import { removeAccents } from '../utils/generalUtils'
-import { productAlreadyInList } from '../utils/productsUtils'
+import {
+  productAlreadyInList,
+  productAlreadyInCart
+} from '../utils/productsUtils'
 
 const StoreContext = createContext({})
 
@@ -210,6 +213,42 @@ function StoreProvider({ children }) {
     }
   }
 
+  const addProductToCart = async productUid => {
+    const selectedProduct = getProductById(productUid)
+    const userCart = user?.cart ?? []
+
+    if (
+      !selectedProduct ||
+      productAlreadyInCart(productUid, user?.cart) ||
+      !userSigned
+    ) {
+      return
+    }
+
+    const updatedCart = [...userCart, selectedProduct]
+    updateUserInfo({
+      cart: updatedCart
+    })
+  }
+
+  const removeProductFromCart = async productUid => {
+    const selectedProduct = getProductById(productUid)
+
+    if (!selectedProduct) {
+      return
+    }
+
+    if (userSigned) {
+      const updatedCart = [...user.cart].filter(
+        product => product.id !== productUid
+      )
+
+      await updateUserInfo({
+        cart: updatedCart
+      })
+    }
+  }
+
   const contextValue = {
     products: products || [],
     setProducts,
@@ -217,9 +256,12 @@ function StoreProvider({ children }) {
     setProduct,
     searchProducts,
     addProductToList,
+    addProductToCart,
     removeProductFromList,
+    removeProductFromCart,
     userPurchasedProducts: user?.purchasedProducts,
     userList: user?.list,
+    userCart: user?.cart,
     guestList: guestInfo?.list,
     searchResults,
     productsLoading,

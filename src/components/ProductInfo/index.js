@@ -3,10 +3,13 @@ import { StoreContext } from '../../contexts/store'
 import { AuthContext } from '../../contexts/auth'
 import StockMessage from '../StockMessage'
 import './productInfo.css'
-import { productAlreadyInList } from '../../utils/productsUtils'
+import {
+  productAlreadyInList,
+  productAlreadyInCart
+} from '../../utils/productsUtils'
 
 function ProductInfo({ product }) {
-  const { addProductToList } = useContext(StoreContext)
+  const { addProductToList, addProductToCart } = useContext(StoreContext)
   const { userSigned, user } = useContext(AuthContext)
   const hasStock = product.stock > 0
   const { minPurchaseUnits, maxPurchaseUnits, price } = product
@@ -27,11 +30,19 @@ function ProductInfo({ product }) {
   const handleAddProductToList = () => {
     addProductToList(product.id)
   }
+  const handleAddProductToCart = () => {
+    addProductToCart(product.id)
+  }
 
   const isProductAlreadyInList = productAlreadyInList(
     product.id,
     userSigned,
     user?.list
+  )
+
+  const isProductAlreadyInCart = productAlreadyInCart(
+    product.id,
+    user?.cart
   )
 
   return (
@@ -63,7 +74,12 @@ function ProductInfo({ product }) {
             {hasStock ? (
               <>
                 <button className="btn-yellow">Comprar</button>
-                <button>Adicionar ao carrinho</button>
+                {!isProductAlreadyInCart && (
+                  <button onClick={handleAddProductToCart}>
+                    Adicionar ao carrinho
+                  </button>
+                )}
+
                 {!isProductAlreadyInList && (
                   <button
                     className="btn-grey"

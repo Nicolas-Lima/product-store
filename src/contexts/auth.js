@@ -9,7 +9,6 @@ import {
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
-  signOut,
 } from "firebase/auth";
 
 import { setDoc, doc, getDoc } from "firebase/firestore";
@@ -103,6 +102,7 @@ function AuthProvider({ children }) {
           uid,
           purchasedProducts: [],
           list: [],
+          cart: [],
           profileConfiguration: {
             imgUrl: "",
             name: "",

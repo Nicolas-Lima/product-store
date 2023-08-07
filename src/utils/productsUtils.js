@@ -40,4 +40,16 @@ const productAlreadyInList = (productUid, userSigned, userList) => {
   }
 }
 
-export { sliceProductsIntoGroups, productAlreadyInList }
+const productAlreadyInCart = (productUid, cart) => {
+  if (Array.isArray(cart) && cart.length > 0) {
+    const alreadyInCart =
+      cart.filter(product => product.id === productUid).length > 0
+    return alreadyInCart
+  }
+}
+
+export {
+  sliceProductsIntoGroups,
+  productAlreadyInList,
+  productAlreadyInCart
+}
