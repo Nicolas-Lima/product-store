@@ -1,31 +1,38 @@
-import { useContext } from "react";
-import { StoreContext } from "../../contexts/store";
-import StockMessage from "../StockMessage";
-import "./productInfo.css";
+import { useContext } from 'react'
+import { StoreContext } from '../../contexts/store'
+import { AuthContext } from '../../contexts/auth'
+import StockMessage from '../StockMessage'
+import './productInfo.css'
+import { productAlreadyInList } from '../../utils/productsUtils'
 
 function ProductInfo({ product }) {
-  const { addProductToList } = useContext(StoreContext);
-  const hasStock = product.stock > 0;
-  const { minPurchaseUnits, maxPurchaseUnits, price } = product;
-  const { dollars, cents } = price;
+  const { addProductToList } = useContext(StoreContext)
+  const { userSigned, user } = useContext(AuthContext)
+  const hasStock = product.stock > 0
+  const { minPurchaseUnits, maxPurchaseUnits, price } = product
+  const { dollars, cents } = price
 
   const generateOptionsForAmountSelect = () => {
-    const amountArray = [
-      ...Array(maxPurchaseUnits - minPurchaseUnits + 1),
-    ];
+    const amountArray = [...Array(maxPurchaseUnits - minPurchaseUnits + 1)]
     return amountArray.map((value, index) => {
-      const optionValue = index + minPurchaseUnits;
+      const optionValue = index + minPurchaseUnits
       return (
         <option value={optionValue} key={index}>
           {optionValue}
         </option>
-      );
-    });
-  };
+      )
+    })
+  }
 
   const handleAddProductToList = () => {
-    addProductToList(product.id);
-  };
+    addProductToList(product.id)
+  }
+
+  const isProductAlreadyInList = productAlreadyInList(
+    product.id,
+    userSigned,
+    user?.list
+  )
 
   return (
     <>
@@ -57,22 +64,26 @@ function ProductInfo({ product }) {
               <>
                 <button className="btn-yellow">Comprar</button>
                 <button>Adicionar ao carrinho</button>
-                <button
-                  className="btn-grey"
-                  onClick={handleAddProductToList}>
-                  Adicionar à Lista
-                </button>
+                {!isProductAlreadyInList && (
+                  <button
+                    className="btn-grey"
+                    onClick={handleAddProductToList}>
+                    Adicionar à Lista
+                  </button>
+                )}
               </>
             ) : (
-              <button onClick={handleAddProductToList}>
-                Adicionar à Lista
-              </button>
+              !isProductAlreadyInList && (
+                <button onClick={handleAddProductToList}>
+                  Adicionar à Lista
+                </button>
+              )
             )}
           </div>
         </div>
       </article>
     </>
-  );
+  )
 }
 
-export default ProductInfo;
+export default ProductInfo

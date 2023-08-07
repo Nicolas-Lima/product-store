@@ -3,7 +3,6 @@ import { StoreContext } from "../../contexts/store";
 import { AuthContext } from '../../contexts/auth'
 
 import Nav from "../../components/Nav";
-import ProductComponent from "../../components/ProductComponent";
 import { sliceProductsIntoGroups } from "../../utils/productsUtils";
 import ProductsGridRenderer from "../../components/ProductsGridRenderer";
 

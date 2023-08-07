@@ -7,13 +7,8 @@ function ProductContent({
   includeStockMessage,
   isListPage = false,
 }) {
-  const { title, seller, imgUrl, description, price, id, stock } = product;
+  const { title, seller, imgUrl, description, price, stock } = product;
   const { dollars, cents } = price;
-
-  console.log(
-    "Não aparecer adicionar ao carrinho quando já estiver no carrinho"
-  );
-  console.log("Não adicionar na lista se já tiver!")
 
   return (
     <div>
