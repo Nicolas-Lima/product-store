@@ -1,4 +1,4 @@
-import { useContext } from 'react'
+import { useContext, useState } from 'react'
 import { StoreContext } from '../../contexts/store'
 import { AuthContext } from '../../contexts/auth'
 import StockMessage from '../StockMessage'
@@ -7,25 +7,17 @@ import {
   productAlreadyInList,
   productAlreadyInCart
 } from '../../utils/productsUtils'
+import BuyProductButton from '../BuyProductButton'
+import ProductAmountSelect from '../ProductAmountSelect'
 
 function ProductInfo({ product }) {
-  const { addProductToList, addProductToCart } = useContext(StoreContext)
+  const { addProductToList, addProductToCart, buyProduct } =
+    useContext(StoreContext)
   const { userSigned, user } = useContext(AuthContext)
   const hasStock = product.stock > 0
   const { minPurchaseUnits, maxPurchaseUnits, price } = product
   const { dollars, cents } = price
-
-  const generateOptionsForAmountSelect = () => {
-    const amountArray = [...Array(maxPurchaseUnits - minPurchaseUnits + 1)]
-    return amountArray.map((value, index) => {
-      const optionValue = index + minPurchaseUnits
-      return (
-        <option value={optionValue} key={index}>
-          {optionValue}
-        </option>
-      )
-    })
-  }
+  const [amount, setAmount] = useState(minPurchaseUnits || 1)
 
   const handleAddProductToList = () => {
     addProductToList(product.id)
@@ -60,10 +52,12 @@ function ProductInfo({ product }) {
           </div>
           {hasStock && (
             <div className="amount-container">
-              <label htmlFor="amount">Quantidade</label>
-              <select id="amount" required>
-                {generateOptionsForAmountSelect()}
-              </select>
+              <ProductAmountSelect
+                amount={amount}
+                setAmount={setAmount}
+                maxPurchaseUnits={maxPurchaseUnits}
+                minPurchaseUnits={minPurchaseUnits}
+              />
             </div>
           )}
           <div className="about-container mb-3">
@@ -73,7 +67,12 @@ function ProductInfo({ product }) {
           <div className="actions">
             {hasStock ? (
               <>
-                <button className="btn-yellow">Comprar</button>
+                <BuyProductButton
+                  productId={product.id}
+                  purchaseData={{
+                    amount
+                  }}
+                />
                 {!isProductAlreadyInCart && (
                   <button onClick={handleAddProductToCart}>
                     Adicionar ao carrinho

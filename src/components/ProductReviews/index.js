@@ -1,14 +1,9 @@
-import {
-  BsPersonCircle,
-  BsStar,
-  BsStarFill,
-  BsStarHalf,
-} from "react-icons/bs";
-import { Fragment } from "react";
-import "./productReviews.css";
+import { BsPersonCircle } from 'react-icons/bs'
+
+import StarRating from '../StarRating'
+import './productReviews.css'
 
 function ProductReviews({ reviews }) {
-  const starRange = [1, 2, 3, 4, 5];
   return (
     <div className="productReviews">
       {reviews?.length > 0 ? (
@@ -18,7 +13,7 @@ function ProductReviews({ reviews }) {
           </header>
           <div className="d-flex flex-column">
             {reviews.map((review, reviewIndex) => {
-              const { personName, avatarUrl, comment, rate } = review;
+              const { personName, avatarUrl, comment, rate } = review
 
               return (
                 <div
@@ -39,32 +34,10 @@ function ProductReviews({ reviews }) {
 
                   <div className="review mt-3">
                     <span className="message">{comment}</span>
-                    <div className="rate mt-2">
-                      {starRange.map((number, starIndex) => {
-                        const isFullStar = number <= rate;
-                        const isHalfStar =
-                          number - 1 === parseInt(rate) &&
-                          rate - parseInt(rate) >= 0.5;
-
-                        let starPng = <BsStar />;
-
-                        if (isFullStar) {
-                          starPng = <BsStarFill />;
-                        } else if (isHalfStar) {
-                          starPng = <BsStarHalf />;
-                        }
-
-                        return (
-                          <Fragment
-                            key={`star-${starIndex}-review-${reviewIndex}`}>
-                            {starPng}
-                          </Fragment>
-                        );
-                      })}
-                    </div>
+                    <StarRating rate={rate} />
                   </div>
                 </div>
-              );
+              )
             })}
           </div>
         </article>
@@ -79,7 +52,7 @@ function ProductReviews({ reviews }) {
         </article>
       )}
     </div>
-  );
+  )
 }
 
-export default ProductReviews;
+export default ProductReviews

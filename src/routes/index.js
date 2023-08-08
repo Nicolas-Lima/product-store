@@ -6,6 +6,8 @@ import Product from '../pages/Product'
 import Error from '../pages/Error'
 import List from '../pages/List'
 import Cart from '../pages/Cart'
+import Orders from '../pages/Orders'
+import BuyProduct from '../pages/BuyProduct'
 import Private from './Private'
 
 import FormProvider from '../contexts/form'
@@ -37,6 +39,22 @@ function RoutesApp() {
         element={
           <Private>
             <Cart />
+          </Private>
+        }
+      />
+      <Route
+        path="/buyProduct/:id/:productAmount"
+        element={
+          <Private>
+            <BuyProduct />
+          </Private>
+        }
+      />
+      <Route
+        path="/orders"
+        element={
+          <Private>
+            <Orders />
           </Private>
         }
       />

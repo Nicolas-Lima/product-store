@@ -3,6 +3,7 @@ import { StoreContext } from '../../contexts/store'
 import { AuthContext } from '../../contexts/auth'
 import StockMessage from '../StockMessage'
 import { Link } from 'react-router-dom'
+import BuyProductButton from '../BuyProductButton'
 import './product.css'
 
 import {
@@ -20,7 +21,8 @@ function ProductContent({
     removeProductFromList,
     removeProductFromCart,
     addProductToCart,
-    addProductToList
+    addProductToList,
+    buyProduct
   } = useContext(StoreContext)
   const { userSigned, user } = useContext(AuthContext)
   const [removingProduct, setRemovingProduct] = useState(false)
@@ -38,12 +40,14 @@ function ProductContent({
     user?.cart
   )
 
-  const handleAddProductToCart = () => {
-    addProductToCart(product.id)
+  const handleAddProductToCart = async () => {
+    await addProductToCart(product.id)
   }
-  const handleAddProductToList = () => {
-    addProductToList(product.id)
+
+  const handleAddProductToList = async () => {
+    await addProductToList(product.id)
   }
+
   const handleRemoveProductFromList = async () => {
     setRemovingProduct(true)
     await removeProductFromList(product.id)
@@ -86,7 +90,7 @@ function ProductContent({
           </div>
           {isListPage && (
             <div className="list-actions d-flex flex-column mt-3">
-              <button className="btn-yellow">Comprar</button>
+              <BuyProductButton productId={product.id} />
               {!isProductAlreadyInCart && (
                 <button onClick={handleAddProductToCart}>
                   Adicionar ao carrinho
@@ -103,7 +107,7 @@ function ProductContent({
           )}
           {isCartPage && (
             <div className="list-actions d-flex flex-column mt-3">
-              <button className="btn-yellow">Comprar</button>
+              <BuyProductButton productId={product.id} />
               {!isProductAlreadyInList && (
                 <button onClick={handleAddProductToList}>
                   Adicionar à Lista
@@ -130,6 +134,7 @@ function ProductComponent({
   isProductPage = false,
   isListPage = false,
   isCartPage = false,
+
   includeStockMessage = false
 }) {
   if (isProductPage || isListPage || isCartPage) {

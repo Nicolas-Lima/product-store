@@ -171,7 +171,7 @@ function StoreProvider({ children }) {
 
     if (userSigned) {
       const updatedList = [...user.list, selectedProduct]
-      updateUserInfo({
+      await updateUserInfo({
         list: updatedList
       })
     } else {
@@ -226,7 +226,7 @@ function StoreProvider({ children }) {
     }
 
     const updatedCart = [...userCart, selectedProduct]
-    updateUserInfo({
+    await updateUserInfo({
       cart: updatedCart
     })
   }
@@ -249,6 +249,31 @@ function StoreProvider({ children }) {
     }
   }
 
+  const buyProduct = async productUid => {
+    // a pessoa só pode comprar um pouco de produto
+
+    // atualizar o purchasedProducts
+
+    // userPurchasedProducts
+
+    //
+
+    const selectedProduct = getProductById(productUid)
+    const userPurchasedProducts = user?.purchasedProducts ?? []
+
+    if (
+      !selectedProduct ||
+      !userSigned
+    ) {
+      return
+    }
+
+    const updatedPurchasedProducts = [...userPurchasedProducts, selectedProduct]
+    await updateUserInfo({
+      purchasedProducts: updatedPurchasedProducts
+    })
+  }
+
   const contextValue = {
     products: products || [],
     setProducts,
@@ -259,6 +284,7 @@ function StoreProvider({ children }) {
     addProductToCart,
     removeProductFromList,
     removeProductFromCart,
+    buyProduct,
     userPurchasedProducts: user?.purchasedProducts,
     userList: user?.list,
     userCart: user?.cart,

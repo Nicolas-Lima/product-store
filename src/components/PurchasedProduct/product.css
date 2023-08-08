@@ -1,0 +1,47 @@
+.grid article img {
+  max-width: 200px;
+  max-height: 200px;
+}
+
+.product article {
+  position: relative;
+}
+
+.product article:hover,
+.product article:focus {
+  box-shadow: 0 10px 10px #aaaaaa;
+  top: -1px;
+}
+
+.description {
+  font-size: 18px !important;
+}
+
+.price {
+  font-size: 24px;
+}
+
+/* Media queries for .list-actions */
+@media (max-width: 576px) {
+  .list-actions {
+    width: 90% !important;
+  }
+}
+
+@media (min-width: 577px) and (max-width: 768px) {
+  .list-actions {
+    width: 85% !important;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 991px) {
+  .list-actions {
+    width: 65% !important;
+  }
+}
+
+@media (min-width: 992px) {
+  .list-actions {
+    width: 100% !important;
+  }
+}
