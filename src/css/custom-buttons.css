@@ -11,6 +11,14 @@
   --custom-orange-hover: #e64a19;
   --custom-orange-focus: #e64a19;
   --custom-orange-inverse: #fff;
+  --custom-green: #43a047;
+  --custom-green-hover: #388e3c;
+  --custom-green-focus: rgba(56, 142, 60, 0.9);
+  --custom-green-inverse: #fff;
+  --custom-blue-grey: #546e7a;
+  --custom-blue-grey-hover: #455a64;
+  --custom-blue-grey-focus: #455a64;
+  --custom-blue-grey-inverse: #fff;
 }
 
 .btn-yellow {
@@ -43,6 +51,21 @@
   background-color: var(--custom-grey-focus) !important;
 }
 
+.btn-blue-grey {
+  background-color: var(--custom-blue-grey) !important;
+  border-color: var(--custom-blue-grey) !important;
+  color: var(--custom-blue-grey-inverse) !important;
+  box-shadow: var(--button-box-shadow, 0 0 0 rgba(0, 0, 0, 0)) !important;
+}
+
+.btn-blue-grey:hover {
+  background-color: var(--custom-blue-grey-hover) !important;
+}
+
+.btn-blue-grey:focus {
+  background-color: var(--custom-blue-grey-focus) !important;
+}
+
 .btn-orange {
   background-color: var(--custom-orange) !important;
   border-color: var(--custom-orange) !important;
@@ -56,4 +79,19 @@
 
 .btn-orange:focus {
   background-color: var(--custom-orange-focus) !important;
+}
+
+.btn-green {
+  background-color: var(--custom-green) !important;
+  border-color: var(--custom-green) !important;
+  color: var(--custom-green-inverse) !important;
+  box-shadow: var(--button-box-shadow, 0 0 0 rgba(0, 0, 0, 0)) !important;
+}
+
+.btn-green:hover {
+  background-color: var(--custom-green-hover) !important;
+}
+
+.btn-green:focus {
+  background-color: var(--custom-green-focus) !important;
 }

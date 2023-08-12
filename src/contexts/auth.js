@@ -1,101 +1,119 @@
-import { useState, useEffect, createContext } from "react";
-import Loading from "../components/LoadingSpinner";
-import { useNavigate } from "react-router-dom";
-import { auth, db } from "../services/firebaseConnection";
+import { useState, useEffect, createContext } from 'react'
+import Loading from '../components/LoadingSpinner'
+import { useNavigate } from 'react-router-dom'
+import { auth, db } from '../services/firebaseConnection'
 import {
   getAuthErrorMessage,
-  getCreateAccountErrorMessage,
-} from "../utils/validationUtils";
+  getCreateAccountErrorMessage
+} from '../utils/validationUtils'
 import {
   signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-} from "firebase/auth";
+  createUserWithEmailAndPassword
+} from 'firebase/auth'
 
-import { setDoc, doc, getDoc } from "firebase/firestore";
+import {
+  addDoc,
+  setDoc,
+  collection,
+  doc,
+  getDoc,
+  updateDoc
+} from 'firebase/firestore'
 
-const AuthContext = createContext({});
+const AuthContext = createContext({})
 
 function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [guestInfo, setGuestInfo] = useState(null);
-  const [pageLoading, setPageLoading] = useState(true);
-  const [loggingIn, setLoggingIn] = useState(false);
-  const [registering, setRegistering] = useState(false);
+  const [user, setUser] = useState(null)
+  const [guestInfo, setGuestInfo] = useState(null)
+  const [pageLoading, setPageLoading] = useState(true)
+  const [loggingIn, setLoggingIn] = useState(false)
+  const [registering, setRegistering] = useState(false)
 
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   const getUserData = async uid => {
-    const userRef = doc(db, "users", uid);
+    const userRef = doc(db, 'users', uid)
     try {
-      const snapshot = await getDoc(userRef);
-      const userData = snapshot.data();
-      return userData;
+      const snapshot = await getDoc(userRef)
+      const userData = snapshot.data()
+      return userData
     } catch (error) {
-      return "error";
+      return 'error'
     }
-  };
+  }
 
   useEffect(() => {
-    const userData = JSON.parse(localStorage.getItem("@userData")) || "";
+    const userData = JSON.parse(localStorage.getItem('@userData')) || ''
 
     if (userData && userData.uid) {
       const setStoredUserData = async userUid => {
-        const storedUserData = await getUserData(userUid);
+        const storedUserData = await getUserData(userUid)
 
         if (storedUserData) {
-          setUser(storedUserData);
+          setUser(storedUserData)
         }
-        setPageLoading(false);
-      };
+        setPageLoading(false)
+      }
 
-      setStoredUserData(userData.uid);
+      setStoredUserData(userData.uid)
     } else {
- 
       const guestData =
-        JSON.parse(localStorage.getItem("@guestData")) || "";
+        JSON.parse(localStorage.getItem('@guestData')) || ''
 
       if (guestData) {
-        setGuestInfo(guestData);
+        setGuestInfo(guestData)
       }
-      setPageLoading(false);
+      setPageLoading(false)
     }
-  }, []);
+  }, [])
 
+  const updateUserInfo = async (updatedInfo = {}) => {
+    const userUid = user?.uid
+    try {
+      const userRef = doc(db, 'users', userUid)
+
+      await updateDoc(userRef, updatedInfo)
+      setUser({
+        ...user,
+        ...updatedInfo
+      })
+    } catch (error) {}
+  }
   async function signIn(email, password) {
-    setLoggingIn(true);
+    setLoggingIn(true)
 
     const returnObject = {
-      credentialsError: "",
-    };
+      credentialsError: ''
+    }
     await signInWithEmailAndPassword(auth, email, password)
       .then(async value => {
-        const uid = value.user.uid;
+        const uid = value.user.uid
 
-        const userData = await getUserData(uid);
+        const userData = await getUserData(uid)
 
-        saveUserLoginInfo(email, uid);
-        setUser(userData);
-        navigate("/");
+        saveUserLoginInfo(email, uid)
+        setUser(userData)
+        navigate('/')
       })
       .catch(error => {
-        returnObject.credentialsError = getAuthErrorMessage(error.code);
-      });
+        returnObject.credentialsError = getAuthErrorMessage(error.code)
+      })
 
-    setLoggingIn(false);
+    setLoggingIn(false)
 
-    return returnObject;
+    return returnObject
   }
 
   async function signUp(email, password) {
     const returnObject = {
-      emailError: "",
-      passwordError: "",
-    };
+      emailError: '',
+      passwordError: ''
+    }
 
     await createUserWithEmailAndPassword(auth, email, password)
       .then(async value => {
-        const { email, uid } = value.user;
-        saveUserLoginInfo(email, uid);
+        const { email, uid } = value.user
+        saveUserLoginInfo(email, uid)
 
         const newUser = {
           email,
@@ -103,43 +121,75 @@ function AuthProvider({ children }) {
           purchasedProducts: [],
           list: [],
           cart: [],
+          creditCardsInfo: [],
           profileConfiguration: {
-            imgUrl: "",
-            name: "",
-          },
-        };
-        setUser(newUser);
+            imgUrl: '',
+            name: ''
+          }
+        }
+        setUser(newUser)
 
-        await setDoc(doc(db, "users", uid), newUser);
-        navigate("/");
+        const userRef = doc(db, 'users', uid)
+        await setDoc(userRef, newUser)
+
+        navigate('/')
       })
       .catch(error => {
-        const errorMessage = getCreateAccountErrorMessage(error.code);
-        returnObject.emailError = errorMessage.email;
-        returnObject.passwordError = errorMessage.password;
-      });
+        const errorMessage = getCreateAccountErrorMessage(error.code)
+        returnObject.emailError = errorMessage.email
+        returnObject.passwordError = errorMessage.password
+      })
 
-    return returnObject;
+    return returnObject
   }
 
   function logout() {
-    localStorage.removeItem("@userData");
-    setUser(false);
+    localStorage.removeItem('@userData')
+    setUser(false)
   }
 
   function saveUserLoginInfo(email, uid) {
     const userData = {
       email,
-      uid,
-    };
-    localStorage.setItem("@userData", JSON.stringify(userData));
+      uid
+    }
+    localStorage.setItem('@userData', JSON.stringify(userData))
+  }
+
+  async function addNewCreditCard(cardInfo) {
+    const userUid = user?.uid
+    if (!userUid) {
+      return
+    }
+
+    const userRef = doc(db, 'users', userUid)
+
+    await addDoc(collection(userRef, 'creditCards'), cardInfo).then(
+      snapshot => {
+        const updatedCreditCardsInfo = [
+          ...(user?.creditCardsInfo || []),
+          {
+            ownerName: cardInfo?.ownerName,
+            cardNumberLastFoursDigits: cardInfo?.cardNumber.slice(-4),
+            id: snapshot.id,
+            cardBrand: 'Fake brand'
+          }
+        ]
+        updateUserInfo({
+          creditCardsInfo: updatedCreditCardsInfo
+        })
+      }
+    )
   }
 
   const contextValue = {
+    addNewCreditCard,
+    updateUserInfo,
     userSigned: !!user,
     user,
     setUser,
     userUid: user?.uid,
+    creditCardsInfo: user?.creditCardsInfo,
     guestInfo,
     setGuestInfo,
     signIn,
@@ -149,15 +199,15 @@ function AuthProvider({ children }) {
     loggingIn,
     setLoggingIn,
     registering,
-    setRegistering,
-  };
+    setRegistering
+  }
 
   return (
     <AuthContext.Provider value={contextValue}>
       {pageLoading ? <Loading /> : children}
     </AuthContext.Provider>
-  );
+  )
 }
 
-export default AuthProvider;
-export { AuthContext };
+export default AuthProvider
+export { AuthContext }

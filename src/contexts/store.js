@@ -7,7 +7,6 @@ import {
   getDoc,
   getDocs,
   collection,
-  updateDoc
 } from 'firebase/firestore'
 import { removeAccents } from '../utils/generalUtils'
 import {
@@ -18,8 +17,14 @@ import {
 const StoreContext = createContext({})
 
 function StoreProvider({ children }) {
-  const { user, userSigned, userUid, setUser, guestInfo, setGuestInfo } =
-    useContext(AuthContext)
+  const {
+    user,
+    userSigned,
+    userUid,
+    guestInfo,
+    setGuestInfo,
+    updateUserInfo
+  } = useContext(AuthContext)
   const [userInfo, setUserInfo] = useState(null)
   const [products, setProducts] = useState(null)
   const [productsLoading, setProductsLoading] = useState(true)
@@ -133,18 +138,6 @@ function StoreProvider({ children }) {
         setSearchResults(products)
       }
     }
-  }
-
-  const updateUserInfo = async (updatedInfo = {}) => {
-    try {
-      const userRef = doc(db, 'users', userUid)
-
-      await updateDoc(userRef, updatedInfo)
-      setUser({
-        ...user,
-        ...updatedInfo
-      })
-    } catch (error) {}
   }
 
   const updateGuestInfo = (updatedInfo = {}) => {
@@ -261,14 +254,14 @@ function StoreProvider({ children }) {
     const selectedProduct = getProductById(productUid)
     const userPurchasedProducts = user?.purchasedProducts ?? []
 
-    if (
-      !selectedProduct ||
-      !userSigned
-    ) {
+    if (!selectedProduct || !userSigned) {
       return
     }
 
-    const updatedPurchasedProducts = [...userPurchasedProducts, selectedProduct]
+    const updatedPurchasedProducts = [
+      ...userPurchasedProducts,
+      selectedProduct
+    ]
     await updateUserInfo({
       purchasedProducts: updatedPurchasedProducts
     })

@@ -52,3 +52,9 @@ form#register input,
 form#login input {
   background-image: unset !important;
 }
+
+/* React Toastify */
+
+.Toastify  button {
+  width: auto !important;
+}
