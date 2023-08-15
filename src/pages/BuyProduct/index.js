@@ -13,8 +13,6 @@ import { toast } from 'react-toastify'
 function BuyProduct() {
   const { id: productId, productAmount } = useParams()
 
-
-
   const [product, setProduct] = useState(null)
   const [productNotFound, setProductNotFound] = useState(false)
   const [productLoading, setProductLoading] = useState(true)
