@@ -52,9 +52,7 @@ function Nav() {
               <ul role="listbox">
                 <li>
                   <Link to="/orders" className="link-secondary">
-                    <div
-                      onClick={() => console.log('Meus pedidos')}
-                      className="d-flex justify-content-end align-items-center">
+                    <div className="d-flex justify-content-end align-items-center">
                       <span className="ms-custom-1">Meus pedidos</span>
                       <BsBox />
                     </div>
@@ -62,9 +60,7 @@ function Nav() {
                 </li>
                 <li>
                   <Link to="/cart" className="link-secondary">
-                    <div
-                      onClick={() => console.log('Meus pedidos')}
-                      className="d-flex justify-content-end align-items-center">
+                    <div className="d-flex justify-content-end align-items-center">
                       <span className="ms-custom-1">Meu carrinho</span>
                       <BsCart3 />
                     </div>
@@ -72,9 +68,7 @@ function Nav() {
                 </li>
                 <li>
                   <Link to="/list" className="link-secondary">
-                    <div
-                      onClick={() => console.log('Meus pedidos')}
-                      className="d-flex justify-content-end align-items-center">
+                    <div className="d-flex justify-content-end align-items-center">
                       <span className="ms-custom-1">Minha lista</span>
                       <BsListUl />
                     </div>
@@ -82,9 +76,7 @@ function Nav() {
                 </li>
                 <li>
                   <Link to="/settings" className="link-secondary">
-                    <div
-                      onClick={() => console.log('configurações')}
-                      className="d-flex justify-content-end align-items-center">
+                    <div className="d-flex justify-content-end align-items-center">
                       <span className="ms-custom-1">Configurações</span>
                       <BsGear />
                     </div>

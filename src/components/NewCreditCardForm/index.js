@@ -9,7 +9,8 @@ function NewCreditCardForm({
   creditCardsInfo,
   setIsAddingNewCreditCard,
   setSelectedCardIndex,
-  savedCreditCardsAmount
+  savedCreditCardsAmount,
+  userHasCreditCard
 }) {
   const [fieldsErrorMessages, setFieldsErrorMessages] = useState({
     ownerName: '',
@@ -55,6 +56,13 @@ function NewCreditCardForm({
         <button type="submit" className="btn-green mt-1">
           Adicionar cartão
         </button>
+        {userHasCreditCard && (
+          <button
+            className="btn-orange"
+            onClick={() => setIsAddingNewCreditCard(false)}>
+            Cancelar
+          </button>
+        )}
       </form>
     </div>
   )

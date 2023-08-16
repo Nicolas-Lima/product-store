@@ -7,6 +7,7 @@ import {
   getDoc,
   getDocs,
   collection,
+  updateDoc
 } from 'firebase/firestore'
 import { removeAccents } from '../utils/generalUtils'
 import {
@@ -62,6 +63,20 @@ function StoreProvider({ children }) {
       return product.id === productId
     })[0]
     return product || null
+  }
+
+  const updateProduct = (productId, updatedInfo) => {
+    const updatedProducts = products.map(product => {
+      if (product.id === productId) {
+        return {
+          ...product,
+          ...updatedInfo
+        }
+      }
+      return product
+    })
+
+    setProducts(updatedProducts)
   }
 
   const setProduct = async product => {
@@ -242,29 +257,88 @@ function StoreProvider({ children }) {
     }
   }
 
-  const buyProduct = async productUid => {
-    // a pessoa só pode comprar um pouco de produto
-
-    // atualizar o purchasedProducts
-
-    // userPurchasedProducts
-
-    //
-
-    const selectedProduct = getProductById(productUid)
+  const buyProduct = async ({
+    productId,
+    cardId,
+    paymentMethod,
+    totalPrice,
+    amount
+  }) => {
+    const selectedProduct = getProductById(productId)
     const userPurchasedProducts = user?.purchasedProducts ?? []
 
     if (!selectedProduct || !userSigned) {
-      return
+      return {
+        status: 'error'
+      }
+    }
+
+    if (paymentMethod === 'credit_card') {
+      const userRef = doc(db, 'users', userUid)
+      const creditCardsCollectionRef = collection(userRef, 'creditCards')
+      const creditCard = await getDoc(
+        doc(creditCardsCollectionRef, cardId)
+      ).then(snapshot => snapshot.data())
+    }
+
+    let updatedProductStock = selectedProduct?.stock - amount
+    updatedProductStock =
+      updatedProductStock <= 0 ? 0 : updatedProductStock
+
+    const currentDate = new Date()
+    const [currentSeconds, currentMinutes] = [
+      currentDate.getSeconds(),
+      currentDate.getMinutes()
+    ]
+
+    const trackingId = `${userUid.slice(
+      -5
+    )}${productId}${currentSeconds}${currentMinutes}${String(
+      Math.random()
+    ).replace('.', '')}${Date.now()}`
+
+    const { description, imgUrl, name, seller, price, rating } =
+      selectedProduct
+
+    const purchasedProduct = {
+      productId: selectedProduct.id,
+      trackingId,
+      paymentMethod,
+      cardId: cardId ?? false,
+      totalPrice,
+      amount,
+      description,
+      imgUrl,
+      productName: name,
+      seller,
+      price,
+      rating
     }
 
     const updatedPurchasedProducts = [
       ...userPurchasedProducts,
-      selectedProduct
+      purchasedProduct
     ]
+
     await updateUserInfo({
       purchasedProducts: updatedPurchasedProducts
     })
+
+    // Update the product stock
+
+    const productRef = doc(db, 'products', productId)
+
+    await updateDoc(productRef, {
+      stock: updatedProductStock
+    })
+
+    updateProduct(productId, {
+      stock: updatedProductStock
+    })
+
+    return {
+      status: 'success'
+    }
   }
 
   const contextValue = {

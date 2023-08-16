@@ -6,6 +6,10 @@ import ProductAmountSelect from '../../components/ProductAmountSelect'
 import NewCreditCardForm from '../../components/NewCreditCardForm'
 import { BsCreditCardFill } from 'react-icons/bs'
 
+import { useNavigate } from 'react-router-dom'
+
+import { toast } from 'react-toastify'
+
 function ProductOrderingSection({ product, productPrice, productAmount }) {
   const [amount, setAmount] = useState(parseInt(productAmount))
 
@@ -14,15 +18,41 @@ function ProductOrderingSection({ product, productPrice, productAmount }) {
   const { addNewCreditCard, creditCardsInfo } = useContext(AuthContext)
   const [isAddingNewCreditCard, setIsAddingNewCreditCard] = useState(false)
   const [selectedCardIndex, setSelectedCardIndex] = useState(0)
+  const [finalizingPurchase, setFinalizingPurchase] = useState(false)
 
   const userHasCreditCard = creditCardsInfo.length > 0
   const [paymentMethod, setPaymentMethod] = useState(
     userHasCreditCard ? 'credit_card' : 'ticket'
   )
 
+  const navigate = useNavigate()
+
   const handleFinalizePurchase = async () => {
-    console.log('Comprando...')
-    //await buyProduct(product.id)
+    setFinalizingPurchase(true)
+    if (paymentMethod === 'credit_card' && !userHasCreditCard) {
+      toast.error('Cadastre um cartão de crédito!', {
+        toastId: 'missingCreditCard'
+      })
+
+      return
+    }
+
+    const { status: purchaseStatus } = await buyProduct({
+      productId: product.id,
+      paymentMethod,
+      cardId: creditCardsInfo[selectedCardIndex]?.id,
+      totalPrice,
+      amount
+    })
+
+    if (purchaseStatus === 'success') {
+      toast.success('Produto comprado com sucesso!')
+      return navigate('/orders')
+    } else {
+      toast.error('Um erro aconteceu, tente novamente mais tarde!')
+    }
+
+    setFinalizingPurchase(false)
   }
 
   const handleAddNewCreditCard = () => {
@@ -81,6 +111,7 @@ function ProductOrderingSection({ product, productPrice, productAmount }) {
           {product.stock > 0 && (
             <div className="amount-container">
               <ProductAmountSelect
+                productStock={product?.stock}
                 amount={amount}
                 setAmount={setAmount}
                 maxPurchaseUnits={product?.maxPurchaseUnits}
@@ -197,6 +228,7 @@ function ProductOrderingSection({ product, productPrice, productAmount }) {
                   setIsAddingNewCreditCard={setIsAddingNewCreditCard}
                   setSelectedCardIndex={setSelectedCardIndex}
                   savedCreditCardsAmount={creditCardsInfo?.length || 0}
+                  userHasCreditCard={userHasCreditCard}
                 />
               )}
             </div>
@@ -207,11 +239,20 @@ function ProductOrderingSection({ product, productPrice, productAmount }) {
             {formattedTotalPrice}
           </div>
           <div className="actions">
-            <button
-              className="btn-yellow"
-              onClick={handleFinalizePurchase}>
-              Finalizar compra
-            </button>
+            {finalizingPurchase ? (
+              <button
+                aria-busy={true}
+                className="btn-yellow"
+                onClick={handleFinalizePurchase}>
+                Finalizando compra...
+              </button>
+            ) : (
+              <button
+                className="btn-yellow"
+                onClick={handleFinalizePurchase}>
+                Finalizar compra
+              </button>
+            )}
           </div>
         </div>
       </article>

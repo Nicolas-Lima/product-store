@@ -53,6 +53,7 @@ function ProductInfo({ product }) {
           {hasStock && (
             <div className="amount-container">
               <ProductAmountSelect
+                productStock={product?.stock}
                 amount={amount}
                 setAmount={setAmount}
                 maxPurchaseUnits={maxPurchaseUnits}

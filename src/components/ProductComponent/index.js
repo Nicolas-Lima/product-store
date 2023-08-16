@@ -22,7 +22,6 @@ function ProductContent({
     removeProductFromCart,
     addProductToCart,
     addProductToList,
-    buyProduct
   } = useContext(StoreContext)
   const { userSigned, user } = useContext(AuthContext)
   const [removingProduct, setRemovingProduct] = useState(false)

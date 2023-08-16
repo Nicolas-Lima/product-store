@@ -1,40 +1,31 @@
-import { useContext, useState, useEffect } from 'react'
+import { useContext } from 'react'
 import { Link } from 'react-router-dom'
 import { StoreContext } from '../../contexts/store'
 import { AuthContext } from '../../contexts/auth'
 
 import Nav from '../../components/Nav'
-import { sliceProductsIntoGroups } from '../../utils/productsUtils'
-import ProductsGridRenderer from '../../components/ProductsGridRenderer'
 
 function Orders() {
   const { userPurchasedProducts } = useContext(StoreContext)
   const { userSigned } = useContext(AuthContext)
-  const [slicedProductsIntoGroups, setSlicedProductsIntoGroups] = useState(
-    []
-  ) // We have to divide the products into groups of 3 so that the PICO.css grid to work better.
-
-  useEffect(() => {
-    if (userSigned) {
-      setSlicedProductsIntoGroups(
-        sliceProductsIntoGroups(userPurchasedProducts)
-      )
-    }
-  }, [userPurchasedProducts, userSigned])
 
   return (
     <>
       <Nav />
       <main className="container mt-4">
-        {slicedProductsIntoGroups?.length > 0 ? (
+        {userPurchasedProducts?.length > 0 ? (
           <>
-            <h1 className="mb-4 text-center text-secondary">
-              Meus pedidos
-            </h1>
-            {ProductsGridRenderer({
-              slicedProductsIntoGroups,
-              isOrdersPage: true
-            })}
+            {/* Purchased Product Component */}
+            {userPurchasedProducts.map(purchasedProduct => (
+              <>
+                {purchasedProduct.productName} {"<=>"}{' '}
+                {purchasedProduct.trackingId} <br />
+                <div className="mb-4">
+                  <hr />
+                </div>
+              </>
+            ))}
+            {/* Purchased Product Component */}
           </>
         ) : (
           <h1 className="text-center text-secondary">
