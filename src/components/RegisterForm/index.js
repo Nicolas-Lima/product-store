@@ -1,20 +1,20 @@
-import { useContext, useEffect, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { FormContext } from "../../contexts/form";
-import { AuthContext } from "../../contexts/auth";
+import { useContext, useEffect, useState } from 'react'
+import { useNavigate, Link } from 'react-router-dom'
+import { FormContext } from '../../contexts/form'
+import { AuthContext } from '../../contexts/auth'
 
 import {
   validateEmailWithMessage,
   validatePasswordWithMessage,
-  validateFullNameWithMessage,
-} from "../../utils/validationUtils";
+  validateFullNameWithMessage
+} from '../../utils/validationUtils'
 
-import RegisterFormFields from "../../components/RegisterFormFields";
+import RegisterFormFields from '../../components/RegisterFormFields'
 
 function RegisterForm() {
-  const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [fullName, setFullName] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
 
   const {
     setFullNameError,
@@ -23,80 +23,78 @@ function RegisterForm() {
     emailInputStarted,
     setFormSubmitted,
     setPasswordError,
-    passwordInputStarted,
-  } = useContext(FormContext);
+    passwordInputStarted
+  } = useContext(FormContext)
 
   const { userSigned, signUp, registering, setRegistering } =
-    useContext(AuthContext);
+    useContext(AuthContext)
 
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (userSigned) {
-      navigate("/");
+      navigate('/')
     }
-  }, [userSigned]);
+  }, [userSigned])
 
   useEffect(() => {
     if (emailInputStarted) {
-      validateEmail();
+      validateEmail()
     }
-  }, [email]);
+  }, [email])
 
   useEffect(() => {
     if (passwordInputStarted) {
-      validatePassword();
+      validatePassword()
     }
-  }, [password]);
+  }, [password])
 
   useEffect(() => {
     if (fullNameInputStarted) {
-      validateFullName();
+      validateFullName()
     }
-  }, [fullName]);
+  }, [fullName])
 
   const validateEmail = () => {
-    const { isValid, errorMessage } = validateEmailWithMessage(email);
-    setEmailError(errorMessage);
-    return isValid;
-  };
+    const { isValid, errorMessage } = validateEmailWithMessage(email)
+    setEmailError(errorMessage)
+    return isValid
+  }
 
   const validatePassword = () => {
-    const { isValid, errorMessage } =
-      validatePasswordWithMessage(password);
-    setPasswordError(errorMessage);
-    return isValid;
-  };
+    const { isValid, errorMessage } = validatePasswordWithMessage(password)
+    setPasswordError(errorMessage)
+    return isValid
+  }
 
   const validateFullName = () => {
-    const { isValid, errorMessage } =
-      validateFullNameWithMessage(fullName);
-    setFullNameError(errorMessage);
-    return isValid;
-  };
+    const { isValid, errorMessage } = validateFullNameWithMessage(fullName)
+    setFullNameError(errorMessage)
+    return isValid
+  }
 
   const handleSubmit = async e => {
-    e.preventDefault();
+    e.preventDefault()
 
-    setFormSubmitted(true);
+    setFormSubmitted(true)
 
-    const isEmailValid = validateEmail();
-    const isPasswordValid = validatePassword();
+    const isEmailValid = validateEmail()
+    const isPasswordValid = validatePassword()
 
     if (!isEmailValid || !isPasswordValid) {
-      return;
+      return
     }
 
-    setRegistering(true);
-    const { emailError, passwordError } = await signUp(email, password);
-    setEmailError(emailError);
-    setPasswordError(passwordError);
-    setRegistering(false);
-  };
+    setRegistering(true)
+    const { emailError, passwordError } = await signUp(email, password)
+    setEmailError(emailError)
+    setPasswordError(passwordError)
+    setRegistering(false)
+  }
 
   return (
     <div className="container py-0">
-      <div className="row justify-content-center gx-sm-5 mb-4 mt-2-3rem">
+      <div className="row justify-content-center gx-sm-5 mb-4 mt-5 mt-sm-4 mt-md-3 mt-lg-0">
         <div className="col-12 col-sm-11 col-md-9 col-lg-7 col-xl-6">
           <article className="shadow-lg pt-0">
             <header className="text-center mb-4 d-flex justify-content-center">
@@ -128,7 +126,7 @@ function RegisterForm() {
               )}
             </form>
             <div className="mb-2 mt-2-3rem">
-              <span style={{ marginRight: "8px" }}>
+              <span style={{ marginRight: '8px' }}>
                 Você já tem uma conta?
               </span>
               <Link to="/login">Fazer login</Link>
@@ -137,7 +135,7 @@ function RegisterForm() {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
-export default RegisterForm;
+export default RegisterForm

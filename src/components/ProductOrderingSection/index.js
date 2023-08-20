@@ -33,6 +33,7 @@ function ProductOrderingSection({ product, productPrice, productAmount }) {
       toast.error('Cadastre um cartão de crédito!', {
         toastId: 'missingCreditCard'
       })
+      setFinalizingPurchase(false)
 
       return
     }

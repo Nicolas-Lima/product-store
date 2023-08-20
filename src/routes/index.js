@@ -8,6 +8,7 @@ import List from '../pages/List'
 import Cart from '../pages/Cart'
 import Orders from '../pages/Orders'
 import BuyProduct from '../pages/BuyProduct'
+import TrackOrder from '../pages/TrackOrder'
 import Private from './Private'
 
 import FormProvider from '../contexts/form'
@@ -55,6 +56,14 @@ function RoutesApp() {
         element={
           <Private>
             <Orders />
+          </Private>
+        }
+      />
+      <Route
+        path="/trackOrder/:trackingId"
+        element={
+          <Private>
+            <TrackOrder />
           </Private>
         }
       />

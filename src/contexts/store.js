@@ -38,7 +38,19 @@ function StoreProvider({ children }) {
       snapshot.forEach(product =>
         products.push({ id: product.id, ...product.data() })
       )
-      setProducts(products)
+
+      const productsWithStock = products?.filter(
+        product => product.stock > 0
+      )
+      const productsWithNoStock = products?.filter(
+        product => product.stock <= 0
+      )
+      const updatedProductList = [
+        ...productsWithStock,
+        ...productsWithNoStock
+      ]
+
+      setProducts(updatedProductList)
       setProductsLoading(false)
     })
   }
@@ -58,8 +70,123 @@ function StoreProvider({ children }) {
     getProducts()
   }, [])
 
+  useEffect(() => {
+    const updateProductsOrderStatus = async () => {
+      const userPurchasedProducts = user?.purchasedProducts
+
+      const getUpdatedOrderStatus = ({
+        purchaseTimestamp,
+        updatedDay,
+        orderStatus,
+        statusIndex
+      }) => {
+        const purchaseDate = new Date(purchaseTimestamp)
+        const [purchaseMonth, purchaseYear] = [
+          purchaseDate.getMonth(),
+          purchaseDate.getFullYear()
+        ]
+
+        const daysInAMonth = 30
+
+        if (updatedDay > daysInAMonth) {
+          const lastStatusMonth =
+            orderStatus[statusIndex - 1]?.done?.date?.month
+
+          let updatedYear = purchaseYear
+          let updatedMonth = lastStatusMonth + 1
+
+          if (lastStatusMonth + 1 > 12) {
+            updatedYear = purchaseYear + 1
+            updatedMonth = 1
+          }
+
+          updatedDay = updatedDay - 30
+
+          return {
+            value: true,
+            date: {
+              day: updatedDay,
+              month: updatedMonth,
+              year: updatedYear
+            }
+          }
+        }
+
+        return {
+          value: true,
+          date: {
+            day: updatedDay,
+            month: purchaseMonth,
+            year: purchaseYear
+          }
+        }
+      }
+
+      const updatedPurchasedProducts =
+        Array.isArray(userPurchasedProducts) &&
+        userPurchasedProducts?.map(purchasedProduct => {
+          const updatedOrderStatus = purchasedProduct?.orderStatus
+
+          const purchaseTimestamp = purchasedProduct?.timestamp
+          const purchaseDay = new Date(purchaseTimestamp).getDate()
+          const currentDay = new Date().getDate()
+
+          if (
+            currentDay - 2 >= purchaseDay &&
+            !updatedOrderStatus[1].done
+          ) {
+            updatedOrderStatus[1].done = getUpdatedOrderStatus({
+              purchaseTimestamp,
+              updatedDay: purchaseDay + 2,
+              orderStatus: purchasedProduct?.orderStatus,
+              statusIndex: 1
+            })
+          }
+
+          if (
+            currentDay - 3 >= purchaseDay &&
+            !updatedOrderStatus[2].done
+          ) {
+            updatedOrderStatus[2].done = getUpdatedOrderStatus({
+              purchaseTimestamp,
+              updatedDay: purchaseDay + 3,
+              orderStatus: purchasedProduct?.orderStatus,
+              statusIndex: 2
+            })
+          }
+
+          if (
+            currentDay - 10 >= purchaseDay &&
+            !updatedOrderStatus[3].done
+          ) {
+            updatedOrderStatus[3].done = getUpdatedOrderStatus({
+              purchaseTimestamp,
+              updatedDay: purchaseDay + 10,
+              orderStatus: purchasedProduct?.orderStatus,
+              statusIndex: 3
+            })
+          }
+
+          return {
+            ...purchasedProduct,
+            updatedOrderStatus
+          }
+        })
+
+      const userRef = doc(db, 'users', userUid)
+
+      await updateDoc(userRef, {
+        purchasedProducts: updatedPurchasedProducts
+      })
+    }
+
+    if (userSigned) {
+      updateProductsOrderStatus()
+    }
+  }, [user, userSigned])
+
   const getProductById = productId => {
-    const product = products.filter(product => {
+    const product = products?.filter(product => {
       return product.id === productId
     })[0]
     return product || null
@@ -265,7 +392,7 @@ function StoreProvider({ children }) {
     amount
   }) => {
     const selectedProduct = getProductById(productId)
-    const userPurchasedProducts = user?.purchasedProducts ?? []
+    const userPurchasedProducts = user?.purchasedProducts || []
 
     if (!selectedProduct || !userSigned) {
       return {
@@ -285,23 +412,63 @@ function StoreProvider({ children }) {
     updatedProductStock =
       updatedProductStock <= 0 ? 0 : updatedProductStock
 
+    const timestamp = Date.now()
     const currentDate = new Date()
-    const [currentSeconds, currentMinutes] = [
+    const [
+      currentSeconds,
+      currentMinutes,
+      currentMonth,
+      currentDay,
+      currentYear
+    ] = [
       currentDate.getSeconds(),
-      currentDate.getMinutes()
+      currentDate.getMinutes(),
+      currentDate.getMonth(),
+      currentDate.getDate(),
+      currentDate.getFullYear()
     ]
 
     const trackingId = `${userUid.slice(
       -5
     )}${productId}${currentSeconds}${currentMinutes}${String(
       Math.random()
-    ).replace('.', '')}${Date.now()}`
+    ).replace('.', '')}${timestamp}`
 
     const { description, imgUrl, name, seller, price, rating } =
       selectedProduct
 
     const purchasedProduct = {
       productId: selectedProduct.id,
+      orderStatus: [
+        {
+          statusName: 'Pedido recebido',
+          statusId: 1,
+          done: {
+            value: true,
+            date: {
+              day: currentDay,
+              month: currentMonth,
+              year: currentYear
+            }
+          }
+        },
+        {
+          statusName: 'Preparando o pedido',
+          statusId: 2,
+          done: false
+        },
+
+        {
+          statusName: 'Em trânsito',
+          statusId: 3,
+          done: false
+        },
+        {
+          statusName: 'Entregue',
+          statusId: 4,
+          done: false
+        }
+      ],
       trackingId,
       paymentMethod,
       cardId: cardId ?? false,
@@ -312,7 +479,8 @@ function StoreProvider({ children }) {
       productName: name,
       seller,
       price,
-      rating
+      rating,
+      timestamp
     }
 
     const updatedPurchasedProducts = [

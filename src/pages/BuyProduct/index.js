@@ -24,7 +24,8 @@ function BuyProduct() {
 
   const changeProductPrice = ({ dollars, cents } = {}) => {
     const areAllNumbers =
-      [dollars, cents].filter(value => Number.isFinite(value)).length === 2
+      [dollars, cents]?.filter(value => Number.isFinite(value)).length ===
+      2
     if (areAllNumbers) {
       setProductPrice(dollars + cents / 100)
     }
@@ -43,9 +44,6 @@ function BuyProduct() {
       })
       setProductLoading(false)
     }
-    console.warn(
-      "git commit -a -m 'Página buyProduct e orders finalizadas (Deixar um pequeno comentário)'"
-    )
   }, [products])
 
   if (productNotFound) {

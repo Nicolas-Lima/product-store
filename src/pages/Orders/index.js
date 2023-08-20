@@ -1,32 +1,50 @@
-import { useContext } from 'react'
+import { useContext, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { StoreContext } from '../../contexts/store'
-import { AuthContext } from '../../contexts/auth'
+
+import ModalOrderInfo, {
+  toggleModalOrderInfo
+} from '../../components/ModalOrderInfo'
+import PurchasedProduct from '../../components/PurchasedProduct'
 
 import Nav from '../../components/Nav'
 
 function Orders() {
   const { userPurchasedProducts } = useContext(StoreContext)
-  const { userSigned } = useContext(AuthContext)
+
+  const modalInfoRef = useRef(null)
+  const [modalInfoIsOpen, setModalInfoIsOpen] = useState(false)
+  const [currentOrderInfo, setCurrentOrderInfo] = useState(null)
+
+  const handleToggleModalInfo = ({ product }) => {
+    toggleModalOrderInfo({
+      product,
+      modalInfoRef,
+      modalInfoIsOpen,
+      setModalInfoIsOpen
+    })
+  }
 
   return (
     <>
+      <ModalOrderInfo
+        modalInfoRef={modalInfoRef}
+        modalInfoIsOpen={modalInfoIsOpen}
+        setModalInfoIsOpen={setModalInfoIsOpen}
+        currentOrderInfo={currentOrderInfo}
+      />
+
       <Nav />
       <main className="container mt-4">
         {userPurchasedProducts?.length > 0 ? (
-          <>
-            {/* Purchased Product Component */}
-            {userPurchasedProducts.map(purchasedProduct => (
-              <>
-                {purchasedProduct.productName} {"<=>"}{' '}
-                {purchasedProduct.trackingId} <br />
-                <div className="mb-4">
-                  <hr />
-                </div>
-              </>
-            ))}
-            {/* Purchased Product Component */}
-          </>
+          userPurchasedProducts?.map((purchasedProduct, index) => (
+            <PurchasedProduct
+              product={purchasedProduct}
+              handleToggleModalInfo={handleToggleModalInfo}
+              setCurrentOrderInfo={setCurrentOrderInfo}
+              key={index}
+            />
+          ))
         ) : (
           <h1 className="text-center text-secondary">
             <span className="d-block">

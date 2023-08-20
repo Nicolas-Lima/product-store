@@ -1,9 +1,13 @@
-import FormRegister from "../../components/RegisterForm"
+import FormRegister from '../../components/RegisterForm'
+import Nav from '../../components/Nav'
 
 function Register() {
   return (
-    <FormRegister />
-  );
+    <>
+      <Nav />
+      <FormRegister />
+    </>
+  )
 }
 
-export default Register;
+export default Register

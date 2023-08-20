@@ -1,0 +1,19 @@
+fieldset input[type='radio'] {
+  color: #fff !important;
+}
+
+fieldset input[type='radio']:disabled:not(.checked) {
+  background-color: #fff !important;
+  border-color: #a2afb9 !important;
+  border-width: 2px;
+}
+
+.checked {
+  background-color: rgba(194, 114, 48, 0.8) !important;
+  border-color: rgba(194, 114, 48, 0.8) !important;
+  opacity: 1 !important;
+}
+
+.slash {
+  margin: 0px 1.8px;
+}

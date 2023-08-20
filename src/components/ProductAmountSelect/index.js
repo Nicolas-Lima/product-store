@@ -7,7 +7,9 @@ function ProductAmountSelect({
 }) {
   const generateOptionsForAmountSelect = () => {
     const amountArray = [...Array(maxPurchaseUnits - minPurchaseUnits + 1)]
-    amountArray.length = productStock
+    if (productStock < maxPurchaseUnits) {
+      amountArray.length = productStock
+    }
     return amountArray.map((value, index) => {
       const optionValue = index + minPurchaseUnits
       return (

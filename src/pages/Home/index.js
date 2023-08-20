@@ -1,26 +1,51 @@
-import { useState, useContext } from "react";
-import Nav from "../../components/Nav";
-import Products from "../../components/Products";
-import { StoreContext } from "../../contexts/store";
-import { BsSearch } from "react-icons/bs";
-import "./home.css";
+import { useState, useContext, useEffect, useRef } from 'react'
+import Nav from '../../components/Nav'
+import Products from '../../components/Products'
+import { StoreContext } from '../../contexts/store'
+import { BsSearch } from 'react-icons/bs'
+import './home.css'
 
 function Home() {
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('')
+  const [lastSearch, setLastSearch] = useState(null)
 
-  const { productsLoading, searchProducts, setProduct } =
-    useContext(StoreContext);
+  const searchInputRef = useRef(null)
+
+  const { productsLoading, searchProducts } = useContext(StoreContext)
 
   const handleSearch = () => {
-    searchProducts(search);
-  };
+    if (search !== lastSearch) {
+      searchProducts(search)
+      setLastSearch(search)
+    }
+  }
+
+  useEffect(() => {
+    const handleKeyDown = e => {
+      const searchInputIsFocused =
+        document.activeElement === searchInputRef.current
+
+      const key = e.key
+
+      if (key === 'Enter') {
+        if (searchInputIsFocused) {
+          handleSearch()
+        }
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [handleSearch])
 
   return (
     <>
       <Nav />
       <main className="container">
         <div
-          className={`searchContainer ${productsLoading && "opacity-0"}`}>
+          className={`searchContainer ${productsLoading && 'opacity-0'}`}>
           <input
             className="mt-4"
             type="search"
@@ -28,6 +53,7 @@ function Home() {
             value={search}
             onChange={e => setSearch(e.target.value)}
             data-theme="light"
+            ref={searchInputRef}
           />
           {!productsLoading && (
             <button
@@ -40,7 +66,7 @@ function Home() {
         <Products />
       </main>
     </>
-  );
+  )
 }
 
-export default Home;
+export default Home
