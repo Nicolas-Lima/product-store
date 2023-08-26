@@ -38,6 +38,8 @@ const productAlreadyInList = (productUid, userSigned, userList) => {
       list.filter(product => product.id === productUid).length > 0
     return alreadyInList
   }
+
+  return false
 }
 
 const productAlreadyInCart = (productUid, cart) => {
@@ -46,6 +48,8 @@ const productAlreadyInCart = (productUid, cart) => {
       cart.filter(product => product.id === productUid).length > 0
     return alreadyInCart
   }
+
+  return false
 }
 
 export {

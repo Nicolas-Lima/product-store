@@ -71,12 +71,12 @@ function AuthProvider({ children }) {
     const userUid = user?.uid
     try {
       const userRef = doc(db, 'users', userUid)
-
       await updateDoc(userRef, updatedInfo)
-      setUser({
-        ...user,
+
+      setUser(prevUser => ({
+        ...prevUser,
         ...updatedInfo
-      })
+      }))
     } catch (error) {}
   }
   async function signIn(email, password) {

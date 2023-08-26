@@ -74,7 +74,7 @@ function ProductInfo({ product }) {
                     amount
                   }}
                 />
-                {!isProductAlreadyInCart && (
+                {!isProductAlreadyInCart && userSigned && (
                   <button onClick={handleAddProductToCart}>
                     Adicionar ao carrinho
                   </button>

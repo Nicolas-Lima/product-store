@@ -21,7 +21,7 @@ function ProductContent({
     removeProductFromList,
     removeProductFromCart,
     addProductToCart,
-    addProductToList,
+    addProductToList
   } = useContext(StoreContext)
   const { userSigned, user } = useContext(AuthContext)
   const [removingProduct, setRemovingProduct] = useState(false)
@@ -90,7 +90,7 @@ function ProductContent({
           {isListPage && (
             <div className="list-actions d-flex flex-column mt-3">
               <BuyProductButton productId={product.id} />
-              {!isProductAlreadyInCart && (
+              {!isProductAlreadyInCart && userSigned && (
                 <button onClick={handleAddProductToCart}>
                   Adicionar ao carrinho
                 </button>

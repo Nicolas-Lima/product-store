@@ -1,17 +1,17 @@
-import { useContext, useState, useEffect } from "react";
-import { StoreContext } from "../../contexts/store";
+import { useContext, useState, useEffect } from 'react'
+import { StoreContext } from '../../contexts/store'
 import { AuthContext } from '../../contexts/auth'
 
-import Nav from "../../components/Nav";
-import { sliceProductsIntoGroups } from "../../utils/productsUtils";
-import ProductsGridRenderer from "../../components/ProductsGridRenderer";
+import Nav from '../../components/Nav'
+import { sliceProductsIntoGroups } from '../../utils/productsUtils'
+import ProductsGridRenderer from '../../components/ProductsGridRenderer'
 
 function List() {
-  const { userList, guestList } = useContext(StoreContext);
+  const { userList, guestList } = useContext(StoreContext)
   const { userSigned } = useContext(AuthContext)
   const [slicedProductsIntoGroups, setSlicedProductsIntoGroups] = useState(
     []
-  ); // We have to divide the products into groups of 3 so that the PICO.css grid to work better.
+  ) // We have to divide the products into groups of 3 so that the PICO.css grid to work better.
 
   useEffect(() => {
     if (userSigned) {
@@ -19,7 +19,7 @@ function List() {
     } else {
       setSlicedProductsIntoGroups(sliceProductsIntoGroups(guestList))
     }
-  }, [userList, guestList, userSigned]);
+  }, [userList, guestList, userSigned])
 
   return (
     <>
@@ -45,4 +45,4 @@ function List() {
   )
 }
 
-export default List;
+export default List

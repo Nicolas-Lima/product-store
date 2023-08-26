@@ -44,7 +44,7 @@ function RoutesApp() {
         }
       />
       <Route
-        path="/buyProduct/:id/:productAmount"
+        path="/buyProduct/:id/:productAmount?"
         element={
           <Private>
             <BuyProduct />

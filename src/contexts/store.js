@@ -55,6 +55,109 @@ function StoreProvider({ children }) {
     })
   }
 
+  const updateProductsOrderStatus = async () => {
+    const userPurchasedProducts = user?.purchasedProducts
+
+    const getUpdatedOrderStatus = ({
+      purchaseTimestamp,
+      updatedDay,
+      orderStatus,
+      statusIndex
+    }) => {
+      const purchaseDate = new Date(purchaseTimestamp)
+      const [purchaseMonth, purchaseYear] = [
+        purchaseDate.getMonth(),
+        purchaseDate.getFullYear()
+      ]
+
+      const daysInAMonth = 30
+
+      if (updatedDay > daysInAMonth) {
+        const lastStatusMonth =
+          orderStatus[statusIndex - 1]?.done?.date?.month
+
+        let updatedYear = purchaseYear
+        let updatedMonth = lastStatusMonth + 1
+
+        if (lastStatusMonth + 1 > 12) {
+          updatedYear = purchaseYear + 1
+          updatedMonth = 1
+        }
+
+        updatedDay = updatedDay - 30
+
+        return {
+          value: true,
+          date: {
+            day: updatedDay,
+            month: updatedMonth,
+            year: updatedYear
+          }
+        }
+      }
+
+      return {
+        value: true,
+        date: {
+          day: updatedDay,
+          month: purchaseMonth,
+          year: purchaseYear
+        }
+      }
+    }
+
+    const updatedPurchasedProducts =
+      Array.isArray(userPurchasedProducts) &&
+      userPurchasedProducts?.map(purchasedProduct => {
+        const updatedOrderStatus = purchasedProduct?.orderStatus
+
+        const purchaseTimestamp = purchasedProduct?.timestamp
+        const purchaseDay = new Date(purchaseTimestamp).getDate()
+        const currentDay = new Date().getDate()
+
+        if (currentDay - 2 >= purchaseDay && !updatedOrderStatus[1].done) {
+          updatedOrderStatus[1].done = getUpdatedOrderStatus({
+            purchaseTimestamp,
+            updatedDay: purchaseDay + 2,
+            orderStatus: purchasedProduct?.orderStatus,
+            statusIndex: 1
+          })
+        }
+
+        if (currentDay - 3 >= purchaseDay && !updatedOrderStatus[2].done) {
+          updatedOrderStatus[2].done = getUpdatedOrderStatus({
+            purchaseTimestamp,
+            updatedDay: purchaseDay + 3,
+            orderStatus: purchasedProduct?.orderStatus,
+            statusIndex: 2
+          })
+        }
+
+        if (
+          currentDay - 10 >= purchaseDay &&
+          !updatedOrderStatus[3].done
+        ) {
+          updatedOrderStatus[3].done = getUpdatedOrderStatus({
+            purchaseTimestamp,
+            updatedDay: purchaseDay + 10,
+            orderStatus: purchasedProduct?.orderStatus,
+            statusIndex: 3
+          })
+        }
+
+        return {
+          ...purchasedProduct,
+          updatedOrderStatus
+        }
+      })
+
+    const userRef = doc(db, 'users', userUid)
+
+    await updateDoc(userRef, {
+      purchasedProducts: updatedPurchasedProducts
+    })
+  }
+
   useEffect(() => {
     const loadUserInfo = async () => {
       const userRef = doc(db, 'users', userUid)
@@ -71,115 +174,6 @@ function StoreProvider({ children }) {
   }, [])
 
   useEffect(() => {
-    const updateProductsOrderStatus = async () => {
-      const userPurchasedProducts = user?.purchasedProducts
-
-      const getUpdatedOrderStatus = ({
-        purchaseTimestamp,
-        updatedDay,
-        orderStatus,
-        statusIndex
-      }) => {
-        const purchaseDate = new Date(purchaseTimestamp)
-        const [purchaseMonth, purchaseYear] = [
-          purchaseDate.getMonth(),
-          purchaseDate.getFullYear()
-        ]
-
-        const daysInAMonth = 30
-
-        if (updatedDay > daysInAMonth) {
-          const lastStatusMonth =
-            orderStatus[statusIndex - 1]?.done?.date?.month
-
-          let updatedYear = purchaseYear
-          let updatedMonth = lastStatusMonth + 1
-
-          if (lastStatusMonth + 1 > 12) {
-            updatedYear = purchaseYear + 1
-            updatedMonth = 1
-          }
-
-          updatedDay = updatedDay - 30
-
-          return {
-            value: true,
-            date: {
-              day: updatedDay,
-              month: updatedMonth,
-              year: updatedYear
-            }
-          }
-        }
-
-        return {
-          value: true,
-          date: {
-            day: updatedDay,
-            month: purchaseMonth,
-            year: purchaseYear
-          }
-        }
-      }
-
-      const updatedPurchasedProducts =
-        Array.isArray(userPurchasedProducts) &&
-        userPurchasedProducts?.map(purchasedProduct => {
-          const updatedOrderStatus = purchasedProduct?.orderStatus
-
-          const purchaseTimestamp = purchasedProduct?.timestamp
-          const purchaseDay = new Date(purchaseTimestamp).getDate()
-          const currentDay = new Date().getDate()
-
-          if (
-            currentDay - 2 >= purchaseDay &&
-            !updatedOrderStatus[1].done
-          ) {
-            updatedOrderStatus[1].done = getUpdatedOrderStatus({
-              purchaseTimestamp,
-              updatedDay: purchaseDay + 2,
-              orderStatus: purchasedProduct?.orderStatus,
-              statusIndex: 1
-            })
-          }
-
-          if (
-            currentDay - 3 >= purchaseDay &&
-            !updatedOrderStatus[2].done
-          ) {
-            updatedOrderStatus[2].done = getUpdatedOrderStatus({
-              purchaseTimestamp,
-              updatedDay: purchaseDay + 3,
-              orderStatus: purchasedProduct?.orderStatus,
-              statusIndex: 2
-            })
-          }
-
-          if (
-            currentDay - 10 >= purchaseDay &&
-            !updatedOrderStatus[3].done
-          ) {
-            updatedOrderStatus[3].done = getUpdatedOrderStatus({
-              purchaseTimestamp,
-              updatedDay: purchaseDay + 10,
-              orderStatus: purchasedProduct?.orderStatus,
-              statusIndex: 3
-            })
-          }
-
-          return {
-            ...purchasedProduct,
-            updatedOrderStatus
-          }
-        })
-
-      const userRef = doc(db, 'users', userUid)
-
-      await updateDoc(userRef, {
-        purchasedProducts: updatedPurchasedProducts
-      })
-    }
-
     if (userSigned) {
       updateProductsOrderStatus()
     }
@@ -503,6 +497,22 @@ function StoreProvider({ children }) {
     updateProduct(productId, {
       stock: updatedProductStock
     })
+
+    const isProductInUserList = productAlreadyInList(
+      productId,
+      userSigned,
+      user?.list
+    )
+
+    const isProductInCart = productAlreadyInCart(productId, user?.cart)
+
+    if (isProductInUserList) {
+      await removeProductFromList(productId)
+    }
+
+    if (isProductInCart) {
+      await removeProductFromCart(productId)
+    }
 
     return {
       status: 'success'

@@ -11,7 +11,9 @@ import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 
 function ProductOrderingSection({ product, productPrice, productAmount }) {
-  const [amount, setAmount] = useState(parseInt(productAmount))
+  const [amount, setAmount] = useState(
+    parseInt(productAmount) || product?.minPurchaseUnits
+  )
 
   const [totalPrice, setTotalPrice] = useState(0)
   const { buyProduct } = useContext(StoreContext)
