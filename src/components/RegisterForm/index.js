@@ -86,7 +86,11 @@ function RegisterForm() {
     }
 
     setRegistering(true)
-    const { emailError, passwordError } = await signUp(email, password)
+    const { emailError, passwordError } = await signUp(
+      email,
+      password,
+      fullName
+    )
     setEmailError(emailError)
     setPasswordError(passwordError)
     setRegistering(false)

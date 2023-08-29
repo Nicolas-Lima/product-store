@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react'
+import { toast } from 'react-toastify'
 import { AuthContext } from './auth'
 import { db } from '../services/firebaseConnection'
 import {
@@ -303,6 +304,9 @@ function StoreProvider({ children }) {
       await updateUserInfo({
         list: updatedList
       })
+      toast.success('Produto adicionado à lista!', {
+        toastId: `productAddedToList-${productUid}`
+      })
     } else {
       const savedList =
         JSON.parse(localStorage.getItem('@guestData'))?.list ?? []
@@ -310,6 +314,9 @@ function StoreProvider({ children }) {
       const updatedList = [...savedList, selectedProduct]
       updateGuestInfo({
         list: updatedList
+      })
+      toast.success('Produto adicionado à lista!', {
+        toastId: `productAddedToList-${productUid}`
       })
     }
   }
@@ -357,6 +364,10 @@ function StoreProvider({ children }) {
     const updatedCart = [...userCart, selectedProduct]
     await updateUserInfo({
       cart: updatedCart
+    })
+    toast.success('Produto adicionado ao carrinho!', {
+      toastId: `productAddedToCart-${productUid}`,
+      autoClose: 1000
     })
   }
 

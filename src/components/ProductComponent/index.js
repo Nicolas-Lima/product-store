@@ -1,4 +1,5 @@
 import { useContext, useState } from 'react'
+import { toast } from 'react-toastify'
 import { StoreContext } from '../../contexts/store'
 import { AuthContext } from '../../contexts/auth'
 import StockMessage from '../StockMessage'
@@ -51,12 +52,18 @@ function ProductContent({
     setRemovingProduct(true)
     await removeProductFromList(product.id)
     setTimeout(() => setRemovingProduct(false), 500)
+    toast.success('Produto removido do carrinho!', {
+      toastId: `productRemovedFromCart-${product.id}`
+    })
   }
 
   const handleRemoveProductFromCart = async () => {
     setRemovingProduct(true)
     await removeProductFromCart(product.id)
     setTimeout(() => setRemovingProduct(false), 500)
+    toast.success('Produto removido do carrinho!', {
+      toastId: `productRemovedFromCart-${product.id}`
+    })
   }
 
   return (

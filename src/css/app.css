@@ -39,6 +39,11 @@ html,
   padding-top: 4rem !important;
 }
 
+.py-0-8rem {
+  padding-top: 0.8rem !important;
+  padding-bottom: 0.8rem !important;
+}
+
 .custom-link {
   text-decoration: unset !important;
   color: rgb(65, 84, 98);
@@ -48,6 +53,11 @@ html,
   color: rgb(65, 84, 98);
 }
 
+.disabled-input:hover {
+  cursor: not-allowed !important;
+  pointer-events: visible !important;
+}
+
 form#register input,
 form#login input {
   background-image: unset !important;
@@ -55,6 +65,6 @@ form#login input {
 
 /* React Toastify */
 
-.Toastify  button {
+.Toastify button {
   width: auto !important;
 }

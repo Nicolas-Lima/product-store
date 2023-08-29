@@ -1,4 +1,5 @@
 import { useState, useEffect, createContext } from 'react'
+import { toast } from 'react-toastify'
 import Loading from '../components/LoadingSpinner'
 import { useNavigate } from 'react-router-dom'
 import { auth, db } from '../services/firebaseConnection'
@@ -104,7 +105,7 @@ function AuthProvider({ children }) {
     return returnObject
   }
 
-  async function signUp(email, password) {
+  async function signUp(email, password, fullName) {
     const returnObject = {
       emailError: '',
       passwordError: ''
@@ -124,7 +125,7 @@ function AuthProvider({ children }) {
           creditCardsInfo: [],
           profileConfiguration: {
             imgUrl: '',
-            name: ''
+            fullName: fullName
           }
         }
         setUser(newUser)
@@ -132,6 +133,9 @@ function AuthProvider({ children }) {
         const userRef = doc(db, 'users', uid)
         await setDoc(userRef, newUser)
 
+        toast.success('Registrado com sucesso!', {
+          toastId: 'registered'
+        })
         navigate('/')
       })
       .catch(error => {
@@ -146,6 +150,9 @@ function AuthProvider({ children }) {
   function logout() {
     localStorage.removeItem('@userData')
     setUser(false)
+    toast.success('Você foi desconectado com sucesso!', {
+      toastId: 'loggedOut'
+    })
   }
 
   function saveUserLoginInfo(email, uid) {

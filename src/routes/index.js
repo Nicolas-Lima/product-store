@@ -9,6 +9,7 @@ import Cart from '../pages/Cart'
 import Orders from '../pages/Orders'
 import BuyProduct from '../pages/BuyProduct'
 import TrackOrder from '../pages/TrackOrder'
+import Settings from '../pages/Settings'
 import Private from './Private'
 
 import FormProvider from '../contexts/form'
@@ -67,7 +68,14 @@ function RoutesApp() {
           </Private>
         }
       />
-
+      <Route
+        path="/settings"
+        element={
+          <Private>
+            <Settings />
+          </Private>
+        }
+      />
       <Route path="*" element={<Error />} />
     </Routes>
   )

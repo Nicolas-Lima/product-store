@@ -1,0 +1,40 @@
+.profilePhoto {
+  border-radius: 50%;
+  width: 95px;
+  height: 95px;
+  object-fit: cover;
+  margin-bottom: 1em;
+}
+
+.profildsaePhoto {
+  margin-bottom: 1em;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.label-avatar {
+  width: 280px;
+  height: 280px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  cursor: pointer;
+}
+
+.label-avatar input {
+  display: none;
+}
+
+.label-avatar span {
+  z-index: 99;
+  position: absolute;
+  opacity: 0.7;
+  transition: all 0.5s;
+}
+
+.label-avatar span:hover,
+.label-avatar span:focus {
+  opacity: 1;
+  transform: scale(1.4);
+}

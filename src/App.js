@@ -16,7 +16,7 @@ function App() {
   return (
     <BrowserRouter>
       <div>
-        <ToastContainer />
+        <ToastContainer autoClose={1000} pauseOnHover={true} />
       </div>
       <AuthProvider>
         <StoreProvider>
