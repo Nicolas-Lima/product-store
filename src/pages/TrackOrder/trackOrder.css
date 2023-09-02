@@ -17,3 +17,9 @@ fieldset input[type='radio']:disabled:not(.checked) {
 .slash {
   margin: 0px 1.8px;
 }
+
+@media screen and (min-width: 992px) {
+  .orderInfo {
+    margin-bottom: 1.8rem !important;
+  }
+}

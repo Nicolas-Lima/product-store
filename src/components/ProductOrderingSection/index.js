@@ -63,6 +63,12 @@ function ProductOrderingSection({ product, productPrice, productAmount }) {
   }
 
   useEffect(() => {
+    if (amount > product?.maxPurchaseUnits) {
+      setAmount(product?.minPurchaseUnits)
+    }
+  }, [])
+
+  useEffect(() => {
     setTotalPrice(productPrice * amount)
   }, [productPrice, amount])
 

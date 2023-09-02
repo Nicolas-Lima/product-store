@@ -13,7 +13,13 @@ function ProductReviews({ reviews }) {
           </header>
           <div className="d-flex flex-column">
             {reviews.map((review, reviewIndex) => {
-              const { personName, avatarUrl, comment, rate } = review
+              const {
+                reviewerName,
+                reviewerAvatarUrl: avatarUrl,
+                comment,
+                rate,
+                edited
+              } = review
 
               return (
                 <div
@@ -29,12 +35,18 @@ function ProductReviews({ reviews }) {
                     ) : (
                       <BsPersonCircle className="reviewerPhoto" />
                     )}
-                    <span>{personName}</span>
+                    <span>{reviewerName}</span>
                   </div>
 
                   <div className="review mt-3">
                     <span className="message">{comment}</span>
+
                     <StarRating rate={rate} />
+                  </div>
+                  <div className="reviewDate mt-3">
+                    <p className="m-0">
+                      {edited ? 'Editado' : 'Avaliado'} em 12/07/2022
+                    </p>
                   </div>
                 </div>
               )

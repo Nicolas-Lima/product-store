@@ -6,13 +6,24 @@ import StarRating from '../StarRating'
 function PurchasedProduct({
   product,
   handleToggleModalInfo,
+  handleToggleModalReviewProduct,
   setCurrentOrderInfo
 }) {
-  const { title, seller, imgUrl, description, price, rating, trackingId } =
-    product
+  const {
+    canProvideReview,
+    orderStatus,
+    title,
+    seller,
+    imgUrl,
+    description,
+    price,
+    rating,
+    trackingId
+  } = product
   const { dollars, cents } = price
 
   const locationOrigin = window.location.origin
+  const productDelivered = orderStatus[3].done !== false
 
   return (
     <article>
@@ -46,13 +57,27 @@ function PurchasedProduct({
             Rastrear encomenda
           </Link>
 
+          <h1 className="text-danger">
+            canProvideReview && productDelivered
+          </h1>
+          {true && (
+            <button
+              className="btn-yellow"
+              onClick={() => {
+                handleToggleModalReviewProduct()
+                setCurrentOrderInfo(product)
+              }}>
+              Avaliar o produto
+            </button>
+          )}
+
           <button
             className="btn-grey"
             onClick={() => {
-              handleToggleModalInfo({ product })
+              handleToggleModalInfo()
               setCurrentOrderInfo(product)
             }}>
-            Ver mais informações
+            Mais informações
           </button>
         </div>
       </div>

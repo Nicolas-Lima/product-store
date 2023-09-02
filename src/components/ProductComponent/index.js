@@ -52,8 +52,8 @@ function ProductContent({
     setRemovingProduct(true)
     await removeProductFromList(product.id)
     setTimeout(() => setRemovingProduct(false), 500)
-    toast.success('Produto removido do carrinho!', {
-      toastId: `productRemovedFromCart-${product.id}`
+    toast.success('Produto removido da lista!', {
+      toastId: `productRemovedFromList-${product.id}`
     })
   }
 

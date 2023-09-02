@@ -4,6 +4,7 @@ import './starRating.css'
 
 function StarRating({ rate }) {
   const starRange = [1, 2, 3, 4, 5]
+
   return (
     <div className="rate mt-2">
       {starRange.map((number, starIndex) => {
@@ -19,11 +20,7 @@ function StarRating({ rate }) {
           starPng = <BsStarHalf />
         }
 
-        return (
-          <Fragment key={`star-${starIndex}`}>
-            {starPng}
-          </Fragment>
-        )
+        return <Fragment key={`star-${starIndex}`}>{starPng}</Fragment>
       })}
     </div>
   )

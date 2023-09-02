@@ -5,6 +5,11 @@ import { StoreContext } from '../../contexts/store'
 import ModalOrderInfo, {
   toggleModalOrderInfo
 } from '../../components/ModalOrderInfo'
+
+import ModalReviewProduct, {
+  toggleModalReviewProduct
+} from '../../components/ModalReviewProduct'
+
 import PurchasedProduct from '../../components/PurchasedProduct'
 
 import Nav from '../../components/Nav'
@@ -13,15 +18,27 @@ function Orders() {
   const { userPurchasedProducts } = useContext(StoreContext)
 
   const modalInfoRef = useRef(null)
+  const modalReviewProductRef = useRef(null)
+
   const [modalInfoIsOpen, setModalInfoIsOpen] = useState(false)
   const [currentOrderInfo, setCurrentOrderInfo] = useState(null)
 
-  const handleToggleModalInfo = ({ product }) => {
+  const [modalReviewProductIsOpen, setModalReviewProductIsOpen] =
+    useState(false)
+
+  const handleToggleModalInfo = () => {
     toggleModalOrderInfo({
-      product,
       modalInfoRef,
       modalInfoIsOpen,
       setModalInfoIsOpen
+    })
+  }
+
+  const handleToggleModalReviewProduct = () => {
+    toggleModalReviewProduct({
+      modalReviewProductRef,
+      modalReviewProductIsOpen,
+      setModalReviewProductIsOpen
     })
   }
 
@@ -34,6 +51,13 @@ function Orders() {
         currentOrderInfo={currentOrderInfo}
       />
 
+      <ModalReviewProduct
+        modalReviewProductRef={modalReviewProductRef}
+        modalReviewProductIsOpen={modalReviewProductIsOpen}
+        setModalReviewProductIsOpen={setModalReviewProductIsOpen}
+        currentOrderInfo={currentOrderInfo}
+      />
+
       <Nav />
       <main className="container mt-4">
         {userPurchasedProducts?.length > 0 ? (
@@ -41,6 +65,9 @@ function Orders() {
             <PurchasedProduct
               product={purchasedProduct}
               handleToggleModalInfo={handleToggleModalInfo}
+              handleToggleModalReviewProduct={
+                handleToggleModalReviewProduct
+              }
               setCurrentOrderInfo={setCurrentOrderInfo}
               key={index}
             />

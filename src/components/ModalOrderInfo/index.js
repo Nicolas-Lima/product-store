@@ -1,7 +1,6 @@
 import { capitalizeFirstLetter } from '../../utils/generalUtils'
 
 function toggleModalOrderInfo({
-  product,
   modalInfoRef,
   modalInfoIsOpen,
   setModalInfoIsOpen

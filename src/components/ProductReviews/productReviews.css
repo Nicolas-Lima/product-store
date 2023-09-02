@@ -11,3 +11,7 @@
 .reviewerInfo span {
   margin-left: 0.7em !important;
 }
+
+.reviewDate p {
+  font-size: 16px !important;
+}

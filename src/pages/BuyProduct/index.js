@@ -8,8 +8,6 @@ import ProductComponent from '../../components/ProductComponent'
 
 import ProductOrderingSection from '../../components/ProductOrderingSection'
 
-import { toast } from 'react-toastify'
-
 function BuyProduct() {
   const { id: productId, productAmount } = useParams()
 
@@ -45,6 +43,8 @@ function BuyProduct() {
       setProductLoading(false)
     }
   }, [products])
+
+
 
   if (productNotFound) {
     return <ErrorComponent message="Esse produto não existe!" />

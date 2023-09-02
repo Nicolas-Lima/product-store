@@ -113,10 +113,21 @@ function StoreProvider({ children }) {
         const updatedOrderStatus = purchasedProduct?.orderStatus
 
         const purchaseTimestamp = purchasedProduct?.timestamp
-        const purchaseDay = new Date(purchaseTimestamp).getDate()
-        const currentDay = new Date().getDate()
+        const purchaseDate = new Date(purchaseTimestamp)
+        const currentDate = new Date()
+        const [purchaseDay, purchaseMonth] = [
+          purchaseDate.getDate(),
+          purchaseDate.getMonth()
+        ]
+        const [currentDay, currentMonth] = [
+          currentDate.getDate(),
+          currentDate.getMonth()
+        ]
 
-        if (currentDay - 2 >= purchaseDay && !updatedOrderStatus[1].done) {
+        const daysSincePurchase =
+          30 * (currentMonth - purchaseMonth) - purchaseDay + currentDay
+
+        if (daysSincePurchase >= 2 && !updatedOrderStatus[1].done) {
           updatedOrderStatus[1].done = getUpdatedOrderStatus({
             purchaseTimestamp,
             updatedDay: purchaseDay + 2,
@@ -125,7 +136,7 @@ function StoreProvider({ children }) {
           })
         }
 
-        if (currentDay - 3 >= purchaseDay && !updatedOrderStatus[2].done) {
+        if (daysSincePurchase >= 3 && !updatedOrderStatus[2].done) {
           updatedOrderStatus[2].done = getUpdatedOrderStatus({
             purchaseTimestamp,
             updatedDay: purchaseDay + 3,
@@ -134,10 +145,7 @@ function StoreProvider({ children }) {
           })
         }
 
-        if (
-          currentDay - 10 >= purchaseDay &&
-          !updatedOrderStatus[3].done
-        ) {
+        if (daysSincePurchase >= 10 && !updatedOrderStatus[3].done) {
           updatedOrderStatus[3].done = getUpdatedOrderStatus({
             purchaseTimestamp,
             updatedDay: purchaseDay + 10,
@@ -187,7 +195,18 @@ function StoreProvider({ children }) {
     return product || null
   }
 
-  const updateProduct = (productId, updatedInfo) => {
+  const getPurchasedProductByOrderId = orderId => {
+    const purchasedProducts = user?.purchasedProducts || []
+
+    const purchasedProduct = purchasedProducts?.filter(
+      purchasedProduct => {
+        return purchasedProduct.orderId === orderId
+      }
+    )[0]
+    return purchasedProduct || null
+  }
+
+  const updateProductState = (productId, updatedInfo) => {
     const updatedProducts = products.map(product => {
       if (product.id === productId) {
         return {
@@ -199,6 +218,26 @@ function StoreProvider({ children }) {
     })
 
     setProducts(updatedProducts)
+  }
+
+  const updateProduct = async (productId, updatedInfo) => {
+    const productRef = doc(db, 'products', productId)
+    await updateDoc(productRef, updatedInfo)
+  }
+
+  const updateCanProvideReview = async (orderId, productUid) => {
+    const userPurchasedProducts = user?.purchasedProducts
+    const purchasedProduct = userPurchasedProducts.filter(
+      purchasedProduct => purchasedProduct.orderId === orderId
+    )[0]
+
+    if (purchasedProduct) {
+      purchasedProduct.canProvideReview = false
+
+      await updateUserInfo({
+        purchasedProducts: userPurchasedProducts
+      })
+    }
   }
 
   const setProduct = async product => {
@@ -443,6 +482,7 @@ function StoreProvider({ children }) {
       selectedProduct
 
     const purchasedProduct = {
+      canProvideReview: true,
       productId: selectedProduct.id,
       orderStatus: [
         {
@@ -475,6 +515,7 @@ function StoreProvider({ children }) {
         }
       ],
       trackingId,
+      orderId: trackingId,
       paymentMethod,
       cardId: cardId ?? false,
       totalPrice,
@@ -505,7 +546,7 @@ function StoreProvider({ children }) {
       stock: updatedProductStock
     })
 
-    updateProduct(productId, {
+    updateProductState(productId, {
       stock: updatedProductStock
     })
 
@@ -534,6 +575,7 @@ function StoreProvider({ children }) {
     products: products || [],
     setProducts,
     getProductById,
+    getPurchasedProductByOrderId,
     setProduct,
     searchProducts,
     addProductToList,
@@ -541,6 +583,9 @@ function StoreProvider({ children }) {
     removeProductFromList,
     removeProductFromCart,
     buyProduct,
+    updateProduct,
+    updateProductState,
+    updateCanProvideReview,
     userPurchasedProducts: user?.purchasedProducts,
     userList: user?.list,
     userCart: user?.cart,
