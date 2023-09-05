@@ -10,3 +10,15 @@
 [role="listbox"] li:hover {
   cursor: pointer;
 }
+
+aside.smallScreen {
+
+}
+
+aside.smallScreen summary {
+  font-size: 120%;
+}
+
+aside.smallScreen span {
+  font-size: 130% !important;
+}

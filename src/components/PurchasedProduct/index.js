@@ -57,10 +57,7 @@ function PurchasedProduct({
             Rastrear encomenda
           </Link>
 
-          <h1 className="text-danger">
-            canProvideReview && productDelivered
-          </h1>
-          {true && (
+          {canProvideReview && productDelivered && (
             <button
               className="btn-yellow"
               onClick={() => {
