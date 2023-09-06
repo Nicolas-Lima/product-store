@@ -50,8 +50,11 @@ function Settings() {
     const image = event.target.files[0]
 
     if (image?.type === 'image/jpeg' || image?.type === 'image/png') {
-      setImageAvatar(image)
-      setAvatarImgUrl(URL.createObjectURL(image))
+      const renamedImage = new File([image], 'avatar.jpg', {
+        type: 'image/jpeg'
+      })
+      setImageAvatar(renamedImage)
+      setAvatarImgUrl(URL.createObjectURL(renamedImage))
     } else {
       toast.error('Envie uma imagem do tipo PNG ou JPEG!')
       setImageAvatar(null)

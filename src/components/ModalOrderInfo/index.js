@@ -62,7 +62,7 @@ function ModalOrderInfo({
 
   const PurchaseTime = () => {
     const newDate = new Date(timestamp)
-    const [day, month, year, hours, minutes] = [
+    let [day, month, year, hours, minutes] = [
       newDate.getDate(),
       newDate.getMonth(),
       String(newDate.getFullYear()).slice(-2),
@@ -70,9 +70,14 @@ function ModalOrderInfo({
       newDate.getMinutes()
     ]
 
+    day = (day < 10 && `0${day}`) || day
+    month = (month < 10 && `0${month}`) || month
+    minutes = (minutes < 10 && `0${minutes}`) || minutes
+    hours = (hours < 10 && `0${hours}`) || hours
+
     return (
       <>
-        {day}/{month >= 10 ? month : `0${month}`}/{year}
+        {day}/{month}/{year}
         <span className="fw-normal ms-1">as</span> {hours}:{minutes}
       </>
     )

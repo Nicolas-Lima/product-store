@@ -25,6 +25,7 @@ const AuthContext = createContext({})
 
 function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
+  const [firebaseError, setFirebaseError] = useState(false)
   const [guestInfo, setGuestInfo] = useState(null)
   const [pageLoading, setPageLoading] = useState(true)
   const [loggingIn, setLoggingIn] = useState(false)
@@ -39,7 +40,7 @@ function AuthProvider({ children }) {
       const userData = snapshot.data()
       return userData
     } catch (error) {
-      return 'error'
+      setFirebaseError(true)
     }
   }
 
@@ -209,9 +210,26 @@ function AuthProvider({ children }) {
     setRegistering
   }
 
+  if (pageLoading) {
+    return <Loading />
+  }
+
+  if (firebaseError) {
+    return (
+      <div className="d-flex flex-column align-items-center mt-5 ps-3 pe-2">
+        <h1 className="text-danger fw-semibold mt-1">
+          Problema de conexão
+        </h1>
+        <h4 className="w-auto text-center fw-normal">
+          Não foi possível a comunicação com o servidor. Por favor,
+          verifique sua conexão com a internet e tente novamente.
+        </h4>
+      </div>
+    )
+  }
   return (
     <AuthContext.Provider value={contextValue}>
-      {pageLoading ? <Loading /> : children}
+      {children}
     </AuthContext.Provider>
   )
 }
