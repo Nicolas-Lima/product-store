@@ -1,4 +1,5 @@
 import { capitalizeFirstLetter } from '../../utils/generalUtils'
+import DeliveryAddress from '../DeliveryAddress'
 
 function toggleModalOrderInfo({
   modalInfoRef,
@@ -34,7 +35,8 @@ function ModalOrderInfo({
     seller,
     rating,
     totalPrice,
-    timestamp
+    timestamp,
+    deliveryAddress
   } = currentOrderInfo || {}
 
   const PaymentMethod = () => {
@@ -111,7 +113,6 @@ function ModalOrderInfo({
             <span>{amount > 1 ? 'unidades' : 'unidade'}</span>
           </div>
           <PaymentMethod />
-
           <div className="mt-3">
             <span className="fw-medium">Preço:</span>
             <span className="ms-1">
@@ -122,7 +123,6 @@ function ModalOrderInfo({
               reais
             </span>
           </div>
-
           <div className="mt-3">
             <span className="fw-medium me-1">Nome do Produto:</span>
             {productName && capitalizeFirstLetter(productName)}

@@ -1,20 +1,24 @@
-import { useContext, useState, useEffect } from 'react'
+import { useContext, useState, useEffect, useMemo, useRef } from 'react'
+import { toast } from 'react-toastify'
 import { AuthContext } from '../../contexts/auth'
-
 import { db, storage } from '../../services/firebaseConnection'
 import { doc, updateDoc } from 'firebase/firestore'
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
-
 import { BsPersonCircle, BsUpload } from 'react-icons/bs'
-
 import Nav from '../../components/Nav'
-import { toast } from 'react-toastify'
+import UpdateDeliveryAddress from '../../components/UpdateDeliveryAddress'
+import {
+  validateDeliveryAddressForm,
+  validateFullNameWithMessage
+} from '../../utils/validationUtils'
 
 import './settings.css'
 
 function Settings() {
-  const { user, updateUserInfo } = useContext(AuthContext)
+  const { user, updateUserInfo, updateDeliveryAddress } =
+    useContext(AuthContext)
 
+  const imageInputRef = useRef(null)
   const [avatarImgUrl, setAvatarImgUrl] = useState(
     user?.profileConfiguration?.imgUrl
   )
@@ -22,14 +26,106 @@ function Settings() {
   const [email, setEmail] = useState(user?.email)
   const [updatingName, setUpdatingName] = useState(false)
   const [updatingPhoto, setUpdatingPhoto] = useState(false)
+  const [updatingDeliveryAddress, setUpdatingDeliveryAddress] =
+    useState(false)
   const [fullName, setFullName] = useState(
     user?.profileConfiguration?.fullName
   )
+
+  const [deliveryAddress, setDeliveryAddress] = useState(
+    user?.deliveryAddress
+  )
+  const [newDeliveryAddress, setNewDeliveryAddress] = useState(
+    user?.deliveryAddress
+  )
+
+  const [userHasDeliveryAddress, setUserHasDeliveryAddress] =
+    useState(false)
+  const [showDeliveryAddressForm, setShowDeliveryAddressForm] =
+    useState(false)
+
+  const [deliveryAddressErrorMessages, setDeliveryAddressErrorMessages] =
+    useState({
+      city: '',
+      postalCode: '',
+      state: '',
+      streetAddress: ''
+    })
+
+  const areDeliveryAddressErrorsEmpty = useMemo(() => {
+    return Object.keys(deliveryAddressErrorMessages).every(
+      key => !deliveryAddressErrorMessages[key]
+    )
+  }, [deliveryAddressErrorMessages])
+
+  const areDeliveryAddressesEqual = useMemo(() => {
+    const areDeliveryAddressesEqual =
+      Object.keys(deliveryAddress).filter(
+        key => deliveryAddress[key] === newDeliveryAddress[key]
+      ).length === Object.keys(deliveryAddress).length
+    return areDeliveryAddressesEqual
+  }, [newDeliveryAddress, deliveryAddress])
+
+  const hasUserModifiedData = useMemo(() => {
+    return (
+      imageAvatar != null ||
+      user?.profileConfiguration?.fullName !== fullName ||
+      !areDeliveryAddressesEqual
+    )
+  }, [imageAvatar, fullName, user, areDeliveryAddressesEqual])
+
+  const fullNameErrorMessage = useMemo(() => {
+    const { errorMessage } = validateFullNameWithMessage(fullName)
+    return errorMessage
+  }, [fullName])
+
+  useEffect(() => {
+    const { errorMessages: deliveryAddressErrorMessages } =
+      validateDeliveryAddressForm(newDeliveryAddress)
+
+    setDeliveryAddressErrorMessages(deliveryAddressErrorMessages)
+  }, [
+    imageAvatar,
+    fullName,
+    user,
+    areDeliveryAddressesEqual,
+    newDeliveryAddress
+  ])
+
+  useEffect(() => {
+    const userHasDeliveryAddress = Object.keys(deliveryAddress).every(
+      key => !!deliveryAddress[key] === true
+    )
+    setUserHasDeliveryAddress(userHasDeliveryAddress)
+  }, [deliveryAddress])
+
+  useEffect(() => {
+    const handleBeforeUnload = event => {
+      if (hasUserModifiedData) {
+        event.preventDefault()
+      }
+    }
+
+    window.addEventListener('beforeunload', handleBeforeUnload)
+
+    return () =>
+      window.removeEventListener('beforeunload', handleBeforeUnload)
+  }, [
+    areDeliveryAddressesEqual,
+    imageAvatar,
+    fullName,
+    user,
+    hasUserModifiedData
+  ])
 
   const handleSave = async () => {
     if (imageAvatar != null) {
       setUpdatingPhoto(true)
       handleUpload()
+    }
+
+    if (!areDeliveryAddressErrorsEmpty) {
+      return
     }
 
     if (user?.profileConfiguration?.fullName !== fullName) {
@@ -44,6 +140,30 @@ function Settings() {
       toast.success('Nome atualizado com sucesso!')
       setUpdatingName(false)
     }
+
+    if (!areDeliveryAddressesEqual) {
+      const handleUpdateDeliveryAddress = async () => {
+        setUpdatingDeliveryAddress(true)
+        setShowDeliveryAddressForm(false)
+
+        await updateDeliveryAddress(newDeliveryAddress)
+        setUpdatingDeliveryAddress(false)
+        setDeliveryAddress(newDeliveryAddress)
+        toast.success('Endereço de entrega atualizado com sucesso!')
+      }
+
+      handleUpdateDeliveryAddress()
+    }
+  }
+
+  const handleCancelChanges = () => {
+    imageInputRef.current.value = null
+
+    setImageAvatar(null)
+    setAvatarImgUrl(user?.profileConfiguration?.imgUrl)
+    setEmail(user?.email)
+    setFullName(user?.profileConfiguration?.fullName)
+    setNewDeliveryAddress(user?.deliveryAddress)
   }
 
   function handleFile(event) {
@@ -55,8 +175,9 @@ function Settings() {
       })
       setImageAvatar(renamedImage)
       setAvatarImgUrl(URL.createObjectURL(renamedImage))
-    } else {
+    } else if (image?.type) {
       toast.error('Envie uma imagem do tipo PNG ou JPEG!')
+      imageInputRef.current.value = ''
       setImageAvatar(null)
       return
     }
@@ -111,6 +232,7 @@ function Settings() {
                 id="avatarUpload"
                 accept="image/*"
                 onChange={handleFile}
+                ref={imageInputRef}
               />
               <br />
               {avatarImgUrl ? (
@@ -136,6 +258,19 @@ function Settings() {
               />
             </label>
           </div>
+          <div className="mb-3 mt-0 text-danger">
+            {fullNameErrorMessage && fullNameErrorMessage}
+          </div>
+          <UpdateDeliveryAddress
+            userHasDeliveryAddress={userHasDeliveryAddress}
+            deliveryAddress={deliveryAddress}
+            updatingDeliveryAddress={updatingDeliveryAddress}
+            setNewDeliveryAddress={setNewDeliveryAddress}
+            newDeliveryAddress={newDeliveryAddress}
+            showDeliveryAddressForm={showDeliveryAddressForm}
+            setShowDeliveryAddressForm={setShowDeliveryAddressForm}
+            deliveryAddressErrorMessages={deliveryAddressErrorMessages}
+          />
           <div className="d-flex align-items-center w-100 pe-2 ps-3 rounded mb-3 mt-1">
             <label htmlFor="email" className="w-100">
               E-mail
@@ -148,7 +283,7 @@ function Settings() {
               />
             </label>
           </div>
-          {updatingPhoto || updatingName ? (
+          {updatingPhoto || updatingName || updatingDeliveryAddress ? (
             <button
               className="w-auto align-self-start mt-4 ms-1 ms-md-3 px-3 py-2 secondary disabled-input"
               disabled
@@ -156,11 +291,12 @@ function Settings() {
               Salvando...
             </button>
           ) : (
-            <>
-              {imageAvatar != null ||
-              user?.profileConfiguration?.fullName !== fullName ? (
+            <div className="d-flex align-self-start">
+              {hasUserModifiedData &&
+              !fullNameErrorMessage &&
+              areDeliveryAddressErrorsEmpty ? (
                 <button
-                  className="w-auto align-self-start mt-4 ms-1 ms-md-3 px-3 py-2 secondary"
+                  className="mt-4 ms-1 ms-md-3 px-3 py-2 btn-green"
                   onClick={handleSave}>
                   Salvar
                 </button>
@@ -171,7 +307,14 @@ function Settings() {
                   Salvar
                 </button>
               )}
-            </>
+              {hasUserModifiedData && (
+                <button
+                  className="mt-4 ms-1 ms-md-3 px-3 py-2 btn-orange"
+                  onClick={handleCancelChanges}>
+                  Cancelar
+                </button>
+              )}
+            </div>
           )}
         </div>
       </main>

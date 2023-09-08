@@ -1,9 +1,11 @@
 import { useContext, useEffect, useState, useMemo } from 'react'
+import { Link } from 'react-router-dom'
 import { StoreContext } from '../../contexts/store'
 import { AuthContext } from '../../contexts/auth'
 import StockMessage from '../../components/StockMessage'
 import ProductAmountSelect from '../../components/ProductAmountSelect'
 import NewCreditCardForm from '../../components/NewCreditCardForm'
+import DeliveryAddress from '../DeliveryAddress'
 import { BsCreditCardFill } from 'react-icons/bs'
 
 import { useNavigate } from 'react-router-dom'
@@ -17,10 +19,17 @@ function ProductOrderingSection({ product, productPrice, productAmount }) {
 
   const [totalPrice, setTotalPrice] = useState(0)
   const { buyProduct } = useContext(StoreContext)
-  const { addNewCreditCard, creditCardsInfo } = useContext(AuthContext)
+  const { user, addNewCreditCard, creditCardsInfo } =
+    useContext(AuthContext)
   const [isAddingNewCreditCard, setIsAddingNewCreditCard] = useState(false)
   const [selectedCardIndex, setSelectedCardIndex] = useState(0)
   const [finalizingPurchase, setFinalizingPurchase] = useState(false)
+  const [deliveryAddress, setDeliveryAddress] = useState(
+    user?.deliveryAddress
+  )
+  const userHasDeliveryAddress = Object.keys(user?.deliveryAddress).every(
+    key => !!user?.deliveryAddress[key] === true
+  )
 
   const userHasCreditCard = creditCardsInfo.length > 0
   const [paymentMethod, setPaymentMethod] = useState(
@@ -40,12 +49,21 @@ function ProductOrderingSection({ product, productPrice, productAmount }) {
       return
     }
 
+    if (!userHasDeliveryAddress) {
+      toast.error('Adicione um endereço de entrega!', {
+        toastId: 'missingDeliveryAddress'
+      })
+      setFinalizingPurchase(false)
+      return
+    }
+
     const { status: purchaseStatus } = await buyProduct({
       productId: product.id,
       paymentMethod,
       cardId: creditCardsInfo[selectedCardIndex]?.id,
       totalPrice,
-      amount
+      amount,
+      deliveryAddress
     })
 
     if (purchaseStatus === 'success') {
@@ -242,17 +260,32 @@ function ProductOrderingSection({ product, productPrice, productAmount }) {
               )}
             </div>
           </div>
+          <div className="deliveryAddress border rounded px-4 p-3 mb-4">
+            {userHasDeliveryAddress ? (
+              <div className="mb-2">
+                <DeliveryAddress deliveryAddress={deliveryAddress} />
+              </div>
+            ) : (
+              <legend className="mb-3">
+                <strong>Endereço de entrega</strong>
+                <p className="text-danger mt-1 mb-0">
+                  Você não possui um endereço de entrega!
+                </p>
+              </legend>
+            )}
 
+            <Link to="/settings" className="text-success">
+              {userHasDeliveryAddress ? 'Editar' : 'Adicionar'} endereço de
+              entrega!
+            </Link>
+          </div>
           <div className="totalPrice fs-6 mb-4">
             <strong className="me-2">Preço total:</strong>
             {formattedTotalPrice}
           </div>
           <div className="actions">
             {finalizingPurchase ? (
-              <button
-                aria-busy={true}
-                className="btn-yellow"
-                onClick={handleFinalizePurchase}>
+              <button aria-busy={true} className="btn-yellow">
                 Finalizando compra...
               </button>
             ) : (

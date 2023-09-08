@@ -81,6 +81,77 @@ function validateCreditCardForm({
   return { areAllFieldsValid, errorMessages }
 }
 
+function validateDeliveryAddressForm({
+  city,
+  postalCode,
+  state,
+  streetAddress
+}) {
+  const {
+    isValid: pstalCodeIsValid,
+    errorMessage: postalCodeErrorMessage
+  } = validatePostalCodeWithMessage(postalCode)
+
+  const { isValid: cityIsValid, errorMessage: cityErrorMessage } =
+    validateCityWithMessage(city)
+
+  const { isValid: stateIsValid, errorMessage: stateErrorMessage } =
+    validateStateWithMessage(state)
+
+  const {
+    isValid: streetAddressIsValid,
+    errorMessage: streetAddressErrorMessage
+  } = validateStreetAddressWithMessage(streetAddress)
+
+  const areAllFieldsValid = [
+    pstalCodeIsValid,
+    cityIsValid,
+    stateIsValid,
+    streetAddressIsValid
+  ].reduce(
+    (areAllFieldsValid, currentField) => areAllFieldsValid && currentField,
+    true
+  )
+
+  const errorMessages = {
+    postalCode: postalCodeErrorMessage,
+    city: cityErrorMessage,
+    state: stateErrorMessage,
+    streetAddress: streetAddressErrorMessage
+  }
+
+  return { areAllFieldsValid, errorMessages }
+}
+
+function validateStreetAddressWithMessage(streetAddress) {
+  let isValid = true
+  let errorMessage = ''
+
+  const validationConditions = [
+    {
+      condition: !streetAddress,
+      errorMessage: 'Digite o logradouro!'
+    },
+    {
+      condition:
+        typeof streetAddress !== 'string' || streetAddress.trim() === '',
+      errorMessage: 'O logradouro não pode estar em branco!'
+    }
+  ]
+
+  validationConditions.forEach(condition => {
+    if (condition.condition && isValid) {
+      isValid = false
+      errorMessage = condition.errorMessage
+    }
+  })
+
+  return {
+    isValid,
+    errorMessage
+  }
+}
+
 function validateOwnerNameWithMessage(ownerName) {
   let isValid = true
   let errorMessage = ''
@@ -464,6 +535,7 @@ function getCreateAccountErrorMessage(errorCode) {
 export {
   hasValidDomain,
   validateCreditCardForm,
+  validateDeliveryAddressForm,
   validateOwnerNameWithMessage,
   validateCardNumberWithMessage,
   validateExpirationDateWithMessage,

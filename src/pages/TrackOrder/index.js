@@ -154,6 +154,29 @@ function TrackOrder() {
             })}
           </div>
         </fieldset>
+        {order?.deliveryAddress && (
+          <div className="d-flex flex-column w-100 border border-secondary border-opacity-10 p-4 pt-4 pb-3 rounded">
+            <strong>Endereço de entrega</strong>
+            <div className="d-flex flex-column mt-3">
+              <div>
+                <span className="fw-semibold">Logradouro:</span>{' '}
+                {order?.deliveryAddress.streetAddress}
+              </div>
+              <div>
+                <span className="fw-semibold">Cidade:</span>{' '}
+                {order?.deliveryAddress.city}
+              </div>
+              <div>
+                <span className="fw-semibold">Estado:</span>{' '}
+                {order?.deliveryAddress.state}
+              </div>
+              <div>
+                <span className="fw-semibold">CEP:</span>{' '}
+                {order?.deliveryAddress.postalCode}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </>
   )

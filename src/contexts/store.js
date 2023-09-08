@@ -433,7 +433,8 @@ function StoreProvider({ children }) {
     cardId,
     paymentMethod,
     totalPrice,
-    amount
+    amount,
+    deliveryAddress
   }) => {
     const selectedProduct = getProductById(productId)
     const userPurchasedProducts = user?.purchasedProducts || []
@@ -526,7 +527,8 @@ function StoreProvider({ children }) {
       seller,
       price,
       rating,
-      timestamp
+      timestamp,
+      deliveryAddress
     }
 
     const updatedPurchasedProducts = [

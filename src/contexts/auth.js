@@ -1,6 +1,7 @@
 import { useState, useEffect, createContext } from 'react'
 import { toast } from 'react-toastify'
 import Loading from '../components/LoadingSpinner'
+import FirebaseError from '../components/FirebaseError'
 import { useNavigate } from 'react-router-dom'
 import { auth, db } from '../services/firebaseConnection'
 import {
@@ -69,18 +70,40 @@ function AuthProvider({ children }) {
     }
   }, [])
 
-  const updateUserInfo = async (updatedInfo = {}) => {
+  const updateUserInfo = (updatedInfo = {}) => {
     const userUid = user?.uid
-    try {
-      const userRef = doc(db, 'users', userUid)
-      await updateDoc(userRef, updatedInfo)
+    return new Promise(async (resolve, reject) => {
+      try {
+        const userRef = doc(db, 'users', userUid)
+        await updateDoc(userRef, updatedInfo)
 
-      setUser(prevUser => ({
-        ...prevUser,
-        ...updatedInfo
-      }))
-    } catch (error) {}
+        setUser(prevUser => ({
+          ...prevUser,
+          ...updatedInfo
+        }))
+        resolve(true)
+      } catch (error) {
+        reject(false)
+      }
+    })
   }
+
+  const updateDeliveryAddress = async ({
+    city,
+    state,
+    postalCode,
+    streetAddress
+  }) => {
+    await updateUserInfo({
+      deliveryAddress: {
+        city,
+        state,
+        postalCode,
+        streetAddress
+      }
+    })
+  }
+
   async function signIn(email, password) {
     setLoggingIn(true)
 
@@ -127,6 +150,12 @@ function AuthProvider({ children }) {
           profileConfiguration: {
             imgUrl: '',
             fullName: fullName
+          },
+          deliveryAddress: {
+            streetAddress: '',
+            city: '',
+            state: '',
+            postalCode: ''
           }
         }
         setUser(newUser)
@@ -193,6 +222,7 @@ function AuthProvider({ children }) {
   const contextValue = {
     addNewCreditCard,
     updateUserInfo,
+    updateDeliveryAddress,
     userSigned: !!user,
     user,
     setUser,
@@ -215,17 +245,7 @@ function AuthProvider({ children }) {
   }
 
   if (firebaseError) {
-    return (
-      <div className="d-flex flex-column align-items-center mt-5 ps-3 pe-2">
-        <h1 className="text-danger fw-semibold mt-1">
-          Problema de conexão
-        </h1>
-        <h4 className="w-auto text-center fw-normal">
-          Não foi possível a comunicação com o servidor. Por favor,
-          verifique sua conexão com a internet e tente novamente.
-        </h4>
-      </div>
-    )
+    return <FirebaseError />
   }
   return (
     <AuthContext.Provider value={contextValue}>
