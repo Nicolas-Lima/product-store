@@ -96,10 +96,10 @@ function AuthProvider({ children }) {
   }) => {
     await updateUserInfo({
       deliveryAddress: {
-        city,
-        state,
-        postalCode,
-        streetAddress
+        city: city.trim(),
+        state: state.trim(),
+        postalCode: postalCode.trim(),
+        streetAddress: streetAddress.trim()
       }
     })
   }

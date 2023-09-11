@@ -129,7 +129,7 @@ function validateStreetAddressWithMessage(streetAddress) {
 
   const validationConditions = [
     {
-      condition: !streetAddress,
+      condition: !streetAddress.trim(),
       errorMessage: 'Digite o logradouro!'
     },
     {
@@ -158,7 +158,7 @@ function validateOwnerNameWithMessage(ownerName) {
 
   const validationConditions = [
     {
-      condition: !ownerName,
+      condition: !ownerName.trim(),
       errorMessage: 'Digite o nome escrito no cartão!'
     },
     {
@@ -186,7 +186,7 @@ function validateCardNumberWithMessage(cardNumber) {
 
   const validationConditions = [
     {
-      condition: !cardNumber,
+      condition: !cardNumber.trim(),
       errorMessage: 'Digite o número do cartão!'
     },
     {
@@ -215,7 +215,7 @@ function validateExpirationDateWithMessage(expirationDate) {
 
   const validationConditions = [
     {
-      condition: !expirationDate,
+      condition: !expirationDate.trim(),
       errorMessage: 'A data de validade é obrigatória.'
     },
     {
@@ -244,7 +244,7 @@ function validateCVVWithMessage(cvv) {
 
   const validationConditions = [
     {
-      condition: !cvv,
+      condition: !cvv.trim(),
       errorMessage: 'O CVV é obrigatório.'
     },
     {
@@ -272,7 +272,7 @@ function validateBillingAddressWithMessage(billingAddress) {
 
   const validationConditions = [
     {
-      condition: !billingAddress,
+      condition: !billingAddress.trim(),
       errorMessage: 'O endereço de cobrança é obrigatório.'
     }
   ]
@@ -296,7 +296,7 @@ function validatePostalCodeWithMessage(postalCode) {
 
   const validationConditions = [
     {
-      condition: !postalCode,
+      condition: !postalCode.trim(),
       errorMessage: 'O CEP é obrigatório.'
     }
   ]
@@ -320,7 +320,7 @@ function validateCityWithMessage(city) {
 
   const validationConditions = [
     {
-      condition: !city,
+      condition: !city.trim(),
       errorMessage: 'A cidade é obrigatória.'
     }
   ]
@@ -344,7 +344,7 @@ function validateStateWithMessage(state) {
 
   const validationConditions = [
     {
-      condition: !state,
+      condition: !state.trim(),
       errorMessage: 'O estado é obrigatório.'
     }
   ]
@@ -368,7 +368,7 @@ function validateEmailWithMessage(email) {
 
   const validationConditions = [
     {
-      condition: !email,
+      condition: !email.trim(),
       errorMessage: 'Seu endereço de email está vazio'
     },
     {
@@ -413,7 +413,7 @@ function validatePasswordWithMessage(password) {
 
   const validationConditions = [
     {
-      condition: !password,
+      condition: !password.trim(),
       errorMessage: 'Sua senha está vazia!'
     },
     {
@@ -454,7 +454,7 @@ function validateFullNameWithMessage(fullName) {
 
   const validationConditions = [
     {
-      condition: !fullName,
+      condition: !fullName.trim(),
       errorMessage: 'Seu nome está vazio!'
     },
     {

@@ -9,7 +9,9 @@ function UpdateDeliveryAddress({
   newDeliveryAddress,
   showDeliveryAddressForm,
   setShowDeliveryAddressForm,
-  deliveryAddressErrorMessages
+  deliveryAddressErrorMessages,
+  areDeliveryAddressesEqual,
+  setStartedDeliveryForm
 }) {
   return (
     <div className="d-flex align-items-center w-100 pe-2 ps-3 py-0 rounded  mb-0">
@@ -35,11 +37,13 @@ function UpdateDeliveryAddress({
             )}
           {!showDeliveryAddressForm && !userHasDeliveryAddress && (
             <button
-              className="btn-blue-grey"
+              className="outline"
               onClick={() =>
                 setShowDeliveryAddressForm(prevState => !prevState)
               }>
-              Adicionar endereço de entrega
+              {!areDeliveryAddressesEqual
+                ? 'ERROOOO, ABRA E CORRIJA!'
+                : ' Adicionar endereço de entrega'}
             </button>
           )}
           {showDeliveryAddressForm && (
@@ -48,15 +52,10 @@ function UpdateDeliveryAddress({
                 setNewDeliveryAddress={setNewDeliveryAddress}
                 newDeliveryAddress={newDeliveryAddress}
                 deliveryAddressErrorMessages={deliveryAddressErrorMessages}
+                setStartedDeliveryForm={setStartedDeliveryForm}
               />
 
-              <button
-                className="btn-orange"
-                onClick={() =>
-                  setShowDeliveryAddressForm(prevState => !prevState)
-                }>
-                Fechar
-              </button>
+              <hr />
             </>
           )}
         </div>

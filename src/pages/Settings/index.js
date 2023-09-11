@@ -43,6 +43,7 @@ function Settings() {
     useState(false)
   const [showDeliveryAddressForm, setShowDeliveryAddressForm] =
     useState(false)
+  const [startedDeliveryForm, setStartedDeliveryForm] = useState(false)
 
   const [deliveryAddressErrorMessages, setDeliveryAddressErrorMessages] =
     useState({
@@ -80,16 +81,26 @@ function Settings() {
   }, [fullName])
 
   useEffect(() => {
-    const { errorMessages: deliveryAddressErrorMessages } =
-      validateDeliveryAddressForm(newDeliveryAddress)
+    if (startedDeliveryForm) {
+      const { errorMessages: deliveryAddressErrorMessages } =
+        validateDeliveryAddressForm(newDeliveryAddress)
 
-    setDeliveryAddressErrorMessages(deliveryAddressErrorMessages)
+      setDeliveryAddressErrorMessages(deliveryAddressErrorMessages)
+    } else {
+      setDeliveryAddressErrorMessages({
+        city: '',
+        postalCode: '',
+        state: '',
+        streetAddress: ''
+      })
+    }
   }, [
     imageAvatar,
     fullName,
     user,
     areDeliveryAddressesEqual,
-    newDeliveryAddress
+    newDeliveryAddress,
+    startedDeliveryForm
   ])
 
   useEffect(() => {
@@ -150,6 +161,7 @@ function Settings() {
         setUpdatingDeliveryAddress(false)
         setDeliveryAddress(newDeliveryAddress)
         toast.success('Endereço de entrega atualizado com sucesso!')
+        setStartedDeliveryForm(false)
       }
 
       handleUpdateDeliveryAddress()
@@ -164,6 +176,8 @@ function Settings() {
     setEmail(user?.email)
     setFullName(user?.profileConfiguration?.fullName)
     setNewDeliveryAddress(user?.deliveryAddress)
+    setShowDeliveryAddressForm(false)
+    setStartedDeliveryForm(false)
   }
 
   function handleFile(event) {
@@ -197,6 +211,13 @@ function Settings() {
           const imgUrl = downloadURL
           const docRef = doc(db, 'users', user?.uid)
           await updateDoc(docRef, {
+            profileConfiguration: {
+              imgUrl,
+              fullName
+            }
+          })
+
+          await updateUserInfo({
             profileConfiguration: {
               imgUrl,
               fullName
@@ -262,6 +283,7 @@ function Settings() {
             {fullNameErrorMessage && fullNameErrorMessage}
           </div>
           <UpdateDeliveryAddress
+            areDeliveryAddressesEqual={areDeliveryAddressesEqual}
             userHasDeliveryAddress={userHasDeliveryAddress}
             deliveryAddress={deliveryAddress}
             updatingDeliveryAddress={updatingDeliveryAddress}
@@ -270,6 +292,7 @@ function Settings() {
             showDeliveryAddressForm={showDeliveryAddressForm}
             setShowDeliveryAddressForm={setShowDeliveryAddressForm}
             deliveryAddressErrorMessages={deliveryAddressErrorMessages}
+            setStartedDeliveryForm={setStartedDeliveryForm}
           />
           <div className="d-flex align-items-center w-100 pe-2 ps-3 rounded mb-3 mt-1">
             <label htmlFor="email" className="w-100">
@@ -307,7 +330,7 @@ function Settings() {
                   Salvar
                 </button>
               )}
-              {hasUserModifiedData && (
+              {(hasUserModifiedData || startedDeliveryForm) && (
                 <button
                   className="mt-4 ms-1 ms-md-3 px-3 py-2 btn-orange"
                   onClick={handleCancelChanges}>

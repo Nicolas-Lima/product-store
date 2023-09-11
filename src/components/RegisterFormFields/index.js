@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 import { FormContext } from "../../contexts/form";
 import PasswordToggle from "../PasswordToggle";
 import { capitalizeFirstLetter } from "../../utils/generalUtils";
