@@ -234,6 +234,8 @@ function Settings() {
       })
   }
 
+  document.title = 'Configurações'
+  
   return (
     <>
       <Nav />

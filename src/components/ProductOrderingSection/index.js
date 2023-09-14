@@ -5,8 +5,8 @@ import { AuthContext } from '../../contexts/auth'
 import StockMessage from '../../components/StockMessage'
 import ProductAmountSelect from '../../components/ProductAmountSelect'
 import NewCreditCardForm from '../../components/NewCreditCardForm'
+import SelectedCreditCardInfo from '../SelectedCreditCardInfo'
 import DeliveryAddress from '../DeliveryAddress'
-import { BsCreditCardFill } from 'react-icons/bs'
 
 import { useNavigate } from 'react-router-dom'
 
@@ -61,6 +61,8 @@ function ProductOrderingSection({ product, productPrice, productAmount }) {
       productId: product.id,
       paymentMethod,
       cardId: creditCardsInfo[selectedCardIndex]?.id,
+      cardNumberLastFoursDigits:
+        creditCardsInfo[selectedCardIndex]?.cardNumberLastFoursDigits,
       totalPrice,
       amount,
       deliveryAddress
@@ -175,76 +177,48 @@ function ProductOrderingSection({ product, productPrice, productAmount }) {
                 Cartão de crédito
               </label>
             </fieldset>
-            <div className="savedCreditCards mb-3">
-              {showSelectedCreditCard && (
-                <>
-                  <article className="shadow-sm pt-0 mt-5 mb-4">
-                    <header className="text-center mb-4 d-flex justify-content-center">
-                      <strong className="me-3">
-                        Cartão de crédito
-                        <BsCreditCardFill
-                          size={26}
-                          className="ms-2"
-                          color="#546e7a"
-                        />
-                      </strong>
-                    </header>
+            {(showSelectedCreditCard ||
+              (paymentMethod === 'credit_card' && !showNewCreditForm)) && (
+              <div className="savedCreditCards mb-3 mt-5">
+                {showSelectedCreditCard && (
+                  <SelectedCreditCardInfo
+                    creditCardsInfo={creditCardsInfo}
+                    selectedCardIndex={selectedCardIndex}
+                  />
+                )}
 
-                    <div>
-                      <div>
-                        <strong className="me-2">Nome no cartão:</strong>
-                        {creditCardsInfo[selectedCardIndex].ownerName}
-                      </div>
-                      <div>
-                        <strong className="me-2">
-                          Últimos 4 dígitos:
-                        </strong>
-                        {
-                          creditCardsInfo[selectedCardIndex]
-                            .cardNumberLastFoursDigits
-                        }
-                      </div>
-                      <div>
-                        <strong className="me-2">Marca do cartão:</strong>
-                        <span>
-                          {creditCardsInfo[selectedCardIndex].cardBrand}
-                        </span>
-                      </div>
-                    </div>
-                  </article>
-                </>
-              )}
+                {paymentMethod === 'credit_card' && (
+                  <div className="selectCreditCardContainer">
+                    {creditCardsInfo?.length > 1 && !showNewCreditForm && (
+                      <>
+                        <label htmlFor="selectCreditCard" className="mb-2">
+                          <strong>Selecione um cartão</strong>
+                        </label>
+                        <select
+                          id="selectCreditCard"
+                          value={selectedCardIndex}
+                          onChange={e =>
+                            setSelectedCardIndex(parseInt(e.target.value))
+                          }>
+                          {creditCardsInfo.map((cardInfo, index) => (
+                            <option value={index} key={`card-${index}`}>
+                              Nome no cartão: {cardInfo?.ownerName}
+                            </option>
+                          ))}
+                        </select>
+                      </>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
 
-              {paymentMethod === 'credit_card' && (
-                <div className="selectCreditCardContainer">
-                  {creditCardsInfo?.length > 1 && !showNewCreditForm && (
-                    <>
-                      <label htmlFor="selectCreditCard" className="mb-2">
-                        <strong>Selecione um cartão</strong>
-                      </label>
-                      <select
-                        id="selectCreditCard"
-                        value={selectedCardIndex}
-                        onChange={e =>
-                          setSelectedCardIndex(parseInt(e.target.value))
-                        }>
-                        {creditCardsInfo.map((cardInfo, index) => (
-                          <option value={index} key={`card-${index}`}>
-                            Nome no cartão: {cardInfo?.ownerName}
-                          </option>
-                        ))}
-                      </select>
-                    </>
-                  )}
-                </div>
-              )}
-            </div>
             <div className="addNewCreditCard">
               {!showNewCreditForm && paymentMethod === 'credit_card' && (
                 <button
                   className="btn-blue-grey"
                   onClick={handleAddNewCreditCard}>
-                  Adicionar cartão de crédito
+                  Trocar cartão de crédito
                 </button>
               )}
 
@@ -256,6 +230,7 @@ function ProductOrderingSection({ product, productPrice, productAmount }) {
                   setSelectedCardIndex={setSelectedCardIndex}
                   savedCreditCardsAmount={creditCardsInfo?.length || 0}
                   userHasCreditCard={userHasCreditCard}
+                  withBorder={true}
                 />
               )}
             </div>

@@ -10,7 +10,8 @@ function NewCreditCardForm({
   setIsAddingNewCreditCard,
   setSelectedCardIndex,
   savedCreditCardsAmount,
-  userHasCreditCard
+  userHasCreditCard,
+  withBorder
 }) {
   const [fieldsErrorMessages, setFieldsErrorMessages] = useState({
     ownerName: '',
@@ -46,7 +47,10 @@ function NewCreditCardForm({
   }
 
   return (
-    <div className="newCreditCardForm border rounded px-4 p-3 mb-4">
+    <div
+      className={`newCreditCardForm ${
+        withBorder ? 'border rounded' : ''
+      } px-4 p-3 mb-4`}>
       <strong>Adicionar novo cartão de crédito</strong>
       <form onSubmit={handleAddNewCreditCard} className="mt-3">
         <NewCreditCardFormFields

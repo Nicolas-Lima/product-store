@@ -19,13 +19,18 @@ import {
   collection,
   doc,
   getDoc,
-  updateDoc
+  updateDoc,
+  arrayUnion
 } from 'firebase/firestore'
 
 const AuthContext = createContext({})
 
 function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
+  const [seller, setSeller] = useState(null)
+  const [hasSellerAccount, setHasSellerAccount] = useState(
+    seller instanceof Object
+  )
   const [firebaseError, setFirebaseError] = useState(false)
   const [guestInfo, setGuestInfo] = useState(null)
   const [pageLoading, setPageLoading] = useState(true)
@@ -41,7 +46,22 @@ function AuthProvider({ children }) {
       const userData = snapshot.data()
       return userData
     } catch (error) {
-      setFirebaseError(true)
+      if (error.code === 'unavailable') {
+        setFirebaseError(true)
+      }
+    }
+  }
+
+  const getSellerData = async uid => {
+    const sellerRef = doc(db, 'sellers', uid)
+    try {
+      const snapshot = await getDoc(sellerRef)
+      const sellerData = snapshot.data()
+      return sellerData
+    } catch (error) {
+      if (error.code === 'unavailable') {
+        setFirebaseError(true)
+      }
     }
   }
 
@@ -49,16 +69,20 @@ function AuthProvider({ children }) {
     const userData = JSON.parse(localStorage.getItem('@userData')) || ''
 
     if (userData && userData.uid) {
-      const setStoredUserData = async userUid => {
+      const setStoredUserAndSellerData = async userUid => {
         const storedUserData = await getUserData(userUid)
+        const storedSellerData = await getSellerData(userUid)
 
         if (storedUserData) {
           setUser(storedUserData)
         }
+        if (storedSellerData) {
+          setSeller(storedSellerData)
+        }
         setPageLoading(false)
       }
 
-      setStoredUserData(userData.uid)
+      setStoredUserAndSellerData(userData.uid)
     } else {
       const guestData =
         JSON.parse(localStorage.getItem('@guestData')) || ''
@@ -69,6 +93,10 @@ function AuthProvider({ children }) {
       setPageLoading(false)
     }
   }, [])
+
+  useEffect(() => {
+    setHasSellerAccount(seller instanceof Object)
+  }, [seller])
 
   const updateUserInfo = (updatedInfo = {}) => {
     const userUid = user?.uid
@@ -159,6 +187,7 @@ function AuthProvider({ children }) {
           }
         }
         setUser(newUser)
+        setSeller(false)
 
         const userRef = doc(db, 'users', uid)
         await setDoc(userRef, newUser)
@@ -177,9 +206,38 @@ function AuthProvider({ children }) {
     return returnObject
   }
 
+  async function registerSeller(cnpj, receivingCreditCard, brandName) {
+    return new Promise((resolve, reject) => {
+      const newSeller = {
+        cnpj,
+        receivingCreditCard,
+        brandName,
+        sellerUid: user?.uid,
+        products: []
+      }
+      setSeller(newSeller)
+
+      const sellerRef = doc(db, 'sellers', user?.uid)
+      setDoc(sellerRef, newSeller)
+        .then(async () => {
+          const brandNames = doc(db, 'sellers', 'brandNames')
+          await updateDoc(brandNames, {
+            brandNames: arrayUnion(brandName)
+          })
+          resolve('Registrado com sucesso!')
+        })
+
+        .catch(error => {
+          console.log(error)
+          reject('Erro ao se cadastrar como um vendedor!')
+        })
+    })
+  }
+
   function logout() {
     localStorage.removeItem('@userData')
     setUser(false)
+    setSeller(false)
     toast.success('Você foi desconectado com sucesso!', {
       toastId: 'loggedOut'
     })
@@ -226,12 +284,16 @@ function AuthProvider({ children }) {
     userSigned: !!user,
     user,
     setUser,
+    seller,
+    setSeller,
+    hasSellerAccount,
     userUid: user?.uid,
     creditCardsInfo: user?.creditCardsInfo,
     guestInfo,
     setGuestInfo,
     signIn,
     signUp,
+    registerSeller,
     logout,
     pageLoading,
     loggingIn,

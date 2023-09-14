@@ -3,6 +3,7 @@ import LoginForm from '../../components/LoginForm'
 import Nav from '../../components/Nav'
 
 function Login() {
+  document.title = 'Login'
   return (
     <>
       <Nav />

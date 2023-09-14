@@ -9,6 +9,63 @@ function hasValidDomain(email) {
   return emailPattern.test(email)
 }
 
+function validateCnpjWithMessage(cnpj) {
+  let isValid = true
+  let errorMessage = ''
+
+  const validationConditions = [
+    {
+      condition: !cnpj.trim(),
+      errorMessage: 'Digite o CNPJ!'
+    },
+    {
+      condition: !/^\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}$/.test(cnpj),
+      errorMessage: 'Digite um CNPJ válido no formato XX.XXX.XXX/XXXX-XX'
+    }
+  ]
+
+  validationConditions.forEach(condition => {
+    if (condition.condition && isValid) {
+      isValid = false
+      errorMessage = condition.errorMessage
+    }
+  })
+
+  return {
+    isValid,
+    errorMessage
+  }
+}
+
+function validateBrandNameWithMessage(brandName) {
+  let isValid = true
+  let errorMessage = ''
+
+  const validationConditions = [
+    {
+      condition: !brandName.trim(),
+      errorMessage: 'Digite o nome da sua marca!'
+    },
+    {
+      condition: !(brandName?.trim().length >= 2),
+      errorMessage:
+        'O nome da sua marca precisa de ter no mínimo 2 letras!'
+    }
+  ]
+
+  validationConditions.forEach(condition => {
+    if (condition.condition && isValid) {
+      isValid = false
+      errorMessage = condition.errorMessage
+    }
+  })
+
+  return {
+    isValid,
+    errorMessage
+  }
+}
+
 function validateCreditCardForm({
   ownerName,
   cardNumber,
@@ -534,6 +591,8 @@ function getCreateAccountErrorMessage(errorCode) {
 
 export {
   hasValidDomain,
+  validateCnpjWithMessage,
+  validateBrandNameWithMessage,
   validateCreditCardForm,
   validateDeliveryAddressForm,
   validateOwnerNameWithMessage,

@@ -2,6 +2,7 @@ import { Routes, Route } from 'react-router-dom'
 import Home from '../pages/Home'
 import Login from '../pages/Login'
 import Register from '../pages/Register'
+import RegisterSeller from '../pages/RegisterSeller'
 import Product from '../pages/Product'
 import Error from '../pages/Error'
 import List from '../pages/List'
@@ -10,6 +11,8 @@ import Orders from '../pages/Orders'
 import BuyProduct from '../pages/BuyProduct'
 import TrackOrder from '../pages/TrackOrder'
 import Settings from '../pages/Settings'
+import Sell from '../pages/Sell'
+import SellerTermsAndConditions from '../pages/SellerTermsAndConditions'
 import Private from './Private'
 
 import FormProvider from '../contexts/form'
@@ -32,6 +35,14 @@ function RoutesApp() {
           <FormProvider>
             <Register />
           </FormProvider>
+        }
+      />
+      <Route
+        path="/registerSeller"
+        element={
+          <Private>
+            <RegisterSeller />
+          </Private>
         }
       />
       <Route path="/product/:id" element={<Product />} />
@@ -75,6 +86,18 @@ function RoutesApp() {
             <Settings />
           </Private>
         }
+      />
+      <Route
+        path="/sell"
+        element={
+          <Private>
+            <Sell />
+          </Private>
+        }
+      />
+      <Route
+        path="/sellerTermsAndConditions"
+        element={<SellerTermsAndConditions />}
       />
       <Route path="*" element={<Error />} />
     </Routes>

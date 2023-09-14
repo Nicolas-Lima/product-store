@@ -431,6 +431,7 @@ function StoreProvider({ children }) {
   const buyProduct = async ({
     productId,
     cardId,
+    cardNumberLastFoursDigits,
     paymentMethod,
     totalPrice,
     amount,
@@ -519,6 +520,7 @@ function StoreProvider({ children }) {
       orderId: trackingId,
       paymentMethod,
       cardId: cardId ?? false,
+      cardNumberLastFoursDigits: cardNumberLastFoursDigits ?? false,
       totalPrice,
       amount,
       description,
@@ -573,7 +575,25 @@ function StoreProvider({ children }) {
     }
   }
 
+  function brandNameAlreadyExists(newBrandName) {
+    return new Promise(async (resolve, reject) => {
+      newBrandName = newBrandName.toLowerCase()
+
+      const brandNamesRef = doc(db, 'sellers', 'brandNames')
+      const brandNames = await getDoc(brandNamesRef)
+        .then(docSnap => docSnap?.data()?.brandNames ?? [])
+        .catch(error => [])
+      const brandNameAlreadyExists = !!brandNames?.find(
+        brandName =>
+          brandName?.toLowerCase() === newBrandName?.toLowerCase()
+      )
+      resolve(brandNameAlreadyExists)
+      reject('error')
+    })
+  }
+
   const contextValue = {
+    brandNameAlreadyExists,
     products: products || [],
     setProducts,
     getProductById,

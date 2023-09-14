@@ -30,6 +30,7 @@ function ModalOrderInfo({
   const {
     amount,
     paymentMethod,
+    cardNumberLastFoursDigits,
     price,
     productName,
     seller,
@@ -45,9 +46,10 @@ function ModalOrderInfo({
         {paymentMethod === 'credit_card' && (
           <div className="mt-3">
             <span className="fw-medium">Método de Pagamento: </span>
-            <span>Cartão de crédito</span>
-
-            {/* <BsCreditCardFill size={26} /> */}
+            <span>
+              Cartão de crédito terminando em{' '}
+              <i>{cardNumberLastFoursDigits}</i>
+            </span>
           </div>
         )}
         {paymentMethod === 'ticket' && (
@@ -106,43 +108,46 @@ function ModalOrderInfo({
         <h3 id="projectName" className="text-center">
           Informações sobre a encomenda
         </h3>
-        <div className="d-flex flex-column align-items-center w-100 px-5 py-2">
-          <div>
-            <span className="fw-medium">Quantidade:</span>{' '}
-            <span>{amount}</span>{' '}
-            <span>{amount > 1 ? 'unidades' : 'unidade'}</span>
-          </div>
-          <PaymentMethod />
-          <div className="mt-3">
-            <span className="fw-medium">Preço:</span>
-            <span className="ms-1">
-              R${price?.dollars}
-              <sup className="me-1">
-                {String(price?.cents).padStart(2, 0)}
-              </sup>
-              reais
-            </span>
-          </div>
-          <div className="mt-3">
-            <span className="fw-medium me-1">Nome do Produto:</span>
-            {productName && capitalizeFirstLetter(productName)}
-          </div>
-          <div className="mt-3">
-            <span className="fw-medium me-1">Vendedor:</span> {seller}
-          </div>
-          <div className="mt-3">
-            <span className="fw-medium me-1">Avaliação:</span> {rating}
-            <span className="ms-1">
-              {rating >= 1 ? 'estrelas' : 'estrela'}
-            </span>
-          </div>
-          <div className="mt-3">
-            <span className="fw-medium me-1">Preço total:</span>
-            {`R$${totalPrice?.toFixed(2)} reais`}
-          </div>
-          <div className="mt-3">
-            <span className="fw-medium me-1">Data da compra:</span>
-            <PurchaseTime />
+        <div className="d-flex justify-content-center w-100">
+          <div className="d-flex flex-column px-5 py-2">
+            <div>
+              <span className="fw-medium">Quantidade:</span>{' '}
+              <span>{amount}</span>{' '}
+              <span>{amount > 1 ? 'unidades' : 'unidade'}</span>
+            </div>
+            <PaymentMethod />
+            <div className="mt-3">
+              <span className="fw-medium">Preço:</span>
+              <span className="ms-1">
+                R${price?.dollars}
+                <sup className="me-1">
+                  {String(price?.cents).padStart(2, 0)}
+                </sup>
+                reais
+              </span>
+            </div>
+            <div className="mt-3">
+              <span className="fw-medium me-1">Nome do Produto:</span>
+              {productName && capitalizeFirstLetter(productName)}
+            </div>
+            <div className="mt-3">
+              <span className="fw-medium me-1">Vendedor:</span> {seller}
+            </div>
+            <div className="mt-3">
+              <span className="fw-medium me-1">Avaliação do produto:</span>{' '}
+              {rating}
+              <span className="ms-1">
+                {rating >= 1 ? 'estrelas' : 'estrela'}
+              </span>
+            </div>
+            <div className="mt-3">
+              <span className="fw-medium me-1">Preço total:</span>
+              {`R$${totalPrice?.toFixed(2)} reais`}
+            </div>
+            <div className="mt-3">
+              <span className="fw-medium me-1">Data da compra:</span>
+              <PurchaseTime />
+            </div>
           </div>
         </div>
       </article>

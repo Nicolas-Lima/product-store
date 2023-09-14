@@ -40,6 +40,8 @@ function Home() {
     }
   }, [handleSearch])
 
+  document.title = 'Product Store'
+
   return (
     <>
       <Nav />

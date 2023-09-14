@@ -81,6 +81,8 @@ function TrackOrder() {
     return <LoadingSpinner />
   }
 
+  document.title = 'Rastrear pedido'
+
   return (
     <>
       <Nav />

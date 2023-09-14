@@ -32,7 +32,7 @@ function BuyProduct() {
   useEffect(() => {
     if (!productsLoading) {
       const product = getProductById(productId)
-      const { dollars = 0, cents = 0 } = product?.price
+      const { dollars = 0, cents = 0 } = product?.price || {}
       setHasStock(product?.stock > 0)
       setProductNotFound(!product)
       setProduct(product)
@@ -44,7 +44,11 @@ function BuyProduct() {
     }
   }, [products])
 
-
+  useEffect(() => {
+    document.title = product?.name
+      ? product?.name
+      : 'Produto não encontrado'
+  }, [product])
 
   if (productNotFound) {
     return <ErrorComponent message="Esse produto não existe!" />

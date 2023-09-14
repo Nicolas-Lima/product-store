@@ -1,35 +1,39 @@
-import { useParams } from "react-router-dom";
-import { useContext, useEffect, useState, Fragment } from "react";
-import { StoreContext } from "../../contexts/store";
-import Nav from "../../components/Nav";
-import Loading from "../../components/Loading";
-import ErrorComponent from "../../components/ErrorComponent";
-import ProductComponent from "../../components/ProductComponent";
-import ProductInfo from "../../components/ProductInfo";
-import ProductReviews from "../../components/ProductReviews";
+import { useParams } from 'react-router-dom'
+import { useContext, useEffect, useState, Fragment } from 'react'
+import { StoreContext } from '../../contexts/store'
+import Nav from '../../components/Nav'
+import Loading from '../../components/Loading'
+import ErrorComponent from '../../components/ErrorComponent'
+import ProductComponent from '../../components/ProductComponent'
+import ProductInfo from '../../components/ProductInfo'
+import ProductReviews from '../../components/ProductReviews'
 
 function Product() {
-  const { id: productId } = useParams();
+  const { id: productId } = useParams()
 
-  const [product, setProduct] = useState(null);
-  const [productNotFound, setProductNotFound] = useState(false);
-  const [productLoading, setProductLoading] = useState(true);
+  const [product, setProduct] = useState(null)
+  const [productNotFound, setProductNotFound] = useState(false)
+  const [productLoading, setProductLoading] = useState(true)
 
   const { products, getProductById, productsLoading } =
-    useContext(StoreContext);
+    useContext(StoreContext)
 
   useEffect(() => {
     if (!productsLoading) {
-      const product = getProductById(productId);
-      setProductNotFound(!product);
-      setProduct(product);
-      setProductLoading(false);
+      const product = getProductById(productId)
+      setProductNotFound(!product)
+      setProduct(product)
+      setProductLoading(false)
     }
-  }, [products]);
+  }, [products])
 
   if (productNotFound) {
-    return <ErrorComponent message="Esse produto não existe!" />;
+    return <ErrorComponent message="Esse produto não existe!" />
   }
+
+  document.title = product?.name
+    ? product?.name
+    : 'Produto não encontrado!'
 
   return (
     <>
@@ -54,7 +58,7 @@ function Product() {
         </>
       )}
     </>
-  );
+  )
 }
 
-export default Product;
+export default Product

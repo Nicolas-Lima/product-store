@@ -19,6 +19,8 @@ function Cart() {
     }
   }, [userCart, userSigned])
 
+  document.title = 'Meu carrinho'
+  
   return (
     <>
       <Nav />

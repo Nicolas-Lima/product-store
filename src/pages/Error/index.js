@@ -1,9 +1,11 @@
-import ErrorComponent from "../../components/ErrorComponent";
+import ErrorComponent from '../../components/ErrorComponent'
 
 function Error() {
-  return <ErrorComponent message="Não conseguimos encontrar esta página!" />;
+  document.title = 'Página não encontrada!'
+
+  return (
+    <ErrorComponent message="Não conseguimos encontrar esta página!" />
+  )
 }
 
-export default Error;
-
-
+export default Error

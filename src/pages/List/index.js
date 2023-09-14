@@ -21,6 +21,8 @@ function List() {
     }
   }, [userList, guestList, userSigned])
 
+  document.title = 'Minha lista'
+
   return (
     <>
       <Nav />

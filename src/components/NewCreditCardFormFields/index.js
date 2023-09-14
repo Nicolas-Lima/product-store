@@ -76,6 +76,7 @@ function NewCreditCardFormFields({
           placeholder="Número do Cartão"
           value={cardNumber}
           onChange={e => setCardNumber(e.target.value)}
+          maxLength={16}
         />
       </label>
       <div className="mb-2 mt-2 text-danger">
@@ -96,6 +97,7 @@ function NewCreditCardFormFields({
           placeholder="MM / AA"
           value={expirationDate}
           onChange={e => setExpirationDate(e.target.value)}
+          maxLength={7}
         />
       </label>
       <div className="mb-2 mt-2 text-danger">
@@ -117,6 +119,7 @@ function NewCreditCardFormFields({
           placeholder="CVV"
           value={cvv}
           onChange={e => setCVV(e.target.value)}
+          maxLength={4}
         />
       </label>
       <div className="mb-2 mt-2 text-danger">

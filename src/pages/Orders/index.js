@@ -42,6 +42,8 @@ function Orders() {
     })
   }
 
+  document.title = 'Pedidos'
+
   return (
     <>
       <ModalOrderInfo

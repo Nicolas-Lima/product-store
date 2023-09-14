@@ -11,7 +11,8 @@ import {
   BsCart3,
   BsListUl,
   BsBoxArrowInUp,
-  BsPersonAdd
+  BsPersonAdd,
+  BsShop
 } from 'react-icons/bs'
 
 import './nav.css'
@@ -116,16 +117,22 @@ function NavContent() {
                     </div>
                   </Link>
                 </li>
-                {userSigned && (
-                  <li onClick={logout}>
-                    <Link to="" className="link-secondary">
-                      <div className="d-flex justify-content-end align-items-center">
-                        <span className="ms-custom-1">Sair</span>
-                        <BsBoxArrowRight />
-                      </div>
-                    </Link>
-                  </li>
-                )}
+                <li>
+                  <Link to="/sell" className="link-secondary">
+                    <div className="d-flex justify-content-end align-items-center">
+                      <span className="ms-custom-1">Vender</span>
+                      <BsShop />
+                    </div>
+                  </Link>
+                </li>
+                <li onClick={logout}>
+                  <Link to="" className="link-secondary">
+                    <div className="d-flex justify-content-end align-items-center">
+                      <span className="ms-custom-1">Sair</span>
+                      <BsBoxArrowRight />
+                    </div>
+                  </Link>
+                </li>
               </ul>
             </details>
           </li>

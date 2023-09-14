@@ -41,9 +41,7 @@ function UpdateDeliveryAddress({
               onClick={() =>
                 setShowDeliveryAddressForm(prevState => !prevState)
               }>
-              {!areDeliveryAddressesEqual
-                ? 'ERROOOO, ABRA E CORRIJA!'
-                : ' Adicionar endereço de entrega'}
+              Adicionar endereço de entrega
             </button>
           )}
           {showDeliveryAddressForm && (

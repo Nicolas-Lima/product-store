@@ -4,7 +4,7 @@ import RoutesApp from './routes'
 import AuthProvider from './contexts/auth'
 import StoreProvider from './contexts/store'
 
-import { ToastContainer, toast } from 'react-toastify'
+import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
 import './css/app.css'
