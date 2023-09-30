@@ -1,16 +1,23 @@
 import { Link } from 'react-router-dom'
-function BuyProductButton({ productId, purchaseData }) {
+
+function BuyProductButton({
+  productId,
+  purchaseData,
+  isUserTheProductSeller
+}) {
+  if (isUserTheProductSeller) {
+    return
+  }
+
   const purchaseAmount = purchaseData?.amount
   const linkTo = purchaseAmount
     ? `/buyProduct/${productId}/${purchaseAmount}`
     : `/buyProduct/${productId}`
 
   return (
-    <>
-      <Link to={linkTo} className="text-decoration-none">
-        <button className="btn-yellow">Comprar</button>
-      </Link>
-    </>
+    <Link to={linkTo} className="text-decoration-none">
+      <button className="btn-yellow">Comprar</button>
+    </Link>
   )
 }
 

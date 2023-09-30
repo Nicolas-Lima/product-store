@@ -148,9 +148,12 @@ function ProductOrderingSection({ product, productPrice, productAmount }) {
               />
             </div>
           )}
+
           <div className="about-container mb-3">
-            <strong>Sobre este item</strong>: {product.description}
+            <strong>Sobre este item</strong>:{' '}
+            {product.description ? product.description : 'Sem descrição'}
           </div>
+
           <div className="paymentMethod border rounded px-4 p-3 mb-4">
             <fieldset onChange={e => setPaymentMethod(e.target.value)}>
               <legend className="mb-4">

@@ -11,7 +11,8 @@ function Home() {
 
   const searchInputRef = useRef(null)
 
-  const { productsLoading, searchProducts } = useContext(StoreContext)
+  const { productsLoading, searchProducts, products } =
+    useContext(StoreContext)
 
   const handleSearch = () => {
     if (search !== lastSearch) {
@@ -65,7 +66,13 @@ function Home() {
             </button>
           )}
         </div>
-        <Products />
+        {products?.length > 0 || productsLoading ? (
+          <Products />
+        ) : (
+          <h1 className="text-center text-danger mt-4">
+            Não existem produtos!
+          </h1>
+        )}
       </main>
     </>
   )

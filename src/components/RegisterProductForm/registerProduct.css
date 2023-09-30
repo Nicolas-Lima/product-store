@@ -1,0 +1,12 @@
+.productImg-uploader svg.imgPhoto {
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+  margin-bottom: 1em;
+}
+
+.productImg-uploader img.imgPhoto {
+  width: auto !important;
+  height: auto !important;
+  margin-bottom: 1em;
+}

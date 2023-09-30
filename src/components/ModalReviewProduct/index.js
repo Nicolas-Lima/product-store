@@ -141,6 +141,12 @@ function ModalReviewProduct({
 
       let updatedProductReviews = [...productReviews, productReview]
 
+      const updatedProductRating =
+        updatedProductReviews.reduce(
+          (productRating, review) => productRating + review?.rate,
+          0
+        ) / updatedProductReviews?.length
+
       if (userLastReviewInThisProduct) {
         Object.assign(userLastReviewInThisProduct, {
           ...productReview,
@@ -150,11 +156,13 @@ function ModalReviewProduct({
       }
 
       await updateProduct(selectedProductUid, {
-        reviews: updatedProductReviews
+        reviews: updatedProductReviews,
+        rating: updatedProductRating
       })
 
       await updateProductState(selectedProductUid, {
-        reviews: updatedProductReviews
+        reviews: updatedProductReviews,
+        rating: updatedProductRating
       })
 
       await updateCanProvideReview(orderId, selectedProductUid)

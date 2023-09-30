@@ -1,15 +1,17 @@
 import { createContext, useContext, useState, useEffect } from 'react'
 import { toast } from 'react-toastify'
 import { AuthContext } from './auth'
-import { db } from '../services/firebaseConnection'
+import { db, storage } from '../services/firebaseConnection'
 import {
   addDoc,
+  deleteDoc,
   doc,
   getDoc,
   getDocs,
   collection,
   updateDoc
 } from 'firebase/firestore'
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 import { removeAccents } from '../utils/generalUtils'
 import {
   productAlreadyInList,
@@ -21,14 +23,17 @@ const StoreContext = createContext({})
 function StoreProvider({ children }) {
   const {
     user,
+    seller,
     userSigned,
     userUid,
     guestInfo,
     setGuestInfo,
-    updateUserInfo
+    updateUserInfo,
+    updateSellerInfo
   } = useContext(AuthContext)
   const [userInfo, setUserInfo] = useState(null)
   const [products, setProducts] = useState(null)
+  const [myProducts, setMyProducts] = useState([])
   const [productsLoading, setProductsLoading] = useState(true)
   const [searchResults, setSearchResults] = useState([])
 
@@ -36,20 +41,17 @@ function StoreProvider({ children }) {
     const productsRef = collection(db, 'products')
     await getDocs(productsRef).then(snapshot => {
       const products = []
-      snapshot.forEach(product =>
-        products.push({ id: product.id, ...product.data() })
-      )
+      snapshot.forEach(product => {
+        const productData = product.data()
 
-      const productsWithStock = products?.filter(
-        product => product.stock > 0
-      )
-      const productsWithNoStock = products?.filter(
-        product => product.stock <= 0
-      )
-      const updatedProductList = [
-        ...productsWithStock,
-        ...productsWithNoStock
-      ]
+        products.push({ id: product.id, ...productData })
+      })
+
+      const productsWithStock =
+        products?.filter(product => product.stock > 0) || []
+      const productsWithNoStock =
+        products?.filter(product => product.stock <= 0) || []
+      const updatedProductList = productsWithStock
 
       setProducts(updatedProductList)
       setProductsLoading(false)
@@ -188,6 +190,20 @@ function StoreProvider({ children }) {
     }
   }, [user, userSigned])
 
+  useEffect(() => {
+    const getMyProducts = () => {
+      const myProductsIds =
+        seller?.products?.map(product => product?.productId) || []
+
+      const myProductsFiltered = products?.filter(product =>
+        myProductsIds?.includes(product?.id)
+      )
+
+      return myProductsFiltered
+    }
+    setMyProducts(getMyProducts())
+  }, [products, seller])
+
   const getProductById = productId => {
     const product = products?.filter(product => {
       return product.id === productId
@@ -240,66 +256,17 @@ function StoreProvider({ children }) {
     }
   }
 
-  const setProduct = async product => {
-    if (!product) {
-      return
-    }
-
-    const {
-      name,
-      description,
-      imgUrl,
-      type,
-      price,
-      seller,
-      minPurchaseUnits,
-      maxPurchaseUnits,
-      stock,
-      keywords,
-      empty,
-      rating,
-      reviews
-    } = product
-
-    const newProduct = {
-      name,
-      description,
-      imgUrl,
-      type,
-      price,
-      seller,
-      minPurchaseUnits,
-      maxPurchaseUnits,
-      stock,
-      keywords,
-      empty,
-      rating,
-      reviews
-    }
-
-    const productsRef = collection(db, 'products')
-    await addDoc(productsRef, newProduct).then(docRef => {
-      setProducts(prevState => [
-        ...prevState,
-        {
-          id: docRef.id,
-          ...newProduct
-        }
-      ])
-    })
-  }
-
   const searchProducts = (search = '') => {
+    search = search.trim()
     if (!productsLoading) {
-      if (search.trim() !== '') {
+      if (search !== '') {
         const productsFound = products.filter(product => {
           const strToLowerCase = str => str?.toLowerCase() || ''
           let { description = '', name = '', keywords = [] } = product
-          ;[search, description, name, keywords] = [
-            search,
-            description,
-            name
-          ].map(item => removeAccents(strToLowerCase(item)))
+          keywords = keywords || []
+          search = removeAccents(strToLowerCase(search))
+          description = removeAccents(strToLowerCase(description))
+          name = removeAccents(strToLowerCase(name))
 
           const searchFilter =
             description.includes(search) ||
@@ -326,6 +293,133 @@ function StoreProvider({ children }) {
 
       localStorage.setItem('@guestData', JSON.stringify(updatedGuestInfo))
     } catch (error) {}
+  }
+
+  const registerProduct = ({
+    description,
+    productImg,
+    keywords = [],
+    maxPurchaseUnits,
+    minPurchaseUnits,
+    name,
+    price = {},
+    rating = 0,
+    reviews = [],
+    stock = 1,
+    type
+  }) => {
+    return new Promise(async (resolve, reject) => {
+      const newProduct = {
+        description,
+        keywords,
+        maxPurchaseUnits,
+        minPurchaseUnits,
+        name,
+        sellerUid: seller?.sellerUid,
+        seller: seller?.brandName,
+        empty: false,
+        price: {
+          dollars: price?.real,
+          cents: price?.cents
+        },
+        rating,
+        reviews,
+        salesCount: 0,
+        stock,
+        type
+      }
+
+      const productsRef = collection(db, 'products')
+      try {
+        await addDoc(productsRef, newProduct).then(async docRef => {
+          const productId = docRef?.id
+          newProduct['productId'] = productId
+
+          const uploadImage = async () => {
+            const currentUid = user?.uid
+
+            const uploadRef = ref(
+              storage,
+              `images/${currentUid}/productsImages/${productId}/mainImage`
+            )
+
+            const uploadTask = await uploadBytes(uploadRef, productImg)
+              .then(async snapshot => {
+                await getDownloadURL(snapshot.ref).then(
+                  async downloadURL => {
+                    const productImgUrl = downloadURL
+                    const productRef = doc(db, 'products', productId)
+                    newProduct['imgUrl'] = productImgUrl
+                    await updateDoc(productRef, {
+                      imgUrl: productImgUrl
+                    })
+                  }
+                )
+              })
+              .catch(error => {
+                toast.error('Erro ao enviar sua imagem, tente novamente!')
+              })
+          }
+          await uploadImage()
+
+          const sellerProducts = seller?.products || []
+          const updatedSellerProducts = [...sellerProducts, newProduct]
+
+          await updateSellerInfo({
+            products: updatedSellerProducts
+          })
+
+          setProducts(prevState => [
+            ...prevState,
+            {
+              id: docRef.id,
+              ...newProduct
+            }
+          ])
+        })
+        toast.success('Produto cadastrado com sucesso!')
+        resolve('ok')
+      } catch (error) {
+        toast.error(
+          'Não foi possível cadastrar o produto! Tente novamente mais tarde!'
+        )
+        reject(error)
+      }
+    })
+  }
+
+  const removeProduct = ({ productId }) => {
+    return new Promise(async (resolve, reject) => {
+      const productRef = doc(db, 'products', productId)
+      try {
+        await deleteDoc(productRef).then(async docRef => {
+          const sellerProducts = seller?.products || []
+          const updatedSellerProducts =
+            sellerProducts?.filter(
+              product => product?.productId !== productId
+            ) || []
+
+          await updateSellerInfo({
+            products: updatedSellerProducts
+          })
+
+          setProducts(prevState => {
+            const updatedProducts = prevState.filter(
+              product => product?.id !== productId
+            )
+
+            return updatedProducts
+          })
+        })
+        toast.success('Produto removido com sucesso!')
+        resolve('ok')
+      } catch (error) {
+        toast.error(
+          'Não foi possível remover o produto! Tente novamente mais tarde!'
+        )
+        reject(error)
+      }
+    })
   }
 
   const addProductToList = async productUid => {
@@ -361,12 +455,6 @@ function StoreProvider({ children }) {
   }
 
   const removeProductFromList = async productUid => {
-    const selectedProduct = getProductById(productUid)
-
-    if (!selectedProduct) {
-      return
-    }
-
     if (userSigned) {
       const updatedList = [...user.list].filter(
         product => product.id !== productUid
@@ -411,12 +499,6 @@ function StoreProvider({ children }) {
   }
 
   const removeProductFromCart = async productUid => {
-    const selectedProduct = getProductById(productUid)
-
-    if (!selectedProduct) {
-      return
-    }
-
     if (userSigned) {
       const updatedCart = [...user.cart].filter(
         product => product.id !== productUid
@@ -457,6 +539,7 @@ function StoreProvider({ children }) {
     let updatedProductStock = selectedProduct?.stock - amount
     updatedProductStock =
       updatedProductStock <= 0 ? 0 : updatedProductStock
+    let updatedProductSalesCount = (selectedProduct?.salesCount || 0) + 1
 
     const timestamp = Date.now()
     const currentDate = new Date()
@@ -547,11 +630,13 @@ function StoreProvider({ children }) {
     const productRef = doc(db, 'products', productId)
 
     await updateDoc(productRef, {
-      stock: updatedProductStock
+      stock: updatedProductStock,
+      salesCount: updatedProductSalesCount
     })
 
     updateProductState(productId, {
-      stock: updatedProductStock
+      stock: updatedProductStock,
+      salesCount: updatedProductSalesCount
     })
 
     const isProductInUserList = productAlreadyInList(
@@ -595,19 +680,21 @@ function StoreProvider({ children }) {
   const contextValue = {
     brandNameAlreadyExists,
     products: products || [],
+    myProducts,
     setProducts,
     getProductById,
     getPurchasedProductByOrderId,
-    setProduct,
     searchProducts,
     addProductToList,
     addProductToCart,
+    removeProduct,
     removeProductFromList,
     removeProductFromCart,
     buyProduct,
     updateProduct,
     updateProductState,
     updateCanProvideReview,
+    registerProduct,
     userPurchasedProducts: user?.purchasedProducts,
     userList: user?.list,
     userCart: user?.cart,

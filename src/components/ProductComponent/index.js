@@ -24,9 +24,18 @@ function ProductContent({
     addProductToCart,
     addProductToList
   } = useContext(StoreContext)
-  const { userSigned, user } = useContext(AuthContext)
+  const { userSigned, user, sellerUid } = useContext(AuthContext)
   const [removingProduct, setRemovingProduct] = useState(false)
-  const { title, seller, imgUrl, description, price, stock } = product
+  const {
+    title,
+    seller,
+    imgUrl,
+    name,
+    price,
+    stock,
+    salesCount,
+    reviews
+  } = product
   const { dollars, cents } = price
 
   const isProductAlreadyInList = productAlreadyInList(
@@ -39,6 +48,8 @@ function ProductContent({
     product.id,
     user?.cart
   )
+
+  const isUserTheProductSeller = sellerUid === product?.sellerUid
 
   const handleAddProductToCart = async () => {
     await addProductToCart(product.id)
@@ -79,29 +90,44 @@ function ProductContent({
               {seller}
             </span>
 
-            <div className="description text-center mt-3 text-gray">
-              {description}
+            <div className="name text-center mt-3 text-gray">{name}</div>
+            <div>
+              <div className="price text-start p-1 px-2 mt-2">
+                <span>
+                  R${dollars}
+                  <sup>{String(cents).padStart(2, 0)}</sup>
+                </span>
+              </div>
+              <div className="product-info text-secondary mt-2 text-center">
+                <span className="me-3">
+                  {salesCount} {salesCount === 1 ? 'venda' : 'vendas'}
+                </span>
+                <span className="d-block">
+                  {reviews?.length}{' '}
+                  {reviews?.length === 1 ? 'avaliação' : 'avaliações'}
+                </span>
+              </div>
             </div>
-            <div className="price text-start p-1 px-2 mt-2">
-              <span>
-                R${dollars}
-                <sup>{String(cents).padStart(2, 0)}</sup>
-              </span>
-            </div>
+
             {includeStockMessage && (
-              <div className="stockMessage mt-3">
+              <div className="stockMessage mt-2">
                 <StockMessage stock={stock} />
               </div>
             )}
           </div>
           {isListPage && (
             <div className="list-actions d-flex flex-column mt-3">
-              <BuyProductButton productId={product.id} />
-              {!isProductAlreadyInCart && userSigned && (
-                <button onClick={handleAddProductToCart}>
-                  Adicionar ao carrinho
-                </button>
-              )}
+              <BuyProductButton
+                productId={product.id}
+                isUserTheProductSeller={isUserTheProductSeller}
+              />
+              {!isProductAlreadyInCart &&
+                userSigned &&
+                !isUserTheProductSeller && (
+                  <button onClick={handleAddProductToCart}>
+                    Adicionar ao carrinho
+                  </button>
+                )}
               <button
                 className="btn-orange"
                 onClick={handleRemoveProductFromList}>
@@ -113,8 +139,11 @@ function ProductContent({
           )}
           {isCartPage && (
             <div className="list-actions d-flex flex-column mt-3">
-              <BuyProductButton productId={product.id} />
-              {!isProductAlreadyInList && (
+              <BuyProductButton
+                productId={product.id}
+                isUserTheProductSeller={isUserTheProductSeller}
+              />
+              {!isProductAlreadyInList && !isUserTheProductSeller && (
                 <button onClick={handleAddProductToList}>
                   Adicionar à Lista
                 </button>

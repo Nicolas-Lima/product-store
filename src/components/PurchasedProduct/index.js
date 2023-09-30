@@ -1,7 +1,9 @@
+import { useContext } from 'react'
 import { Link } from 'react-router-dom'
 
 import './purchasedProduct.css'
 import StarRating from '../StarRating'
+import { StoreContext } from '../../contexts/store'
 
 function PurchasedProduct({
   product,
@@ -9,21 +11,25 @@ function PurchasedProduct({
   handleToggleModalReviewProduct,
   setCurrentOrderInfo
 }) {
-  const {
+  const { getProductById } = useContext(StoreContext)
+
+  let {
     canProvideReview,
     orderStatus,
     title,
     seller,
     imgUrl,
-    description,
+    name,
     price,
     rating,
-    trackingId
+    trackingId,
+    productId
   } = product
   const { dollars, cents } = price
 
   const locationOrigin = window.location.origin
   const productDelivered = orderStatus[3].done !== false
+  const productExists = getProductById(productId)
 
   return (
     <article>
@@ -37,9 +43,7 @@ function PurchasedProduct({
             <span className="seller badge bg-light p-1 px-2 rounded">
               {seller}
             </span>
-            <div className="description text-center mt-3 text-gray">
-              {description}
-            </div>
+            <div className="name text-center mt-3 text-gray">{name}</div>
             <div className="price text-start p-1 px-2 mt-2">
               <span>
                 R${dollars}
@@ -57,7 +61,7 @@ function PurchasedProduct({
             Rastrear encomenda
           </Link>
 
-          {canProvideReview && productDelivered && (
+          {canProvideReview && productDelivered && productExists && (
             <button
               className="btn-yellow"
               onClick={() => {

@@ -138,6 +138,404 @@ function validateCreditCardForm({
   return { areAllFieldsValid, errorMessages }
 }
 
+function validateRegisterProductForm({
+  name = '',
+  description = '',
+  productImg = '',
+  price,
+  real = '',
+  cents = '',
+  stock = '',
+  minPurchaseUnits = '',
+  maxPurchaseUnits = '',
+  newKeyword = '',
+  type = ''
+} = {}) {
+  const { isValid: nameIsValid, errorMessage: nameErrorMessage } =
+    validateProductNameWithMessage(name)
+  const {
+    isValid: descriptionIsValid,
+    errorMessage: descriptionErrorMessage
+  } = validateProductDescriptionWithMessage(description)
+  const { isValid: imgIsValid, errorMessage: imgErrorMessage } =
+    validateProductImgWithMessage(productImg)
+  const { isValid: priceIsValid, errorMessage: priceErrorMessage } =
+    validateProductPriceWithMessage(price)
+  const { isValid: realIsValid, errorMessage: realErrorMessage } =
+    validateRealWithMessage(real)
+  const { isValid: centsIsValid, errorMessage: centsErrorMessage } =
+    validateCentsWithMessage(cents)
+  const { isValid: stockIsValid, errorMessage: stockErrorMessage } =
+    validateProductStockWithMessage(stock)
+  const {
+    isValid: minPurchaseUnitsIsValid,
+    errorMessage: minPurchaseUnitsErrorMessage
+  } = validateProductMinPurchaseUnitsWithMessage({
+    minPurchaseUnits,
+    maxPurchaseUnits
+  })
+  const {
+    isValid: maxPurchaseUnitsIsValid,
+    errorMessage: maxPurchaseUnitsErrorMessage
+  } = validateProductMaxPurchaseUnitsWithMessage({
+    maxPurchaseUnits,
+    minPurchaseUnits
+  })
+  const { isValid: typeIsValid, errorMessage: typeErrorMessage } =
+    validateProductTypeWithMessage(type)
+
+  const areAllFieldsValid = [
+    nameIsValid,
+    descriptionIsValid,
+    imgIsValid,
+    realIsValid,
+    priceIsValid,
+    centsIsValid,
+    stockIsValid,
+    minPurchaseUnitsIsValid,
+    maxPurchaseUnitsIsValid,
+
+    typeIsValid
+  ].reduce(
+    (areAllFieldsValid, currentField) => areAllFieldsValid && currentField,
+    true
+  )
+
+  const errorMessages = {
+    name: nameErrorMessage,
+    description: descriptionErrorMessage,
+    productImg: imgErrorMessage,
+    price: priceErrorMessage,
+    real: realErrorMessage,
+    cents: centsErrorMessage,
+    stock: stockErrorMessage,
+    minPurchaseUnits: minPurchaseUnitsErrorMessage,
+    maxPurchaseUnits: maxPurchaseUnitsErrorMessage,
+    newKeyword: '',
+    type: typeErrorMessage
+  }
+
+  return { areAllFieldsValid, errorMessages }
+}
+
+function validateProductNameWithMessage(productName) {
+  let isValid = true
+  let errorMessage = ''
+
+  const validationConditions = [
+    {
+      condition: !productName.trim(),
+      errorMessage: 'Digite o nome do produto!'
+    },
+    {
+      condition: !(productName?.trim().length >= 2),
+      errorMessage:
+        'O nome do produto precisa de ter no mínimo 2 caracteres!'
+    },
+    {
+      condition: !(productName?.trim().length <= 19),
+      errorMessage: 'O nome do produto pode ter no máximo 20 caracteres!'
+    }
+  ]
+
+  validationConditions.forEach(condition => {
+    if (condition.condition && isValid) {
+      isValid = false
+      errorMessage = condition.errorMessage
+    }
+  })
+
+  return {
+    isValid,
+    errorMessage
+  }
+}
+
+function validateProductDescriptionWithMessage(productDescription) {
+  let isValid = true
+  let errorMessage = ''
+
+  const validationConditions = [
+    {
+      condition: !(productDescription?.trim().length <= 199),
+      errorMessage: 'A descrição pode ter no máximo 200 caracteres!'
+    }
+  ]
+
+  validationConditions.forEach(condition => {
+    if (condition.condition && isValid) {
+      isValid = false
+      errorMessage = condition.errorMessage
+    }
+  })
+
+  return {
+    isValid,
+    errorMessage
+  }
+}
+
+function validateProductImgWithMessage(img) {
+  let isValid = true
+  let errorMessage = ''
+
+  const validationConditions = [
+    {
+      condition: !img?.type?.includes('image'),
+      errorMessage: 'O produto precisa de ter uma imagem!'
+    }
+  ]
+
+  validationConditions.forEach(condition => {
+    if (condition.condition && isValid) {
+      isValid = false
+      errorMessage = condition.errorMessage
+    }
+  })
+
+  return {
+    isValid,
+    errorMessage
+  }
+}
+
+function validateProductPriceWithMessage(productPrice) {
+  let isValid = true
+  let errorMessage = ''
+
+  const validationConditions = [
+    {
+      condition:
+        Number(productPrice?.real) <= 0 &&
+        Number(productPrice?.cents) <= 0,
+      errorMessage: 'Digite o preço do produto!'
+    }
+  ]
+
+  validationConditions.forEach(condition => {
+    if (condition.condition && isValid) {
+      isValid = false
+      errorMessage = condition.errorMessage
+    }
+  })
+
+  return {
+    isValid,
+    errorMessage
+  }
+}
+
+function validateRealWithMessage(real) {
+  let isValid = true
+  let errorMessage = ''
+
+  const validationConditions = [
+    {
+      condition: !real?.trim() && real !== '0',
+      errorMessage: 'Digite os reais!'
+    },
+    {
+      condition: !(real?.trim() >= 0),
+      errorMessage: 'Campo inválido!'
+    }
+  ]
+
+  validationConditions.forEach(condition => {
+    if (condition.condition && isValid) {
+      isValid = false
+      errorMessage = condition.errorMessage
+    }
+  })
+
+  return {
+    isValid,
+    errorMessage
+  }
+}
+
+function validateCentsWithMessage(cents) {
+  let isValid = true
+  let errorMessage = ''
+
+  const validationConditions = [
+    {
+      condition: !cents?.trim() && cents !== '0',
+      errorMessage: 'Digite os centavos!'
+    },
+    {
+      condition: !(cents?.trim() <= 99) || !(cents?.trim() >= 0),
+      errorMessage: 'Campo inválido!'
+    }
+  ]
+
+  validationConditions.forEach(condition => {
+    if (condition.condition && isValid) {
+      isValid = false
+      errorMessage = condition.errorMessage
+    }
+  })
+
+  return {
+    isValid,
+    errorMessage
+  }
+}
+
+function validateProductStockWithMessage(productStock) {
+  let isValid = true
+  let errorMessage = ''
+
+  const validationConditions = [
+    {
+      condition: parseInt(productStock) <= 0,
+      errorMessage: 'Insira ao menos uma unidade!'
+    },
+    {
+      condition: !(parseInt(productStock) > 0),
+      errorMessage: 'Estoque inválido!'
+    }
+  ]
+
+  validationConditions.forEach(condition => {
+    if (condition.condition && isValid) {
+      isValid = false
+      errorMessage = condition.errorMessage
+    }
+  })
+
+  return {
+    isValid,
+    errorMessage
+  }
+}
+
+function validateProductMinPurchaseUnitsWithMessage({
+  minPurchaseUnits,
+  maxPurchaseUnits
+}) {
+  let isValid = true
+  let errorMessage = ''
+
+  maxPurchaseUnits = parseInt(maxPurchaseUnits)
+  minPurchaseUnits = parseInt(minPurchaseUnits)
+
+  const validationConditions = [
+    {
+      condition: minPurchaseUnits < 1,
+      errorMessage: 'Insira a quantidade mínima de compra!'
+    },
+    {
+      condition: !(minPurchaseUnits >= 1),
+      errorMessage:
+        'A quantidade mínima precisa de ser igual ou maior que 1!'
+    },
+    {
+      condition: maxPurchaseUnits && minPurchaseUnits > maxPurchaseUnits,
+      errorMessage:
+        'A quantidade mínima precisa de ser menor que a quantidade máxima!'
+    }
+  ]
+
+  validationConditions.forEach(condition => {
+    if (condition.condition && isValid) {
+      isValid = false
+      errorMessage = condition.errorMessage
+    }
+  })
+
+  return {
+    isValid,
+    errorMessage
+  }
+}
+
+function validateProductMaxPurchaseUnitsWithMessage({
+  maxPurchaseUnits,
+  minPurchaseUnits
+}) {
+  let isValid = true
+  let errorMessage = ''
+
+  maxPurchaseUnits = parseInt(maxPurchaseUnits)
+  minPurchaseUnits = parseInt(minPurchaseUnits)
+
+  const validationConditions = [
+    {
+      condition: !(maxPurchaseUnits >= 1),
+      errorMessage: 'Insira a quantidade máxima de compra!'
+    },
+    {
+      condition: minPurchaseUnits && maxPurchaseUnits < minPurchaseUnits,
+      errorMessage:
+        'A quantidade máxima precisa de ser maior que a quantidade mínima!'
+    }
+  ]
+
+  validationConditions.forEach(condition => {
+    if (condition.condition && isValid) {
+      isValid = false
+      errorMessage = condition.errorMessage
+    }
+  })
+
+  return {
+    isValid,
+    errorMessage
+  }
+}
+
+function validateNewKeywordWithMessage(newKeyword) {
+  let isValid = true
+  let errorMessage = ''
+
+  const validationConditions = [
+    {
+      condition: !newKeyword?.trim(),
+      errorMessage: 'Insira a palavra-chave!'
+    },
+    {
+      condition: !(newKeyword?.trim().length >= 2),
+      errorMessage: 'A palavra-chave precisa de ao menos dois caracteres!'
+    }
+  ]
+
+  validationConditions.forEach(condition => {
+    if (condition.condition && isValid) {
+      isValid = false
+      errorMessage = condition.errorMessage
+    }
+  })
+
+  return {
+    isValid,
+    errorMessage
+  }
+}
+
+function validateProductTypeWithMessage(productType) {
+  let isValid = true
+  let errorMessage = ''
+
+  const validationConditions = [
+    {
+      condition: !productType?.trim() || productType === 'default',
+      errorMessage: 'Selecione o tipo do produto'
+    }
+  ]
+
+  validationConditions.forEach(condition => {
+    if (condition.condition && isValid) {
+      isValid = false
+      errorMessage = condition.errorMessage
+    }
+  })
+
+  return {
+    isValid,
+    errorMessage
+  }
+}
+
 function validateDeliveryAddressForm({
   city,
   postalCode,
@@ -594,7 +992,9 @@ export {
   validateCnpjWithMessage,
   validateBrandNameWithMessage,
   validateCreditCardForm,
+  validateRegisterProductForm,
   validateDeliveryAddressForm,
+  validateNewKeywordWithMessage,
   validateOwnerNameWithMessage,
   validateCardNumberWithMessage,
   validateExpirationDateWithMessage,

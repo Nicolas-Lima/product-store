@@ -4,14 +4,13 @@ import { AuthContext } from '../../contexts/auth'
 import { db, storage } from '../../services/firebaseConnection'
 import { doc, updateDoc } from 'firebase/firestore'
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
-import { BsPersonCircle, BsUpload } from 'react-icons/bs'
 import Nav from '../../components/Nav'
 import UpdateDeliveryAddress from '../../components/UpdateDeliveryAddress'
+import ImageUploader from '../../components/ImageUploader'
 import {
   validateDeliveryAddressForm,
   validateFullNameWithMessage
 } from '../../utils/validationUtils'
-
 import './settings.css'
 
 function Settings() {
@@ -22,6 +21,7 @@ function Settings() {
   const [avatarImgUrl, setAvatarImgUrl] = useState(
     user?.profileConfiguration?.imgUrl
   )
+
   const [imageAvatar, setImageAvatar] = useState(null)
   const [email, setEmail] = useState(user?.email)
   const [updatingName, setUpdatingName] = useState(false)
@@ -180,23 +180,6 @@ function Settings() {
     setStartedDeliveryForm(false)
   }
 
-  function handleFile(event) {
-    const image = event.target.files[0]
-
-    if (image?.type === 'image/jpeg' || image?.type === 'image/png') {
-      const renamedImage = new File([image], 'avatar.jpg', {
-        type: 'image/jpeg'
-      })
-      setImageAvatar(renamedImage)
-      setAvatarImgUrl(URL.createObjectURL(renamedImage))
-    } else if (image?.type) {
-      toast.error('Envie uma imagem do tipo PNG ou JPEG!')
-      imageInputRef.current.value = ''
-      setImageAvatar(null)
-      return
-    }
-  }
-
   async function handleUpload() {
     const currentUid = user?.uid
 
@@ -235,39 +218,21 @@ function Settings() {
   }
 
   document.title = 'Configurações'
-  
+
   return (
     <>
       <Nav />
       <main className="container mt-4 mb-4">
         <h1 className="text-center text-secondary">Configurações</h1>
         <div className="mt-2-3rem d-flex flex-column align-items-center bg-light p-3 pt-0 rounded">
-          <div className="d-flex justify-content-center align-items-center w-100 pe-2 ps-3 mt-4 mb-3 rounded">
-            <label
-              htmlFor="avatarUpload"
-              className="label-avatar w-auto h-auto">
-              <span>
-                <BsUpload color="#fff" size={25} />
-              </span>
-
-              <input
-                type="file"
-                id="avatarUpload"
-                accept="image/*"
-                onChange={handleFile}
-                ref={imageInputRef}
-              />
-              <br />
-              {avatarImgUrl ? (
-                <img
-                  src={avatarImgUrl}
-                  alt={`profilePhoto`}
-                  className="profilePhoto"
-                />
-              ) : (
-                <BsPersonCircle className="profilePhoto" />
-              )}
-            </label>
+          <div className="avatar-uploader pe-2 ps-3 mt-4 mb-3">
+            <ImageUploader
+              imgUrl={avatarImgUrl}
+              setImgUrl={setAvatarImgUrl}
+              setImage={setImageAvatar}
+              imageInputRef={imageInputRef}
+              isAvatar={true}
+            />
           </div>
           <div className="d-flex align-items-center w-100 pe-2 ps-3 py-0 rounded  mb-0">
             <label htmlFor="fullName" className="w-100">

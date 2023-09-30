@@ -1,0 +1,26 @@
+.label-img {
+  width: 280px;
+  height: 280px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  cursor: pointer;
+}
+
+.label-img input {
+  display: none;
+}
+
+.label-img span {
+  z-index: 99;
+  position: absolute;
+  opacity: 0.7;
+  transition: all 0.5s;
+}
+
+.label-img span:hover,
+.label-img span:focus {
+  opacity: 1;
+  transform: scale(1.4);
+}

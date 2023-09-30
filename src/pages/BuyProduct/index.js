@@ -1,6 +1,7 @@
 import { useParams } from 'react-router-dom'
 import { useContext, useEffect, useState, useMemo } from 'react'
 import { StoreContext } from '../../contexts/store'
+import { AuthContext } from '../../contexts/auth'
 import Nav from '../../components/Nav'
 import Loading from '../../components/Loading'
 import ErrorComponent from '../../components/ErrorComponent'
@@ -19,8 +20,12 @@ function BuyProduct() {
 
   const { products, getProductById, productsLoading } =
     useContext(StoreContext)
+  const { userUid, sellerUid } = useContext(AuthContext)
 
   const changeProductPrice = ({ dollars, cents } = {}) => {
+    dollars = parseInt(dollars)
+    cents = parseInt(cents)
+
     const areAllNumbers =
       [dollars, cents]?.filter(value => Number.isFinite(value)).length ===
       2
@@ -28,6 +33,8 @@ function BuyProduct() {
       setProductPrice(dollars + cents / 100)
     }
   }
+
+  const isUserTheProductSeller = sellerUid === product?.sellerUid
 
   useEffect(() => {
     if (!productsLoading) {
@@ -52,6 +59,12 @@ function BuyProduct() {
 
   if (productNotFound) {
     return <ErrorComponent message="Esse produto não existe!" />
+  }
+
+  if (isUserTheProductSeller) {
+    return (
+      <ErrorComponent message="Você não pode comprar seu próprio produto!" />
+    )
   }
 
   if (!hasStock && !productsLoading) {

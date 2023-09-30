@@ -34,6 +34,12 @@ function NewCreditCardForm({
     setFieldsErrorMessages(errorMessages)
 
     if (!areAllFieldsValid) {
+      toast.error(
+        'Por favor, verifique se todos os campos estão preenchidos corretamente.',
+        {
+          toastId: 'creditCardFormInvalidFields'
+        }
+      )
       return
     }
 

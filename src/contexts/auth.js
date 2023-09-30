@@ -116,6 +116,24 @@ function AuthProvider({ children }) {
     })
   }
 
+  const updateSellerInfo = (updatedInfo = {}) => {
+    const sellerUid = user?.uid
+    return new Promise(async (resolve, reject) => {
+      try {
+        const sellerRef = doc(db, 'sellers', sellerUid)
+        await updateDoc(sellerRef, updatedInfo)
+
+        setSeller(prevSeller => ({
+          ...prevSeller,
+          ...updatedInfo
+        }))
+        resolve(true)
+      } catch (error) {
+        reject(false)
+      }
+    })
+  }
+
   const updateDeliveryAddress = async ({
     city,
     state,
@@ -228,7 +246,6 @@ function AuthProvider({ children }) {
         })
 
         .catch(error => {
-          console.log(error)
           reject('Erro ao se cadastrar como um vendedor!')
         })
     })
@@ -280,11 +297,13 @@ function AuthProvider({ children }) {
   const contextValue = {
     addNewCreditCard,
     updateUserInfo,
+    updateSellerInfo,
     updateDeliveryAddress,
     userSigned: !!user,
     user,
     setUser,
     seller,
+    sellerUid: seller?.sellerUid,
     setSeller,
     hasSellerAccount,
     userUid: user?.uid,

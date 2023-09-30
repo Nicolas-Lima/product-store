@@ -13,7 +13,7 @@ import ProductAmountSelect from '../ProductAmountSelect'
 function ProductInfo({ product }) {
   const { addProductToList, addProductToCart, buyProduct } =
     useContext(StoreContext)
-  const { userSigned, user } = useContext(AuthContext)
+  const { userSigned, user, userUid, sellerUid } = useContext(AuthContext)
   const hasStock = product.stock > 0
   const { minPurchaseUnits, maxPurchaseUnits, price } = product
   const { dollars, cents } = price
@@ -37,6 +37,8 @@ function ProductInfo({ product }) {
     user?.cart
   )
 
+  const isUserTheProductSeller = sellerUid === product?.sellerUid
+
   return (
     <>
       <article className="mb-0">
@@ -50,7 +52,7 @@ function ProductInfo({ product }) {
           <div className="mt-2 mb-3">
             <StockMessage stock={product.stock} withBadge={true} />
           </div>
-          {hasStock && (
+          {hasStock && !isUserTheProductSeller && (
             <div className="amount-container">
               <ProductAmountSelect
                 productStock={product?.stock}
@@ -61,20 +63,25 @@ function ProductInfo({ product }) {
               />
             </div>
           )}
+
           <div className="about-container mb-3">
-            <strong>Sobre este item</strong>: {product.description}
+            <strong>Sobre este item</strong>:{' '}
+            {product.description ? product.description : 'Sem descrição'}
           </div>
 
           <div className="actions">
-            {hasStock ? (
+            {!isUserTheProductSeller && userSigned && (
               <>
-                <BuyProductButton
-                  productId={product.id}
-                  purchaseData={{
-                    amount
-                  }}
-                />
-                {!isProductAlreadyInCart && userSigned && (
+                {hasStock && (
+                  <BuyProductButton
+                    productId={product.id}
+                    isUserTheProductSeller={isUserTheProductSeller}
+                    purchaseData={{
+                      amount
+                    }}
+                  />
+                )}
+                {!isProductAlreadyInCart && (
                   <button onClick={handleAddProductToCart}>
                     Adicionar ao carrinho
                   </button>
@@ -88,12 +95,12 @@ function ProductInfo({ product }) {
                   </button>
                 )}
               </>
-            ) : (
-              !isProductAlreadyInList && (
-                <button onClick={handleAddProductToList}>
-                  Adicionar à Lista
-                </button>
-              )
+            )}
+
+            {!isProductAlreadyInList && !userSigned && (
+              <button onClick={handleAddProductToList}>
+                Adicionar à Lista
+              </button>
             )}
           </div>
         </div>
