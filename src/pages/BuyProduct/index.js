@@ -18,7 +18,7 @@ function BuyProduct() {
   const [hasStock, setHasStock] = useState(true)
   const [productPrice, setProductPrice] = useState(0)
 
-  const { products, getProductById, productsLoading } =
+  const { products, getProductById, productsLoading, productHasStock } =
     useContext(StoreContext)
   const { userUid, sellerUid } = useContext(AuthContext)
 
@@ -34,13 +34,15 @@ function BuyProduct() {
     }
   }
 
-  const isUserTheProductSeller = sellerUid === product?.sellerUid
+  const isUserTheProductSeller =
+    !!sellerUid && sellerUid === product?.sellerUid
 
   useEffect(() => {
     if (!productsLoading) {
       const product = getProductById(productId)
       const { dollars = 0, cents = 0 } = product?.price || {}
-      setHasStock(product?.stock > 0)
+      const hasStock = productHasStock(productId)
+      setHasStock(hasStock)
       setProductNotFound(!product)
       setProduct(product)
       changeProductPrice({
@@ -53,13 +55,16 @@ function BuyProduct() {
 
   useEffect(() => {
     document.title = product?.name
-      ? product?.name
-      : 'Produto não encontrado'
   }, [product])
 
-  if (productNotFound) {
-    return <ErrorComponent message="Esse produto não existe!" />
-  }
+
+  /*
+  Correção de bugs envolvendo estoque do produto
+
+  - Corrigido o bug que impossibilitava o produto de ser removido da lista e carrinho quando o mesmo não possuia estoque.
+
+  - Produto era dado como inexistente nas rotas 'product' e 'buyProduct' quando não possuia estoque.
+  */
 
   if (isUserTheProductSeller) {
     return (
@@ -67,8 +72,14 @@ function BuyProduct() {
     )
   }
 
-  if (!hasStock && !productsLoading) {
+  if (hasStock === 'no' && !productsLoading) {
+    document.title = 'Produto sem estoque!'
     return <ErrorComponent message="Esse produto está sem estoque!" />
+  }
+
+  if (productNotFound) {
+    document.title = 'Produto não encontrado!'
+    return <ErrorComponent message="Esse produto não existe!" />
   }
 
   return (

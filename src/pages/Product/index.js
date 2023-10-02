@@ -14,26 +14,33 @@ function Product() {
   const [product, setProduct] = useState(null)
   const [productNotFound, setProductNotFound] = useState(false)
   const [productLoading, setProductLoading] = useState(true)
+  const [hasStock, setHasStock] = useState(true)
 
-  const { products, getProductById, productsLoading } =
+  const { products, getProductById, productsLoading, productHasStock } =
     useContext(StoreContext)
 
   useEffect(() => {
     if (!productsLoading) {
       const product = getProductById(productId)
+      const hasStock = productHasStock(productId)
+      setHasStock(hasStock)
       setProductNotFound(!product)
       setProduct(product)
       setProductLoading(false)
     }
   }, [products])
 
+  if (hasStock === 'no' && !productsLoading) {
+    document.title = 'Produto sem estoque!'
+    return <ErrorComponent message="Esse produto está sem estoque!" />
+  }
+
   if (productNotFound) {
+    document.title = 'Produto não encontrado!'
     return <ErrorComponent message="Esse produto não existe!" />
   }
 
   document.title = product?.name
-    ? product?.name
-    : 'Produto não encontrado!'
 
   return (
     <>

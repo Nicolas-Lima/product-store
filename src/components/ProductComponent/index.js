@@ -22,7 +22,8 @@ function ProductContent({
     removeProductFromList,
     removeProductFromCart,
     addProductToCart,
-    addProductToList
+    addProductToList,
+    getProductById
   } = useContext(StoreContext)
   const { userSigned, user, sellerUid } = useContext(AuthContext)
   const [removingProduct, setRemovingProduct] = useState(false)
@@ -48,6 +49,8 @@ function ProductContent({
     product.id,
     user?.cart
   )
+
+  const productExists = getProductById(product.id)
 
   const isUserTheProductSeller = sellerUid === product?.sellerUid
 
@@ -123,7 +126,8 @@ function ProductContent({
               />
               {!isProductAlreadyInCart &&
                 userSigned &&
-                !isUserTheProductSeller && (
+                !isUserTheProductSeller &&
+                productExists && (
                   <button onClick={handleAddProductToCart}>
                     Adicionar ao carrinho
                   </button>
@@ -143,11 +147,13 @@ function ProductContent({
                 productId={product.id}
                 isUserTheProductSeller={isUserTheProductSeller}
               />
-              {!isProductAlreadyInList && !isUserTheProductSeller && (
-                <button onClick={handleAddProductToList}>
-                  Adicionar à Lista
-                </button>
-              )}
+              {!isProductAlreadyInList &&
+                !isUserTheProductSeller &&
+                productExists && (
+                  <button onClick={handleAddProductToList}>
+                    Adicionar à Lista
+                  </button>
+                )}
 
               <button
                 className="btn-orange"

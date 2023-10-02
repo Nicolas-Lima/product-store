@@ -33,6 +33,7 @@ function StoreProvider({ children }) {
   } = useContext(AuthContext)
   const [userInfo, setUserInfo] = useState(null)
   const [products, setProducts] = useState(null)
+  const [productsWithNoStock, setProductsWithNoStock] = useState([])
   const [myProducts, setMyProducts] = useState([])
   const [productsLoading, setProductsLoading] = useState(true)
   const [searchResults, setSearchResults] = useState([])
@@ -54,6 +55,7 @@ function StoreProvider({ children }) {
       const updatedProductList = productsWithStock
 
       setProducts(updatedProductList)
+      setProductsWithNoStock(productsWithNoStock)
       setProductsLoading(false)
     })
   }
@@ -204,6 +206,24 @@ function StoreProvider({ children }) {
     setMyProducts(getMyProducts())
   }, [products, seller])
 
+  const productHasStock = productId => {
+    const selectedProduct = productsWithNoStock.filter(
+      product => product?.id === productId
+    )[0]
+
+    const productStock = parseInt(selectedProduct?.stock)
+
+    let message = 'undefined'
+
+    if (productStock <= 0) {
+      message = 'no'
+    } else if (productStock > 0) {
+      message = 'yes'
+    }
+
+    return message
+  }
+
   const getProductById = productId => {
     const product = products?.filter(product => {
       return product.id === productId
@@ -232,6 +252,10 @@ function StoreProvider({ children }) {
       }
       return product
     })
+
+    const productsWithNoStock =
+      updatedProducts?.filter(product => product.stock <= 0) || []
+    setProductsWithNoStock(productsWithNoStock)
 
     setProducts(updatedProducts)
   }
@@ -480,11 +504,13 @@ function StoreProvider({ children }) {
     const selectedProduct = getProductById(productUid)
     const userCart = user?.cart ?? []
 
-    if (
-      !selectedProduct ||
-      productAlreadyInCart(productUid, user?.cart) ||
-      !userSigned
-    ) {
+    if (!selectedProduct) {
+      toast.error('O produto não existe!')
+      return
+    }
+
+    if (productAlreadyInCart(productUid, user?.cart) || !userSigned) {
+      toast.error('Um erro aconteceu, tente novamente!')
       return
     }
 
@@ -680,6 +706,8 @@ function StoreProvider({ children }) {
   const contextValue = {
     brandNameAlreadyExists,
     products: products || [],
+    productsWithNoStock,
+    productHasStock,
     myProducts,
     setProducts,
     getProductById,
