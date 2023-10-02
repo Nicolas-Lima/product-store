@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
 import CountrySelectOptions from '../CountrySelectOptions'
+import { IMaskInput } from 'react-imask'
+
 function NewCreditCardFormFields({
   newCreditCardInfo,
   fieldsErrorMessages,
@@ -86,7 +88,8 @@ function NewCreditCardFormFields({
       {/* Expiration Date */}
       <label className="mb-0" htmlFor="expirationDate">
         Data de Validade
-        <input
+        <IMaskInput
+          mask="00 / 00"
           {...(formSubmitted
             ? { 'aria-invalid': !!fieldsErrorMessages.expirationDate }
             : {})}
@@ -96,7 +99,7 @@ function NewCreditCardFormFields({
           name="expirationDate"
           placeholder="MM / AA"
           value={expirationDate}
-          onChange={e => setExpirationDate(e.target.value)}
+          onAccept={value => setExpirationDate(value)}
           maxLength={7}
         />
       </label>

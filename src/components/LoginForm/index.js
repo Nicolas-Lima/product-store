@@ -1,35 +1,35 @@
-import { useState, useEffect, useContext } from "react";
-import { useNavigate } from "react-router-dom";
-import { FormContext } from "../../contexts/form";
-import { AuthContext } from "../../contexts/auth";
-import PasswordToggle from "../PasswordToggle";
+import { useState, useEffect, useContext } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { FormContext } from '../../contexts/form'
+import { AuthContext } from '../../contexts/auth'
+import PasswordToggle from '../PasswordToggle'
 
 function LoginForm() {
-  const [credentialsError, setCredentialsError] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const { showingPassword } = useContext(FormContext);
+  const [credentialsError, setCredentialsError] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const { showingPassword } = useContext(FormContext)
   const { userSigned, signIn, loggingIn, setLoggingIn } =
-    useContext(AuthContext);
+    useContext(AuthContext)
 
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (userSigned) {
-      navigate("/");
+      navigate('/')
     }
-  }, []);
+  }, [])
 
   const handleSubmit = async e => {
-    e.preventDefault();
+    e.preventDefault()
 
-    setLoggingIn(true);
-    const { credentialsError } = await signIn(email, password);
+    setLoggingIn(true)
+    const { credentialsError } = await signIn(email, password)
     if (credentialsError) {
-      setCredentialsError(credentialsError);
+      setCredentialsError(credentialsError)
     }
-    setLoggingIn(false);
-  };
+    setLoggingIn(false)
+  }
 
   return (
     <form
@@ -57,7 +57,7 @@ function LoginForm() {
             Senha
           </label>
           <input
-            type={showingPassword ? "text" : "password"}
+            type={showingPassword ? 'text' : 'password'}
             id="password"
             name="password"
             placeholder="Digite sua senha"
@@ -79,7 +79,7 @@ function LoginForm() {
         <button type="submit mt-0">Logar</button>
       )}
     </form>
-  );
+  )
 }
 
-export default LoginForm;
+export default LoginForm

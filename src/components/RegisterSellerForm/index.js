@@ -4,6 +4,7 @@ import {
   validateCnpjWithMessage,
   validateBrandNameWithMessage
 } from '../../utils/validationUtils'
+import { IMaskInput } from 'react-imask'
 
 function RegisterSellerForm({
   newSeller,
@@ -48,7 +49,8 @@ function RegisterSellerForm({
     <form onSubmit={handleRegisterSeller}>
       <label htmlFor="cnpj" className="w-100">
         CNPJ
-        <input
+        <IMaskInput
+          mask="00.000.000/0001-00"
           aria-invalid={
             cnpjInputStarted || formSubmitted
               ? !!newSellerErrorMessages?.cnpj
@@ -56,14 +58,14 @@ function RegisterSellerForm({
           }
           type="text"
           value={newSeller?.cnpj}
-          onChange={e => {
+          onAccept={value => {
             setNewSeller(prevState => {
-              return { ...prevState, cnpj: e.target.value }
+              return { ...prevState, cnpj: value }
             })
             setCnpjInputStarted(true)
           }}
+          placeholder="Digite seu CNPJ"
           id="cnpj"
-          placeholder="Digite o seu CNPJ"
           className="mb-2"
           maxLength={18}
         />
