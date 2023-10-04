@@ -10,11 +10,14 @@ import {
 } from '../utils/validationUtils'
 import {
   signInWithEmailAndPassword,
-  createUserWithEmailAndPassword
+  createUserWithEmailAndPassword,
+  getAuth,
+  deleteUser
 } from 'firebase/auth'
 
 import {
   addDoc,
+  deleteDoc,
   setDoc,
   collection,
   doc,
@@ -224,6 +227,26 @@ function AuthProvider({ children }) {
     return returnObject
   }
 
+  function deleteAccount() {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const userRef = doc(db, 'users', user?.uid)
+        await deleteDoc(userRef)
+        const auth = getAuth()
+        await deleteUser(auth?.currentUser)
+        await logout(false)
+        navigate('/')
+        toast.success('Sua conta foi deletada com sucesso!')
+        resolve('ok')
+      } catch (error) {
+        toast.error(
+          'Erro ao deletar sua conta, tente novamente mais tarde!'
+        )
+        reject(error?.code || 'error')
+      }
+    })
+  }
+
   async function registerSeller(cnpj, receivingCreditCard, brandName) {
     return new Promise((resolve, reject) => {
       const newSeller = {
@@ -251,13 +274,15 @@ function AuthProvider({ children }) {
     })
   }
 
-  function logout() {
+  function logout(displayToast = true) {
     localStorage.removeItem('@userData')
     setUser(false)
     setSeller(false)
-    toast.success('Você foi desconectado com sucesso!', {
-      toastId: 'loggedOut'
-    })
+    if (displayToast) {
+      toast.success('Você foi desconectado com sucesso!', {
+        toastId: 'loggedOut'
+      })
+    }
   }
 
   function saveUserLoginInfo(email, uid) {
@@ -296,6 +321,7 @@ function AuthProvider({ children }) {
 
   const contextValue = {
     addNewCreditCard,
+    deleteAccount,
     updateUserInfo,
     updateSellerInfo,
     updateDeliveryAddress,

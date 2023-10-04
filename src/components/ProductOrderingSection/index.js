@@ -135,7 +135,11 @@ function ProductOrderingSection({ product, productPrice, productAmount }) {
             </span>
           </div>
           <div className="mt-2 mb-3">
-            <StockMessage stock={product.stock} withBadge={true} />
+            <StockMessage
+              stock={product.stock}
+              minPurchaseUnits={product?.minPurchaseUnits}
+              withBadge={true}
+            />
           </div>
           {product.stock > 0 && (
             <div className="amount-container">

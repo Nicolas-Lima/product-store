@@ -18,6 +18,7 @@ function ProductAmountSelect({
 
     return amountArray.map((value, index) => {
       const optionValue = index + minPurchaseUnits
+
       return (
         <option value={optionValue} key={index}>
           {optionValue}
@@ -25,18 +26,21 @@ function ProductAmountSelect({
       )
     })
   }
-  return (
-    <>
-      <label htmlFor="amount">Quantidade</label>
-      <select
-        id="amount"
-        value={amount}
-        onChange={e => setAmount(e.target.value)}
-        required>
-        {generateOptionsForAmountSelect()}
-      </select>
-    </>
-  )
+
+  if (productStock >= minPurchaseUnits) {
+    return (
+      <>
+        <label htmlFor="amount">Quantidade</label>
+        <select
+          id="amount"
+          value={amount}
+          onChange={e => setAmount(e.target.value)}
+          required>
+          {generateOptionsForAmountSelect()}
+        </select>
+      </>
+    )
+  }
 }
 
 export default ProductAmountSelect

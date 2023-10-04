@@ -78,10 +78,11 @@ function RegisterForm() {
 
     setFormSubmitted(true)
 
+    const isFullNameValid = validateFullName()
     const isEmailValid = validateEmail()
     const isPasswordValid = validatePassword()
 
-    if (!isEmailValid || !isPasswordValid) {
+    if (!isEmailValid || !isPasswordValid || !isFullNameValid) {
       return
     }
 

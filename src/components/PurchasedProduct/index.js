@@ -80,6 +80,12 @@ function PurchasedProduct({
             }}>
             Mais informações
           </button>
+          {!productExists && canProvideReview && productDelivered && (
+            <span className="text-danger mt-2 w-100 fs-6">
+              * Não é possível avaliar o produto, pois o produto não existe
+              mais!
+            </span>
+          )}
         </div>
       </div>
     </article>

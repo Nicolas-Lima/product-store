@@ -9,7 +9,9 @@ import {
   getDoc,
   getDocs,
   collection,
-  updateDoc
+  updateDoc,
+  arrayUnion,
+  arrayRemove
 } from 'firebase/firestore'
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 import { removeAccents } from '../utils/generalUtils'
@@ -24,6 +26,7 @@ function StoreProvider({ children }) {
   const {
     user,
     seller,
+    setSeller,
     userSigned,
     userUid,
     guestInfo,
@@ -49,14 +52,76 @@ function StoreProvider({ children }) {
       })
 
       const productsWithStock =
-        products?.filter(product => product.stock > 0) || []
+        products?.filter(
+          product => product.stock >= product.minPurchaseUnits
+        ) || []
       const productsWithNoStock =
-        products?.filter(product => product.stock <= 0) || []
+        products?.filter(
+          product => product.stock < product.minPurchaseUnits
+        ) || []
       const updatedProductList = productsWithStock
 
       setProducts(updatedProductList)
       setProductsWithNoStock(productsWithNoStock)
       setProductsLoading(false)
+    })
+  }
+
+  function deleteSellerAccount(setDeletionMessage) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        // Removes the brand name from Firebase
+        const brandNames = doc(db, 'sellers', 'brandNames')
+        await updateDoc(brandNames, {
+          brandNames: arrayRemove(seller?.brandName)
+        })
+        // Removes the seller products from Firebase
+        setDeletionMessage('Deletando seus produtos!')
+        const deletedProducts = doc(db, 'backup', 'deletedProducts')
+        const sellerProducts = seller?.products || []
+        const sellerProductsIds =
+          seller?.products?.map(product => product?.productId) || []
+
+        for (let product of sellerProducts) {
+          const productId = product?.productId
+          // Creates a backup for the product in Firebase
+          await updateDoc(deletedProducts, {
+            deletedProducts: arrayUnion(product)
+          })
+          // Deletes the product from Firebase
+          const productRef = doc(db, 'products', productId)
+          await deleteDoc(productRef)
+        }
+        // Removes the seller account from Firebase
+        setDeletionMessage('Deletando sua conta!')
+        const sellerRef = doc(db, 'sellers', seller?.sellerUid)
+        await deleteDoc(sellerRef)
+        // Creates a backup for the seller in Firebase
+        const deletedSellers = doc(db, 'backup', 'deletedSellers')
+        await updateDoc(deletedSellers, {
+          deletedSellers: arrayUnion(seller)
+        })
+        // Removes the seller products from the products state
+        setProducts(prevState => {
+          const updatedProducts =
+            prevState.filter(
+              product => !sellerProductsIds?.includes(product?.id)
+            ) || []
+
+          return updatedProducts
+        })
+
+        // Another things
+        setDeletionMessage('')
+        setSeller(null)
+        toast.success('Sua conta de vendedor foi deletada com sucesso!')
+        resolve('ok')
+      } catch (error) {
+        toast.error(
+          'Erro ao deletar sua conta de vendedor, tente novamente mais tarde!'
+        )
+        reject(error?.code || 'error')
+      }
     })
   }
 
@@ -197,14 +262,25 @@ function StoreProvider({ children }) {
       const myProductsIds =
         seller?.products?.map(product => product?.productId) || []
 
-      const myProductsFiltered = products?.filter(product =>
-        myProductsIds?.includes(product?.id)
-      )
+      const productsWithStockFiltered =
+        products?.filter(product =>
+          myProductsIds?.includes(product?.id)
+        ) || []
+
+      const productsWithNoStockFiltered =
+        productsWithNoStock?.filter(product =>
+          myProductsIds?.includes(product?.id)
+        ) || []
+
+      const myProductsFiltered = [
+        ...productsWithStockFiltered,
+        ...productsWithNoStockFiltered
+      ]
 
       return myProductsFiltered
     }
     setMyProducts(getMyProducts())
-  }, [products, seller])
+  }, [products, seller, productsWithNoStock])
 
   const productHasStock = productId => {
     const selectedProduct = productsWithNoStock.filter(
@@ -254,7 +330,9 @@ function StoreProvider({ children }) {
     })
 
     const productsWithNoStock =
-      updatedProducts?.filter(product => product.stock <= 0) || []
+      updatedProducts?.filter(
+        product => product.stock < product.minPurchaseUnits
+      ) || []
     setProductsWithNoStock(productsWithNoStock)
 
     setProducts(updatedProducts)
@@ -350,7 +428,8 @@ function StoreProvider({ children }) {
         reviews,
         salesCount: 0,
         stock,
-        type
+        type,
+        registrationDate: new Date().getTime()
       }
 
       const productsRef = collection(db, 'products')
@@ -704,6 +783,7 @@ function StoreProvider({ children }) {
   }
 
   const contextValue = {
+    deleteSellerAccount,
     brandNameAlreadyExists,
     products: products || [],
     productsWithNoStock,

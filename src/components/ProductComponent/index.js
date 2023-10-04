@@ -34,6 +34,7 @@ function ProductContent({
     name,
     price,
     stock,
+    minPurchaseUnits,
     salesCount,
     reviews
   } = product
@@ -114,7 +115,10 @@ function ProductContent({
 
             {includeStockMessage && (
               <div className="stockMessage mt-2">
-                <StockMessage stock={stock} />
+                <StockMessage
+                  stock={stock}
+                  minPurchaseUnits={minPurchaseUnits}
+                />
               </div>
             )}
           </div>

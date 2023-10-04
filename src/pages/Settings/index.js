@@ -1,6 +1,7 @@
 import { useContext, useState, useEffect, useMemo, useRef } from 'react'
 import { toast } from 'react-toastify'
 import { AuthContext } from '../../contexts/auth'
+import { StoreContext } from '../../contexts/store'
 import { db, storage } from '../../services/firebaseConnection'
 import { doc, updateDoc } from 'firebase/firestore'
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
@@ -14,8 +15,15 @@ import {
 import './settings.css'
 
 function Settings() {
-  const { user, updateUserInfo, updateDeliveryAddress } =
-    useContext(AuthContext)
+  const {
+    seller,
+    user,
+    updateUserInfo,
+    updateDeliveryAddress,
+    deleteAccount
+  } = useContext(AuthContext)
+
+  const { deleteSellerAccount } = useContext(StoreContext)
 
   const imageInputRef = useRef(null)
   const [avatarImgUrl, setAvatarImgUrl] = useState(
@@ -31,7 +39,6 @@ function Settings() {
   const [fullName, setFullName] = useState(
     user?.profileConfiguration?.fullName
   )
-
   const [deliveryAddress, setDeliveryAddress] = useState(
     user?.deliveryAddress
   )
@@ -52,6 +59,8 @@ function Settings() {
       state: '',
       streetAddress: ''
     })
+  const [deletingAccount, setDeletingAccount] = useState(false)
+  const [deletionMessage, setDeletionMessage] = useState('')
 
   const areDeliveryAddressErrorsEmpty = useMemo(() => {
     return Object.keys(deliveryAddressErrorMessages).every(
@@ -112,7 +121,7 @@ function Settings() {
 
   useEffect(() => {
     const handleBeforeUnload = event => {
-      if (hasUserModifiedData) {
+      if (hasUserModifiedData || deletingAccount) {
         event.preventDefault()
       }
     }
@@ -126,7 +135,8 @@ function Settings() {
     imageAvatar,
     fullName,
     user,
-    hasUserModifiedData
+    hasUserModifiedData,
+    deletingAccount
   ])
 
   const handleSave = async () => {
@@ -217,6 +227,28 @@ function Settings() {
       })
   }
 
+  const handleDeleteAccount = async () => {
+    if (!window.confirm('🚫 Você realmente deseja excluir sua conta?')) {
+      return
+    }
+    setDeletingAccount(true)
+    await deleteAccount()
+    setDeletingAccount(false)
+  }
+
+  const handleDeleteSellerAccount = async () => {
+    if (
+      !window.confirm(
+        '🚫 Você realmente deseja excluir sua conta de vendedor e todos os seus produtos?'
+      )
+    ) {
+      return
+    }
+    setDeletingAccount(true)
+    await deleteSellerAccount(setDeletionMessage)
+    setDeletingAccount(false)
+  }
+
   document.title = 'Configurações'
 
   return (
@@ -284,7 +316,8 @@ function Settings() {
             <div className="d-flex align-self-start">
               {hasUserModifiedData &&
               !fullNameErrorMessage &&
-              areDeliveryAddressErrorsEmpty ? (
+              areDeliveryAddressErrorsEmpty &&
+              !deletingAccount ? (
                 <button
                   className="mt-4 ms-1 ms-md-3 px-3 py-2 btn-green"
                   onClick={handleSave}>
@@ -306,6 +339,36 @@ function Settings() {
               )}
             </div>
           )}
+          <div className="danger-zone w-100 mt-3 mb-2 px-3">
+            <strong>
+              <span className="me-2">🚫</span>Zona de perigo
+            </strong>
+            {deletingAccount ? (
+              <h3 aria-busy={true} className="mt-4 text-danger">
+                {deletionMessage ? deletionMessage : 'Deletando...'}
+              </h3>
+            ) : (
+              <div className="grid w-auto mt-4">
+                {user instanceof Object && (
+                  <button
+                    type="button"
+                    className="btn-orange d-inline"
+                    onClick={handleDeleteAccount}>
+                    Excluir conta
+                  </button>
+                )}
+
+                {seller instanceof Object && (
+                  <button
+                    type="button"
+                    className="btn-orange d-inline"
+                    onClick={handleDeleteSellerAccount}>
+                    Excluir conta de vendedor
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </main>
     </>

@@ -116,7 +116,7 @@ function NewCreditCardFormFields({
             ? { 'aria-invalid': !!fieldsErrorMessages.cvv }
             : {})}
           className="mb-0"
-          type="text"
+          type="password"
           id="cvv"
           name="cvv"
           placeholder="CVV"

@@ -15,6 +15,7 @@ function ProductComponent({ product, includeStockMessage = false }) {
     name,
     price,
     stock,
+    minPurchaseUnits,
     salesCount,
     reviews,
     id: productId
@@ -66,7 +67,10 @@ function ProductComponent({ product, includeStockMessage = false }) {
 
             {includeStockMessage && (
               <div className="stockMessage mt-2">
-                <StockMessage stock={stock} />
+                <StockMessage
+                  stock={stock}
+                  minPurchaseUnits={minPurchaseUnits}
+                />
               </div>
             )}
 

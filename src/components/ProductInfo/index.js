@@ -50,7 +50,11 @@ function ProductInfo({ product }) {
             </span>
           </div>
           <div className="mt-2 mb-3">
-            <StockMessage stock={product.stock} withBadge={true} />
+            <StockMessage
+              stock={product.stock}
+              minPurchaseUnits={minPurchaseUnits}
+              withBadge={true}
+            />
           </div>
           {hasStock && !isUserTheProductSeller && (
             <div className="amount-container">
