@@ -10,7 +10,11 @@ function toggleModalRegisterProduct({
   setModalRegisterProductIsOpen
 }) {
   if (modalRegisterProductIsOpen) {
-    document.body.classList.remove('modal-is-open', 'modal-is-opening')
+    document.body.classList.remove(
+      'modal-is-open',
+      'modal-is-opening',
+      'modal-register-product-is-open'
+    )
     document.body.classList.add('modal-is-open', 'modal-is-closing')
     modalRegisterProductRef?.current?.removeAttribute('open', '')
     document.body.classList.remove('modal-is-open', 'modal-is-closing')
@@ -19,7 +23,11 @@ function toggleModalRegisterProduct({
     return
   }
 
-  document.body.classList.add('modal-is-open', 'modal-is-opening')
+  document.body.classList.add(
+    'modal-is-open',
+    'modal-is-opening',
+    'modal-register-product-is-open'
+  )
   modalRegisterProductRef?.current?.setAttribute('open', '')
   setModalRegisterProductIsOpen(true)
 }

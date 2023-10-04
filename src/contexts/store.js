@@ -1,4 +1,10 @@
-import { createContext, useContext, useState, useEffect } from 'react'
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback
+} from 'react'
 import { toast } from 'react-toastify'
 import { AuthContext } from './auth'
 import { db, storage } from '../services/firebaseConnection'
@@ -257,30 +263,30 @@ function StoreProvider({ children }) {
     }
   }, [user, userSigned])
 
-  useEffect(() => {
-    const getMyProducts = () => {
-      const myProductsIds =
-        seller?.products?.map(product => product?.productId) || []
+  const getMyProducts = useCallback(() => {
+    const myProductsIds =
+      seller?.products?.map(product => product?.productId) || []
 
-      const productsWithStockFiltered =
-        products?.filter(product =>
-          myProductsIds?.includes(product?.id)
-        ) || []
+    const productsWithStockFiltered =
+      products?.filter(product => myProductsIds?.includes(product?.id)) ||
+      []
 
-      const productsWithNoStockFiltered =
-        productsWithNoStock?.filter(product =>
-          myProductsIds?.includes(product?.id)
-        ) || []
+    const productsWithNoStockFiltered =
+      productsWithNoStock?.filter(product =>
+        myProductsIds?.includes(product?.id)
+      ) || []
 
-      const myProductsFiltered = [
-        ...productsWithStockFiltered,
-        ...productsWithNoStockFiltered
-      ]
+    const myProductsFiltered = [
+      ...productsWithStockFiltered,
+      ...productsWithNoStockFiltered
+    ]
 
-      return myProductsFiltered
-    }
-    setMyProducts(getMyProducts())
+    return myProductsFiltered
   }, [products, seller, productsWithNoStock])
+
+  useEffect(() => {
+    setMyProducts(getMyProducts())
+  }, [products, seller, productsWithNoStock, getMyProducts])
 
   const productHasStock = productId => {
     const selectedProduct = productsWithNoStock.filter(
@@ -319,23 +325,30 @@ function StoreProvider({ children }) {
   }
 
   const updateProductState = (productId, updatedInfo) => {
-    const updatedProducts = products.map(product => {
-      if (product.id === productId) {
-        return {
-          ...product,
-          ...updatedInfo
+    const updatedProducts = [...products, ...productsWithNoStock].map(
+      product => {
+        if (product.id === productId) {
+          return {
+            ...product,
+            ...updatedInfo
+          }
         }
+        return product
       }
-      return product
-    })
+    )
 
-    const productsWithNoStock =
+    const updatedProductsWithStock =
+      updatedProducts?.filter(
+        product => product.stock >= product.minPurchaseUnits
+      ) || []
+
+    const updatedProductsWithNoStock =
       updatedProducts?.filter(
         product => product.stock < product.minPurchaseUnits
       ) || []
-    setProductsWithNoStock(productsWithNoStock)
 
-    setProducts(updatedProducts)
+    setProductsWithNoStock(updatedProductsWithNoStock)
+    setProducts(updatedProductsWithStock)
   }
 
   const updateProduct = async (productId, updatedInfo) => {
@@ -782,9 +795,40 @@ function StoreProvider({ children }) {
     })
   }
 
+  function changeProductStock({
+    productId,
+    newStock,
+    oldStock,
+    setCurrentError
+  }) {
+    if (!productId) {
+      setCurrentError('Um erro aconteceu, tente novamente!')
+    }
+
+    return new Promise(async (resolve, reject) => {
+      try {
+        // Updates the product on Firebase
+        await updateProduct(productId, {
+          stock: newStock
+        })
+        // Updates de products state with the updated product
+        await updateProductState(productId, {
+          stock: newStock
+        })
+        setMyProducts(getMyProducts())
+        resolve('ok')
+        toast.success('Estoque atualizado com sucesso!')
+      } catch (error) {
+        setCurrentError('Um erro aconteceu, tente novamente!')
+        reject(error?.code || 'error')
+      }
+    })
+  }
+
   const contextValue = {
     deleteSellerAccount,
     brandNameAlreadyExists,
+    changeProductStock,
     products: products || [],
     productsWithNoStock,
     productHasStock,

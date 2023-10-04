@@ -1,5 +1,4 @@
 import { capitalizeFirstLetter } from '../../utils/generalUtils'
-import DeliveryAddress from '../DeliveryAddress'
 
 function toggleModalOrderInfo({
   modalInfoRef,

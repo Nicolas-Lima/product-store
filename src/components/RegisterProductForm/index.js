@@ -147,7 +147,9 @@ function RegisterProductForm({
     const handleFocus = () => {
       const modalHasOpenAttribute =
         modalRegisterProductRef?.current?.hasAttribute('open')
-      const isModalOpen = document.body.classList.contains('modal-is-open')
+      const isModalOpen =
+        document.body.classList.contains('modal-is-open') &&
+        document.body.classList.contains('modal-register-product-is-open')
       const imageInputValueLength = imageInputRef.current.value.length
 
       if (
