@@ -6,13 +6,15 @@ import { useNavigate } from 'react-router-dom'
 import { auth, db } from '../services/firebaseConnection'
 import {
   getAuthErrorMessage,
-  getCreateAccountErrorMessage
+  getCreateAccountErrorMessage,
+  validatePasswordWithMessage
 } from '../utils/validationUtils'
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   getAuth,
-  deleteUser
+  deleteUser,
+  updatePassword
 } from 'firebase/auth'
 
 import {
@@ -227,6 +229,25 @@ function AuthProvider({ children }) {
     return returnObject
   }
 
+  function changePassword(newPassword) {
+    return new Promise(async (resolve, reject) => {
+      const { isValid: newPasswordIsValid } =
+        validatePasswordWithMessage(newPassword)
+
+      if (newPasswordIsValid) {
+        try {
+          const auth = getAuth()
+          const user = auth?.currentUser
+
+          await updatePassword(user, newPassword)
+          resolve('ok')
+        } catch (e) {
+          reject(e?.code || 'error')
+        }
+      }
+    })
+  }
+
   function deleteAccount() {
     return new Promise(async (resolve, reject) => {
       try {
@@ -338,6 +359,7 @@ function AuthProvider({ children }) {
     setGuestInfo,
     signIn,
     signUp,
+    changePassword,
     registerSeller,
     logout,
     pageLoading,

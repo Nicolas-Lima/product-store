@@ -12,7 +12,7 @@ const sliceProductsIntoGroups = products => {
     slicedProductGroups.push(productsCopy.splice(0, groupSize))
   }
 
-  slicedProductGroups.map(group => {
+  slicedProductGroups.forEach(group => {
     if (group.length !== groupSize) {
       const missingProducts = groupSize - group.length
       for (let i = 0; i < missingProducts; i++) {

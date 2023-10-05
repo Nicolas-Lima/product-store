@@ -10,7 +10,8 @@ import UpdateDeliveryAddress from '../../components/UpdateDeliveryAddress'
 import ImageUploader from '../../components/ImageUploader'
 import {
   validateDeliveryAddressForm,
-  validateFullNameWithMessage
+  validateFullNameWithMessage,
+  validatePasswordWithMessage
 } from '../../utils/validationUtils'
 import './settings.css'
 
@@ -18,6 +19,7 @@ function Settings() {
   const {
     seller,
     user,
+    changePassword,
     updateUserInfo,
     updateDeliveryAddress,
     deleteAccount
@@ -36,9 +38,14 @@ function Settings() {
   const [updatingPhoto, setUpdatingPhoto] = useState(false)
   const [updatingDeliveryAddress, setUpdatingDeliveryAddress] =
     useState(false)
+  const [updatingPassword, setUpdatingPassword] = useState(false)
+  const [showChangePasswordInput, setShowChangePasswordInput] =
+    useState(false)
   const [fullName, setFullName] = useState(
     user?.profileConfiguration?.fullName
   )
+  const [password, setPassword] = useState('')
+  const [passwordInputStarted, setPasswordInputStarted] = useState(false)
   const [deliveryAddress, setDeliveryAddress] = useState(
     user?.deliveryAddress
   )
@@ -80,14 +87,24 @@ function Settings() {
     return (
       imageAvatar != null ||
       user?.profileConfiguration?.fullName !== fullName ||
-      !areDeliveryAddressesEqual
+      !areDeliveryAddressesEqual ||
+      password
     )
-  }, [imageAvatar, fullName, user, areDeliveryAddressesEqual])
+  }, [imageAvatar, fullName, user, areDeliveryAddressesEqual, password])
 
   const fullNameErrorMessage = useMemo(() => {
     const { errorMessage } = validateFullNameWithMessage(fullName)
     return errorMessage
   }, [fullName])
+
+  const passwordErrorMessage = useMemo(() => {
+    const { errorMessage } = validatePasswordWithMessage(password)
+    if (passwordInputStarted) {
+      return errorMessage
+    } else {
+      return ''
+    }
+  }, [password, passwordInputStarted])
 
   useEffect(() => {
     if (startedDeliveryForm) {
@@ -107,6 +124,7 @@ function Settings() {
     imageAvatar,
     fullName,
     user,
+    password,
     areDeliveryAddressesEqual,
     newDeliveryAddress,
     startedDeliveryForm
@@ -134,6 +152,7 @@ function Settings() {
     areDeliveryAddressesEqual,
     imageAvatar,
     fullName,
+    password,
     user,
     hasUserModifiedData,
     deletingAccount
@@ -176,6 +195,27 @@ function Settings() {
 
       handleUpdateDeliveryAddress()
     }
+
+    if (!passwordErrorMessage && password) {
+      setUpdatingPassword(true)
+      await changePassword(password)
+        .then(() => {
+          setPassword('')
+          setPasswordInputStarted(false)
+          setShowChangePasswordInput(false)
+          toast.success('Senha atualizada com sucesso!')
+          setUpdatingPassword(false)
+        })
+        .catch(e => {
+          if (e === 'auth/requires-recent-login') {
+            toast.error('Por favor, faça login novamente!')
+          } else {
+            toast.error('Um erro aconteceu, tente novamente!')
+          }
+
+          setUpdatingPassword(false)
+        })
+    }
   }
 
   const handleCancelChanges = () => {
@@ -185,6 +225,9 @@ function Settings() {
     setAvatarImgUrl(user?.profileConfiguration?.imgUrl)
     setEmail(user?.email)
     setFullName(user?.profileConfiguration?.fullName)
+    setPassword('')
+    setPasswordInputStarted(false)
+    setShowChangePasswordInput(false)
     setNewDeliveryAddress(user?.deliveryAddress)
     setShowDeliveryAddressForm(false)
     setStartedDeliveryForm(false)
@@ -278,9 +321,11 @@ function Settings() {
               />
             </label>
           </div>
-          <div className="mb-3 mt-0 text-danger">
-            {fullNameErrorMessage && fullNameErrorMessage}
-          </div>
+          {fullNameErrorMessage && (
+            <div className="mb-3 mt-0 text-danger align-self-start ps-3">
+              {fullNameErrorMessage}
+            </div>
+          )}
           <UpdateDeliveryAddress
             areDeliveryAddressesEqual={areDeliveryAddressesEqual}
             userHasDeliveryAddress={userHasDeliveryAddress}
@@ -293,7 +338,7 @@ function Settings() {
             deliveryAddressErrorMessages={deliveryAddressErrorMessages}
             setStartedDeliveryForm={setStartedDeliveryForm}
           />
-          <div className="d-flex align-items-center w-100 pe-2 ps-3 rounded mb-3 mt-1">
+          <div className="d-flex align-items-center w-100 pe-2 ps-3 rounded mb-0 mt-1">
             <label htmlFor="email" className="w-100">
               E-mail
               <input
@@ -305,7 +350,41 @@ function Settings() {
               />
             </label>
           </div>
-          {updatingPhoto || updatingName || updatingDeliveryAddress ? (
+          <div className="d-flex align-items-center w-100 pe-2 ps-3 rounded mb-0 mt-1">
+            <label htmlFor="change-password" className="w-100">
+              Senha
+              {!showChangePasswordInput && (
+                <button
+                  className="w-auto btn-blue-grey mt-1"
+                  onClick={() =>
+                    setShowChangePasswordInput(prevState => !prevState)
+                  }>
+                  Trocar senha
+                </button>
+              )}
+              {showChangePasswordInput && (
+                <input
+                  type="password"
+                  value={password}
+                  onChange={e => {
+                    setPassword(e.target.value)
+                    setPasswordInputStarted(true)
+                  }}
+                  placeholder="Digite sua nova senha"
+                  id="change-password"
+                />
+              )}
+            </label>
+          </div>
+          {passwordErrorMessage && passwordInputStarted && (
+            <div className="mb-3 mt-0 text-danger align-self-start ps-3">
+              {passwordErrorMessage}
+            </div>
+          )}
+          {updatingPhoto ||
+          updatingName ||
+          updatingDeliveryAddress ||
+          updatingPassword ? (
             <button
               className="w-auto align-self-start mt-4 ms-1 ms-md-3 px-3 py-2 secondary disabled-input"
               disabled
@@ -316,6 +395,7 @@ function Settings() {
             <div className="d-flex align-self-start">
               {hasUserModifiedData &&
               !fullNameErrorMessage &&
+              !passwordErrorMessage &&
               areDeliveryAddressErrorsEmpty &&
               !deletingAccount ? (
                 <button
@@ -330,7 +410,10 @@ function Settings() {
                   Salvar
                 </button>
               )}
-              {(hasUserModifiedData || startedDeliveryForm) && (
+              {(hasUserModifiedData ||
+                startedDeliveryForm ||
+                passwordInputStarted ||
+                showChangePasswordInput) && (
                 <button
                   className="mt-4 ms-1 ms-md-3 px-3 py-2 btn-orange"
                   onClick={handleCancelChanges}>
