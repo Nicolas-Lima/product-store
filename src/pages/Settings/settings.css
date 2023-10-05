@@ -1,3 +1,9 @@
+@media (min-width: 992px) {
+  .main-settings-container {
+    max-width: 900px !important;
+  }
+}
+
 .avatar-uploader .imgPhoto {
   border-radius: 50%;
   width: 95px;

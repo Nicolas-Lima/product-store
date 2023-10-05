@@ -73,7 +73,7 @@ function ProductInfo({ product }) {
             {product.description ? product.description : 'Sem descrição'}
           </div>
 
-          <div className="actions">
+          <div className="actions actions-product-info m-auto">
             {!isUserTheProductSeller && userSigned && (
               <>
                 {hasStock && (

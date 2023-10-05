@@ -297,7 +297,7 @@ function Settings() {
   return (
     <>
       <Nav />
-      <main className="container mt-4 mb-4">
+      <main className="container mt-4 mb-4 main-settings-container">
         <h1 className="text-center text-secondary">Configurações</h1>
         <div className="mt-2-3rem d-flex flex-column align-items-center bg-light p-3 pt-0 rounded">
           <div className="avatar-uploader pe-2 ps-3 mt-4 mb-3">
@@ -405,7 +405,7 @@ function Settings() {
                 </button>
               ) : (
                 <button
-                  className="w-auto align-self-start mt-4 ms-1 ms-md-3 px-3 py-2 secondary disabled-input"
+                  className="w-auto align-self-start mt-4 ms-3 px-3 py-2 secondary disabled-input"
                   disabled>
                   Salvar
                 </button>

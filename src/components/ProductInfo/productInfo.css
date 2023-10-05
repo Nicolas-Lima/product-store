@@ -1,3 +1,7 @@
+.actions-product-info {
+  max-width: 500px !important;
+}
+
 .amount-container {
   max-width: 125px;
 }
